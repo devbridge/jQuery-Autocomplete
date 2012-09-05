@@ -362,8 +362,8 @@
 			var selectedValue, fn, me;
 			me = this;
 			selectedValue = this.suggestions[i];
+			var s, d;
 			if (selectedValue) {
-				var s, d;
 				s = me.suggestions[i];
 				d = me.data[i];
 				me.el.val(me.getValue(s));
