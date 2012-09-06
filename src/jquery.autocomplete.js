@@ -311,14 +311,17 @@
 			try {
 				response = eval('(' + text + ')');
 			} catch (err) { return; }
-			if (!$.isArray(response.data)) { response.data = []; }
+			var tempData = response.data == null ? response.Data : response.data;
+			var tempSuggestions = response.suggestions == null ? response.Suggestions : response.suggestions;
+			var tempQuery = response.query == null ? response.Query : response.query;
+			if (!$.isArray(tempData)) { tempData = []; }
 			if (!this.options.noCache) {
-				this.cachedResponse[response.query] = response;
-				if (response.suggestions.length === 0) { this.badQueries.push(response.query); }
+				this.cachedResponse[tempQuery] = response;
+				if (tempSuggestions.length === 0) { this.badQueries.push(tempQuery); }
 			}
-			if (response.query === this.getQuery(this.currentValue)) {
-				this.suggestions = response.suggestions;
-				this.data = response.data;
+			if (tempQuery === this.getQuery(this.currentValue)) {
+				this.suggestions = tempSuggestions;
+				this.data = tempData;
 				this.suggest();
 			}
 		},
