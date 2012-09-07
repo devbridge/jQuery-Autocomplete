@@ -421,6 +421,8 @@
 		},
 
 		getValue: function (value) {
+			this.currentValue = this.el.val();
+		        this.ignoreValueChange = false; 
 			var del, currVal, arr, me;
 			me = this;
 			del = me.options.delimiter;
