@@ -36,6 +36,7 @@
 		this.serviceUrl = options.serviceUrl;
 		this.isLocal = false;
 		this.options = {
+            requestMethod = 'get',
 			autoSubmit: false,
 			minChars: 1,
 			maxHeight: 300,
@@ -262,7 +263,12 @@
 			} else if (!this.isBadQuery(q)) {
 				me = this;
 				me.options.params.query = q;
-				$.get(this.serviceUrl, me.options.params, function (txt) { me.processResponse(txt); }, 'text');
+                if( me.options.requestMethod.toLowerCase() == 'get' )
+				    $.get(this.serviceUrl, me.options.params, function (txt) { me.processResponse(txt); }, 'text');
+                else if( me.options.requestMethod.toLowerCase() == 'post' )
+                    $.post(this.serviceUrl, me.options.params, function (txt) { me.processResponse(txt); }, 'text');
+                else
+                    throw "Invalid option: requestMethod (" + me.options.requestMethod + "). Only 'get' and 'post' values are allowed";
 			}
 		},
 
