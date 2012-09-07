@@ -347,7 +347,8 @@
 			var selectedValue, f;
 			selectedValue = this.suggestions[i];
 			if (selectedValue) {
-				this.el.val(selectedValue);
+				var filteredSelectedValue = this.onSelect(i);
+                this.el.val(filteredSelectedValue);
 				if (this.options.autoSubmit) {
 					f = this.el.parents('form');
 					if (f.length > 0) { f.get(0).submit(); }
@@ -366,7 +367,7 @@
 				var s, d;
 				s = me.suggestions[i];
 				d = me.data[i];
-				me.el.val(me.getValue(s));
+				//me.el.val(me.getValue(s));
 			}
 			else {
 				s = '';
@@ -413,8 +414,9 @@
 			fn = me.options.onSelect;
 			s = me.suggestions[i];
 			d = me.data[i];
-			me.el.val(me.getValue(s));
-			if ($.isFunction(fn)) { fn(s, d, me.el); }
+            //me.el.val(me.getValue(s));
+            if ($.isFunction(fn)) { return fn(s, d, me.el); }
+            return s;
 		},
 
 		getValue: function (value) {
