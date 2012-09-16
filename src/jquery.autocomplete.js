@@ -45,7 +45,8 @@
 			params: {},
 			fnFormatResult: fnFormatResult,
 			delimiter: null,
-			zIndex: 9999
+			zIndex: 9999,
+			valueElementId=''
 		};
 		this.initialize();
 		this.setOptions(options);
@@ -212,6 +213,7 @@
 		},
 
 		onValueChange: function () {
+			$("#" + this.options.valueElementId).val('');
 			clearInterval(this.onChangeInterval);
 			this.currentValue = this.el.val();
 			var q = this.getQuery(this.currentValue);
@@ -417,6 +419,7 @@
 			s = me.suggestions[i];
 			d = me.data[i];
 			me.el.val(me.getValue(s));
+			$("#" + me.options.valueElementId).val(me.getValue(d));
 			if ($.isFunction(fn)) { fn(s, d, me.el); }
 		},
 
