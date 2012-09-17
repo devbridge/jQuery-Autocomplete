@@ -1,11 +1,11 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.1.5
-*  (c) 2010 Tomas Kirda, Vytautas Pranskunas
+*  Ajax Autocomplete for jQuery, version 1.1.6
+*  (c) 2010 Tomas Kirda, Vytautas Pranskunas, Sinan Akyazıcı
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
 *  For details, see the web site: http://www.devbridge.com/projects/autocomplete/jquery/
 *
-*  Last Review: 07/24/2012
+*  Last Review: 09/17/2012
 */
 
 /*jslint onevar: true, evil: true, nomen: true, eqeqeq: true, bitwise: true, regexp: true, newcap: true, immed: true */
@@ -45,7 +45,8 @@
 			params: {},
 			fnFormatResult: fnFormatResult,
 			delimiter: null,
-			zIndex: 9999
+			zIndex: 9999,
+			valueElementId=''
 		};
 		this.initialize();
 		this.setOptions(options);
@@ -212,6 +213,7 @@
 		},
 
 		onValueChange: function () {
+			$("#" + this.options.valueElementId).val('');
 			clearInterval(this.onChangeInterval);
 			this.currentValue = this.el.val();
 			var q = this.getQuery(this.currentValue);
@@ -311,14 +313,17 @@
 			try {
 				response = eval('(' + text + ')');
 			} catch (err) { return; }
-			if (!$.isArray(response.data)) { response.data = []; }
+			var tempData = response.data == null ? response.Data : response.data;
+			var tempSuggestions = response.suggestions == null ? response.Suggestions : response.suggestions;
+			var tempQuery = response.query == null ? response.Query : response.query;
+			if (!$.isArray(tempData)) { tempData = []; }
 			if (!this.options.noCache) {
-				this.cachedResponse[response.query] = response;
-				if (response.suggestions.length === 0) { this.badQueries.push(response.query); }
+				this.cachedResponse[tempQuery] = response;
+				if (tempSuggestions.length === 0) { this.badQueries.push(tempQuery); }
 			}
-			if (response.query === this.getQuery(this.currentValue)) {
-				this.suggestions = response.suggestions;
-				this.data = response.data;
+			if (tempQuery === this.getQuery(this.currentValue)) {
+				this.suggestions = tempSuggestions;
+				this.data = tempData;
 				this.suggest();
 			}
 		},
@@ -414,10 +419,13 @@
 			s = me.suggestions[i];
 			d = me.data[i];
 			me.el.val(me.getValue(s));
+			$("#" + me.options.valueElementId).val(me.getValue(d));
 			if ($.isFunction(fn)) { fn(s, d, me.el); }
 		},
 
 		getValue: function (value) {
+			this.currentValue = this.el.val();
+		        this.ignoreValueChange = false; 
 			var del, currVal, arr, me;
 			me = this;
 			del = me.options.delimiter;
