@@ -36,7 +36,7 @@
 		this.serviceUrl = options.serviceUrl;
 		this.isLocal = false;
 		this.options = {
-            requestMethod = 'get',
+            		requestMethod: 'get',
 			autoSubmit: false,
 			minChars: 1,
 			maxHeight: 300,
