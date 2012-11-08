@@ -1,11 +1,11 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.1.3
-*  (c) 2010 Tomas Kirda
+*  Ajax Autocomplete for jQuery, version 1.1.5
+*  (c) 2010 Tomas Kirda, Vytautas Pranskunas
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
 *  For details, see the web site: http://www.devbridge.com/projects/autocomplete/jquery/
 *
-*  Last Review: 04/19/2010
+*  Last Review: 07/24/2012
 */
 
 /*jslint onevar: true, evil: true, nomen: true, eqeqeq: true, bitwise: true, regexp: true, newcap: true, immed: true */
@@ -31,6 +31,7 @@
     this.intervalId = 0;
     this.cachedResponse = [];
     this.onChangeInterval = null;
+    this.onChange = null;
     this.ignoreValueChange = false;
     this.serviceUrl = options.serviceUrl;
     this.isLocal = false;
@@ -48,10 +49,22 @@
     };
     this.initialize();
     this.setOptions(options);
+    this.el.data('autocomplete', this);
   }
   
-  $.fn.autocomplete = function(options) {
-    return new Autocomplete(this.get(0)||$('<input />'), options);
+  $.fn.autocomplete = function (options, optionName) {
+
+    var autocompleteControl;
+
+    if (typeof options == 'string') {
+      autocompleteControl = this.data('autocomplete');
+      if (typeof autocompleteControl[options] == 'function') {
+        autocompleteControl[options](optionName);
+      }
+    } else {
+      autocompleteControl = new Autocomplete(this.get(0) || $('<input />'), options);
+    }
+    return autocompleteControl;
   };
 
 
@@ -88,12 +101,17 @@
       this.el.keyup(function(e) { me.onKeyUp(e); });
       this.el.blur(function() { me.enableKillerFn(); });
       this.el.focus(function() { me.fixPosition(); });
+      this.el.change(function () { me.onValueChanged(); });
+    },
+
+    extendOptions: function (options) {
+      $.extend(this.options, options);
     },
     
     setOptions: function(options){
       var o = this.options;
-      $.extend(o, options);
-      if(o.lookup){
+      this.extendOptions(options);
+      if (o.lookup || o.isLocal) {
         this.isLocal = true;
         if($.isArray(o.lookup)){ o.lookup = { suggestions:o.lookup, data:[] }; }
       }
@@ -137,6 +155,10 @@
 
     stopKillSuggestions: function() {
       window.clearInterval(this.intervalId);
+    },
+
+    onValueChanged: function () {
+      this.change(this.selectedIndex);
     },
 
     onKeyPress: function(e) {
@@ -230,8 +252,9 @@
     },
     
     getSuggestions: function(q) {
+
       var cr, me;
-      cr = this.isLocal ? this.getSuggestionsLocal(q) : this.cachedResponse[q];
+      cr = this.isLocal ? this.getSuggestionsLocal(q) : this.cachedResponse[q]; //dadeta this.options.isLocal ||
       if (cr && $.isArray(cr.suggestions)) {
         this.suggestions = cr.suggestions;
         this.data = cr.data;
@@ -258,6 +281,7 @@
     },
 
     suggest: function() {
+
       if (this.suggestions.length === 0) {
         this.hide();
         return;
@@ -334,6 +358,25 @@
       }
     },
 
+    change: function (i) {
+      var selectedValue, fn, me;
+      me = this;
+      selectedValue = this.suggestions[i];
+      if (selectedValue) {
+        var s, d;
+        s = me.suggestions[i];
+        d = me.data[i];
+        me.el.val(me.getValue(s));
+      }
+      else {
+        s = '';
+        d = -1;
+      }
+
+      fn = me.options.onChange;
+      if ($.isFunction(fn)) { fn(s, d, me.el); }
+    },
+
     moveUp: function() {
       if (this.selectedIndex === -1) { return; }
       if (this.selectedIndex === 0) {
@@ -387,4 +430,4 @@
 
   };
 
-}(jQuery));
+} (jQuery));
