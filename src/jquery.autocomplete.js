@@ -86,18 +86,23 @@
                 }
             };
 
-            if (!this.options.width) { this.options.width = this.el.width(); }
+            if (!this.options.width) {
+                 this.options.width = this.el.width();
+            }
+            
             this.mainContainerId = 'AutocompleteContainter_' + uid;
 
             $('<div id="' + this.mainContainerId + '" style="position:absolute;z-index:9999;"><div class="autocomplete-w1"><div class="autocomplete" id="' + autocompleteElId + '" style="display:none; width:300px;"></div></div></div>').appendTo('body');
 
             this.container = $('#' + autocompleteElId);
             this.fixPosition();
+            
             if (window.opera) {
-                this.el.keypress(function (e) { me.onKeyPress(e); });
+                this.el.keypress(me.onKeyPresse);
             } else {
-                this.el.keydown(function (e) { me.onKeyPress(e); });
+                this.el.keydown(me.onKeyPress);
             }
+            
             this.el.keyup(function (e) { me.onKeyUp(e); });
             this.el.blur(function () { me.enableKillerFn(); });
             this.el.focus(function () { me.fixPosition(); });
