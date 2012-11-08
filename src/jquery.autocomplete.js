@@ -1,17 +1,17 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.1.3
-*  (c) 2010 Tomas Kirda
+*  Ajax Autocomplete for jQuery, version 1.1.5
+*  (c) 2010 Tomas Kirda, Vytautas Pranskunas
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
 *  For details, see the web site: http://www.devbridge.com/projects/autocomplete/jquery/
 *
-*  Last Review: 04/19/2010
+*  Last Review: 07/24/2012
 */
 
 /*jslint onevar: true, evil: true, nomen: true, eqeqeq: true, bitwise: true, regexp: true, newcap: true, immed: true */
 /*global window: true, document: true, clearInterval: true, setInterval: true, jQuery: true */
 
-(function($) {
+(function ($) {
 
   var reEscape = new RegExp('(\\' + ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'].join('|\\') + ')', 'g');
 
@@ -31,6 +31,7 @@
     this.intervalId = 0;
     this.cachedResponse = [];
     this.onChangeInterval = null;
+    this.onChange = null;
     this.ignoreValueChange = false;
     this.serviceUrl = options.serviceUrl;
     this.isLocal = false;
@@ -48,10 +49,22 @@
     };
     this.initialize();
     this.setOptions(options);
+    this.el.data('autocomplete', this);
   }
-  
-  $.fn.autocomplete = function(options) {
-    return new Autocomplete(this.get(0)||$('<input />'), options);
+
+  $.fn.autocomplete = function (options, optionName) {
+
+    var autocompleteControl;
+
+    if (typeof options == 'string') {
+      autocompleteControl = this.data('autocomplete');
+      if (typeof autocompleteControl[options] == 'function') {
+        autocompleteControl[options](optionName);
+      }
+    } else {
+      autocompleteControl = new Autocomplete(this.get(0) || $('<input />'), options);
+    }
+    return autocompleteControl;
   };
 
 
@@ -59,14 +72,14 @@
 
     killerFn: null,
 
-    initialize: function() {
+    initialize: function () {
 
       var me, uid, autocompleteElId;
       me = this;
-      uid = Math.floor(Math.random()*0x100000).toString(16);
+      uid = Math.floor(Math.random() * 0x100000).toString(16);
       autocompleteElId = 'Autocomplete_' + uid;
 
-      this.killerFn = function(e) {
+      this.killerFn = function (e) {
         if ($(e.target).parents('.autocomplete').size() === 0) {
           me.killSuggestions();
           me.disableKillerFn();
@@ -81,65 +94,74 @@
       this.container = $('#' + autocompleteElId);
       this.fixPosition();
       if (window.opera) {
-        this.el.keypress(function(e) { me.onKeyPress(e); });
+        this.el.keypress(function (e) { me.onKeyPress(e); });
       } else {
-        this.el.keydown(function(e) { me.onKeyPress(e); });
+        this.el.keydown(function (e) { me.onKeyPress(e); });
       }
-      this.el.keyup(function(e) { me.onKeyUp(e); });
-      this.el.blur(function() { me.enableKillerFn(); });
-      this.el.focus(function() { me.fixPosition(); });
+      this.el.keyup(function (e) { me.onKeyUp(e); });
+      this.el.blur(function () { me.enableKillerFn(); });
+      this.el.focus(function () { me.fixPosition(); });
+      this.el.change(function () { me.onValueChanged(); });
     },
-    
-    setOptions: function(options){
+
+    extendOptions: function (options) {
+      $.extend(this.options, options);
+    },
+
+    setOptions: function (options) {
       var o = this.options;
-      $.extend(o, options);
-      if(o.lookup){
+      this.extendOptions(options);
+      if (o.lookup || o.isLocal) {
         this.isLocal = true;
-        if($.isArray(o.lookup)){ o.lookup = { suggestions:o.lookup, data:[] }; }
+        if ($.isArray(o.lookup)) { o.lookup = { suggestions: o.lookup, data: [] }; }
       }
-      $('#'+this.mainContainerId).css({ zIndex:o.zIndex });
-      this.container.css({ maxHeight: o.maxHeight + 'px', width:o.width });
+      $('#' + this.mainContainerId).css({ zIndex: o.zIndex });
+      this.container.css({ maxHeight: o.maxHeight + 'px', width: o.width });
     },
-    
-    clearCache: function(){
+
+    clearCache: function () {
       this.cachedResponse = [];
       this.badQueries = [];
     },
-    
-    disable: function(){
+
+    disable: function () {
       this.disabled = true;
     },
-    
-    enable: function(){
+
+    enable: function () {
       this.disabled = false;
     },
 
-    fixPosition: function() {
+    fixPosition: function () {
       var offset = this.el.offset();
       $('#' + this.mainContainerId).css({ top: (offset.top + this.el.innerHeight()) + 'px', left: offset.left + 'px' });
     },
 
-    enableKillerFn: function() {
+    enableKillerFn: function () {
       var me = this;
       $(document).bind('click', me.killerFn);
     },
 
-    disableKillerFn: function() {
+    disableKillerFn: function () {
       var me = this;
       $(document).unbind('click', me.killerFn);
     },
 
-    killSuggestions: function() {
+    killSuggestions: function () {
       var me = this;
       this.stopKillSuggestions();
-      this.intervalId = window.setInterval(function() { me.hide(); me.stopKillSuggestions(); }, 300);
+      this.intervalId = window.setInterval(function () { me.hide(); me.stopKillSuggestions(); }, 300);
     },
 
-    stopKillSuggestions: function() {
+    stopKillSuggestions: function () {
       window.clearInterval(this.intervalId);
     },
 
-    onKeyPress: function(e) {
+    onValueChanged: function () {
+      this.change(this.selectedIndex);
+    },
+
+    onKeyPress: function (e) {
       if (this.disabled || !this.enabled) { return; }
       // return will exit the function
       // and event will not be prevented
@@ -155,7 +177,7 @@
             return;
           }
           this.select(this.selectedIndex);
-          if(e.keyCode === 9){ return; }
+          if (e.keyCode === 9) { return; }
           break;
         case 38: //KEY_UP:
           this.moveUp();
@@ -170,8 +192,8 @@
       e.preventDefault();
     },
 
-    onKeyUp: function(e) {
-      if(this.disabled){ return; }
+    onKeyUp: function (e) {
+      if (this.disabled) { return; }
       switch (e.keyCode) {
         case 38: //KEY_UP:
         case 40: //KEY_DOWN:
@@ -182,14 +204,14 @@
         if (this.options.deferRequestBy > 0) {
           // Defer lookup in case when value changes very quickly:
           var me = this;
-          this.onChangeInterval = setInterval(function() { me.onValueChange(); }, this.options.deferRequestBy);
+          this.onChangeInterval = setInterval(function () { me.onValueChange(); }, this.options.deferRequestBy);
         } else {
           this.onValueChange();
         }
       }
     },
 
-    onValueChange: function() {
+    onValueChange: function () {
       clearInterval(this.onChangeInterval);
       this.currentValue = this.el.val();
       var q = this.getQuery(this.currentValue);
@@ -205,7 +227,7 @@
       }
     },
 
-    getQuery: function(val) {
+    getQuery: function (val) {
       var d, arr;
       d = this.options.delimiter;
       if (!d) { return $.trim(val); }
@@ -213,25 +235,26 @@
       return $.trim(arr[arr.length - 1]);
     },
 
-    getSuggestionsLocal: function(q) {
+    getSuggestionsLocal: function (q) {
       var ret, arr, len, val, i;
       arr = this.options.lookup;
       len = arr.suggestions.length;
-      ret = { suggestions:[], data:[] };
+      ret = { suggestions: [], data: [] };
       q = q.toLowerCase();
-      for(i=0; i< len; i++){
+      for (i = 0; i < len; i++) {
         val = arr.suggestions[i];
-        if(val.toLowerCase().indexOf(q) === 0){
+        if (val.toLowerCase().indexOf(q) === 0) {
           ret.suggestions.push(val);
           ret.data.push(arr.data[i]);
         }
       }
       return ret;
     },
-    
-    getSuggestions: function(q) {
+
+    getSuggestions: function (q) {
+
       var cr, me;
-      cr = this.isLocal ? this.getSuggestionsLocal(q) : this.cachedResponse[q];
+      cr = this.isLocal ? this.getSuggestionsLocal(q) : this.cachedResponse[q]; //dadeta this.options.isLocal ||
       if (cr && $.isArray(cr.suggestions)) {
         this.suggestions = cr.suggestions;
         this.data = cr.data;
@@ -239,11 +262,11 @@
       } else if (!this.isBadQuery(q)) {
         me = this;
         me.options.params.query = q;
-        $.get(this.serviceUrl, me.options.params, function(txt) { me.processResponse(txt); }, 'text');
+        $.get(this.serviceUrl, me.options.params, function (txt) { me.processResponse(txt); }, 'text');
       }
     },
 
-    isBadQuery: function(q) {
+    isBadQuery: function (q) {
       var i = this.badQueries.length;
       while (i--) {
         if (q.indexOf(this.badQueries[i]) === 0) { return true; }
@@ -251,13 +274,14 @@
       return false;
     },
 
-    hide: function() {
+    hide: function () {
       this.enabled = false;
       this.selectedIndex = -1;
       this.container.hide();
     },
 
-    suggest: function() {
+    suggest: function () {
+
       if (this.suggestions.length === 0) {
         this.hide();
         return;
@@ -268,8 +292,8 @@
       len = this.suggestions.length;
       f = this.options.fnFormatResult;
       v = this.getQuery(this.currentValue);
-      mOver = function(xi) { return function() { me.activate(xi); }; };
-      mClick = function(xi) { return function() { me.select(xi); }; };
+      mOver = function (xi) { return function () { me.activate(xi); }; };
+      mClick = function (xi) { return function () { me.select(xi); }; };
       this.container.hide().empty();
       for (i = 0; i < len; i++) {
         s = this.suggestions[i];
@@ -282,24 +306,24 @@
       this.container.show();
     },
 
-    processResponse: function(text) {
+    processResponse: function (text) {
       var response;
       try {
         response = eval('(' + text + ')');
       } catch (err) { return; }
       if (!$.isArray(response.data)) { response.data = []; }
-      if(!this.options.noCache){
+      if (!this.options.noCache) {
         this.cachedResponse[response.query] = response;
         if (response.suggestions.length === 0) { this.badQueries.push(response.query); }
       }
       if (response.query === this.getQuery(this.currentValue)) {
         this.suggestions = response.suggestions;
         this.data = response.data;
-        this.suggest(); 
+        this.suggest();
       }
     },
 
-    activate: function(index) {
+    activate: function (index) {
       var divs, activeItem;
       divs = this.container.children();
       // Clear previous selection:
@@ -314,12 +338,12 @@
       return activeItem;
     },
 
-    deactivate: function(div, index) {
+    deactivate: function (div, index) {
       div.className = '';
       if (this.selectedIndex === index) { this.selectedIndex = -1; }
     },
 
-    select: function(i) {
+    select: function (i) {
       var selectedValue, f;
       selectedValue = this.suggestions[i];
       if (selectedValue) {
@@ -334,7 +358,26 @@
       }
     },
 
-    moveUp: function() {
+    change: function (i) {
+      var selectedValue, fn, me;
+      me = this;
+      selectedValue = this.suggestions[i];
+      if (selectedValue) {
+        var s, d;
+        s = me.suggestions[i];
+        d = me.data[i];
+        me.el.val(me.getValue(s));
+      }
+      else {
+        s = '';
+        d = -1;
+      }
+
+      fn = me.options.onChange;
+      if ($.isFunction(fn)) { fn(s, d, me.el); }
+    },
+
+    moveUp: function () {
       if (this.selectedIndex === -1) { return; }
       if (this.selectedIndex === 0) {
         this.container.children().get(0).className = '';
@@ -345,12 +388,12 @@
       this.adjustScroll(this.selectedIndex - 1);
     },
 
-    moveDown: function() {
+    moveDown: function () {
       if (this.selectedIndex === (this.suggestions.length - 1)) { return; }
       this.adjustScroll(this.selectedIndex + 1);
     },
 
-    adjustScroll: function(i) {
+    adjustScroll: function (i) {
       var activeItem, offsetTop, upperBound, lowerBound;
       activeItem = this.activate(i);
       offsetTop = activeItem.offsetTop;
@@ -364,7 +407,7 @@
       this.el.val(this.getValue(this.suggestions[i]));
     },
 
-    onSelect: function(i) {
+    onSelect: function (i) {
       var me, fn, s, d;
       me = this;
       fn = me.options.onSelect;
@@ -373,18 +416,18 @@
       me.el.val(me.getValue(s));
       if ($.isFunction(fn)) { fn(s, d, me.el); }
     },
-    
-    getValue: function(value){
-        var del, currVal, arr, me;
-        me = this;
-        del = me.options.delimiter;
-        if (!del) { return value; }
-        currVal = me.currentValue;
-        arr = currVal.split(del);
-        if (arr.length === 1) { return value; }
-        return currVal.substr(0, currVal.length - arr[arr.length - 1].length) + value;
+
+    getValue: function (value) {
+      var del, currVal, arr, me;
+      me = this;
+      del = me.options.delimiter;
+      if (!del) { return value; }
+      currVal = me.currentValue;
+      arr = currVal.split(del);
+      if (arr.length === 1) { return value; }
+      return currVal.substr(0, currVal.length - arr[arr.length - 1].length) + value;
     }
 
   };
 
-}(jQuery));
+} (jQuery));
