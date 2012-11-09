@@ -109,13 +109,16 @@
         },
 
         setOptions: function (options) {
-            var o = this.options;
+            var o = this.options, lookup;
 
             this.extendOptions(options);
 
             if (o.lookup || o.isLocal) {
                 this.isLocal = true;
-                if ($.isArray(o.lookup)) { o.lookup = { suggestions: o.lookup, data: [] }; }
+                lookup = o.lookup;
+                if (!lookup[0] || !lookup[0].label || !lookup[0].val) {
+                    console.error("Jquery Autocomplete: Invalid 'lookup' format.")
+                }
             }
 
             $('#' + this.mainContainerId).css({ zIndex: o.zIndex });
@@ -256,19 +259,23 @@
             return $.trim(arr[arr.length - 1]);
         },
 
+        // Suggestions should be an array of objects in the following
+        // format:
+        //   {label: "Cows", value: "animal_id_387"}
         getSuggestionsLocal: function (q) {
-            var ret, arr, len, val, i;
+            var ret, arr, len, val, label, i;
 
             arr = this.options.lookup;
-            len = arr.suggestions.length;
+            len = arr.length;
             ret = { suggestions: [], data: [] };
             q = q.toLowerCase();
 
             for (i = 0; i < len; i++) {
-                val = arr.suggestions[i];
-                if (val.toLowerCase().indexOf(q) === 0) {
-                    ret.suggestions.push(val);
-                    ret.data.push(arr.data[i]);
+                val = arr[i];
+                label = val.label;
+                if (label.toLowerCase().indexOf(q) === 0) {
+                    ret.suggestions.push(label);
+                    ret.data.push(val.val);
                 }
             }
 
