@@ -73,11 +73,12 @@
         killerFn: null,
 
         initialize: function () {
-            var me, uid, autocompleteElId;
-
-            me = this;
-            uid = Math.floor(Math.random() * 0x100000).toString(16);
-            autocompleteElId = 'Autocomplete_' + uid;
+            var me = this,
+                uid = Math.floor(Math.random() * 0x100000).toString(16),
+                autocompleteElId = 'Autocomplete_' + uid,
+                onKeyPress = function (e) {
+                    me.onKeyPress(e);
+                };
 
             this.killerFn = function (e) {
                 if ($(e.target).parents('.autocomplete').size() === 0) {
@@ -87,22 +88,22 @@
             };
 
             if (!this.options.width) {
-                 this.options.width = this.el.width();
+                this.options.width = this.el.width();
             }
-            
+
             this.mainContainerId = 'AutocompleteContainter_' + uid;
 
             $('<div id="' + this.mainContainerId + '" style="position:absolute;z-index:9999;"><div class="autocomplete-w1"><div class="autocomplete" id="' + autocompleteElId + '" style="display:none; width:300px;"></div></div></div>').appendTo('body');
 
             this.container = $('#' + autocompleteElId);
             this.fixPosition();
-            
+
             if (window.opera) {
-                this.el.keypress(me.onKeyPresse);
+                this.el.keypress(onKeyPress);
             } else {
-                this.el.keydown(me.onKeyPress);
+                this.el.keydown(onKeyPress);
             }
-            
+
             this.el.keyup(function (e) { me.onKeyUp(e); });
             this.el.blur(function () { me.enableKillerFn(); });
             this.el.focus(function () { me.fixPosition(); });
