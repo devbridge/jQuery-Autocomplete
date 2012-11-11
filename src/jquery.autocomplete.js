@@ -88,7 +88,7 @@
             };
 
             if (!this.options.width) {
-                this.options.width = this.el.width();
+                this.options.width = this.el.outerWidth();
             }
 
             this.mainContainerId = 'AutocompleteContainter_' + uid;
@@ -144,7 +144,7 @@
 
         fixPosition: function () {
             var offset = this.el.offset();
-            $('#' + this.mainContainerId).css({ top: (offset.top + this.el.innerHeight()) + 'px', left: offset.left + 'px' });
+            $('#' + this.mainContainerId).css({ top: (offset.top + this.el.outerHeight()) + 'px', left: offset.left + 'px' });
         },
 
         enableKillerFn: function () {
