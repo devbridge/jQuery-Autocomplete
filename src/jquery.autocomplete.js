@@ -361,7 +361,10 @@
             var response;
 
             try {
-                response = eval('(' + text + ')');
+                if (typeof(JSON) != "undefined" && typeof(JSON.parse) != "undefined")
+                    response = JSON.parse(text);
+                else
+                    response = eval('(' + text + ')');
             } catch (err) {
                 return;
             }
