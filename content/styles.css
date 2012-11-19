@@ -8,3 +8,5 @@
     .autocomplete strong { font-weight: normal; color: #3399FF; }
 
 #query { font-size: 28px; padding: 10px; border: 1px solid #CCC; display: block; margin: 40px; }
+
+.searching { background: white url(throbbers.gif) right no-repeat; }

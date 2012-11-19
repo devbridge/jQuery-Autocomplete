@@ -46,7 +46,8 @@
             params: {},
             fnFormatResult: fnFormatResult,
             delimiter: null,
-            zIndex: 9999
+            zIndex: 9999,
+            searchClass: 'searching'
         };
         this.initialize();
         this.setOptions(options);
@@ -291,6 +292,7 @@
                 this.data = cr.data;
                 this.suggest();
             } else if (!this.isBadQuery(q)) {
+                this.el.addClass(this.options.searchClass);
                 me = this;
                 me.options.params.query = q;
                 $.get(this.serviceUrl, me.options.params, function (txt) {
@@ -357,6 +359,8 @@
         },
 
         processResponse: function (text) {
+            this.el.removeClass(this.options.searchClass);
+
             /*jslint evil: true */
             var response;
 
