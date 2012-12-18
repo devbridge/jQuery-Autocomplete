@@ -508,7 +508,7 @@
             if (!activeItem) {
                 return;
             }
-            
+
             offsetTop = activeItem.offsetTop;
             upperBound = $(this.suggestionsContainer).scrollTop();
             lowerBound = upperBound + this.options.maxHeight - heightDelta;
