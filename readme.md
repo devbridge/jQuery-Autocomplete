@@ -3,6 +3,10 @@
 Ajax Autocomplete for jQuery allows you to easily create 
 autocomplete/autosuggest boxes for text input fields.
 
+Has no dependencies other than jQuery.
+
+The standard jquery.autocomplete.js file is around 2.7KB when minified via Closure Compiler and gzipped.
+
 ##API
 
 * `$(selector).autocomplete(options);`
