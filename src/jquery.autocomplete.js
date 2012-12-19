@@ -51,18 +51,20 @@
     function Autocomplete(el, options) {
         var that = this,
             defaults = {
+                serviceUrl: null,
+                lookup: null,
+                onSelect: null,
+                width: 'auto',
                 minChars: 1,
                 maxHeight: 300,
                 deferRequestBy: 0,
-                width: 0,
-                highlight: true,
                 params: {},
                 formatResult: Autocomplete.formatResult,
                 delimiter: null,
                 zIndex: 9999,
                 type: 'GET',
                 noCache: false,
-                enforce: false
+                enforce: false,
             };
 
         // Shared variables:
@@ -175,7 +177,7 @@
             // Adjust height, width and z-index:
             $(this.suggestionsContainer).css({
                 'max-height': options.maxHeight + 'px',
-                'width': options.width,
+                'width': options.width + 'px',
                 'z-index': options.zIndex
             });
         },
