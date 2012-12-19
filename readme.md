@@ -15,18 +15,34 @@ Ajax lookup:
     $('#autocomplete').autocomplete({
         serviceUrl: '/autocomplete/countries',
         onSelect: function (suggestion) {
-            status.html('You selected: ' + suggestion);
+            alert('You selected: ' + suggestion.value + ', ' + suggestion.data);
         }
     });
 
 Local lookup (no ajax):
 
+    var countries = [
+       { value: 'Andorra', data: 'AD' },
+       // ...
+       { value: 'Zimbabwe', data: 'ZZ' }
+    ];
+
     $('#autocomplete').autocomplete({
         lookup: countries,
         onSelect: function (suggestion) {
-            status.html('You selected: ' + suggestion);
+            alert('You selected: ' + suggestion.value + ', ' + suggestion.data);
         }
     });
+
+##Styling
+
+Generated HTML markup for suggestions is displayed bellow. You may style it any way you'd like.
+
+    <div class="autocomplete">
+        <div class="autocomplete-suggestion autocomplete-selected">...</div>
+        <div class="autocomplete-suggestion">...</div>
+        <div class="autocomplete-suggestion">...</div>
+    </div>
 
 ##Response Format
 
