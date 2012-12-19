@@ -25,6 +25,8 @@ autocomplete/autosuggest boxes for text input fields.
         * `zIndex`: 'z-index' for suggestions container. Default: `9999`.
         * `type`: Ajax request type to get suggestions. Default: `GET`.
         * `noCache`: Boolean value indicating whether to cache suggestion results. Default `true`.
+        * `onSearchStart`: `function (query) {}` called before ajax request. `this` is bound to input element.
+        * `onSearchComplete`: `function (query) {}` called after ajax response is processed. `this` is bound to input element.
 
 ##Usage
 
@@ -60,11 +62,18 @@ Local lookup (no ajax):
 
 Generated HTML markup for suggestions is displayed bellow. You may style it any way you'd like.
 
-    <div class="autocomplete">
+    <div class="autocomplete-suggestions">
         <div class="autocomplete-suggestion autocomplete-selected">...</div>
         <div class="autocomplete-suggestion">...</div>
         <div class="autocomplete-suggestion">...</div>
     </div>
+
+Style sample:
+
+    .autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
+    .autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
+    .autocomplete-selected { background: #F0F0F0; }
+    .autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
 
 ##Response Format
 
@@ -79,14 +88,17 @@ Response from the server must be JSON formatted following JavaScript object:
         ]
     }
 
-Data can be any value or object. Data object is passed to formatResults function and onSelect callback. Alternatively, if there is no data you can supply just a string array for suggestions:
+Data can be any value or object. Data object is passed to formatResults function 
+and onSelect callback. Alternatively, if there is no data you can 
+supply just a string array for suggestions:
 
     {
         query: "Unit",
         suggestions: ["United Arab Emirates", "United Kingdom", "United States"]
     }
 
-Important: query value must match original value in the input field, otherwise suggestions will not be displayed.
+Important: query value must match original value in the input 
+field, otherwise suggestions will not be displayed.
 
 ##License
 

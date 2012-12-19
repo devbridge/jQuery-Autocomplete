@@ -1,8 +1,12 @@
 ﻿/*jslint vars: true*/
-/*global describe, it, expect, $*/
+/*global describe, it, expect, waitsFor, runs, afterEach, $*/
 
 describe('Autocomplete', function () {
     'use strict';
+
+    afterEach(function () {
+        $('.autocomplete-suggestions').hide();
+    });
 
     it('Should initialize autocomplete options', function () {
         var input = document.createElement('input'),
@@ -32,6 +36,29 @@ describe('Autocomplete', function () {
 
         expect(autocomplete.visible).toBe(true);
         expect(autocomplete.currentValue).toEqual('Jam');
+    });
+
+    it('Should call formatResult three times', function () {
+        var input = document.createElement('input'),
+            counter = 0,
+            suggestion,
+            currentValue,
+            autocomplete = new $.Autocomplete(input, {
+                lookup: ['Jamaica', 'Jamaica', 'Jamaica'],
+                formatResult: function (s, v) {
+                    suggestion = s;
+                    currentValue = v;
+                    counter += 1;
+                }
+            });
+
+        input.value = 'Jam';
+        autocomplete.onValueChange();
+
+        expect(suggestion.value).toBe('Jamaica');
+        expect(suggestion.data).toBe(null);
+        expect(currentValue).toEqual('Jam');
+        expect(counter).toEqual(3);
     });
 
     it('Verify onSelect callback', function () {
@@ -67,4 +94,47 @@ describe('Autocomplete', function () {
         expect(autocomplete.options.lookup[1].value).toBe('B');
     });
 
+    it('Should execute onSearchStart and onSearchCompleted', function () {
+        var input = document.createElement('input'),
+            startQuery,
+            completeQuery,
+            ajaxExecuted = false,
+            autocomplete = new $.Autocomplete(input, {
+                serviceUrl: '/test',
+                onSearchStart: function (query) {
+                    startQuery = query;
+                },
+                onSearchComplete: function (query) {
+                    completeQuery = query;
+                }
+            });
+
+        $.mockjax({
+            url: '/test',
+            responseTime: 50,
+            response: function (settings) {
+                ajaxExecuted = true;
+                var query = settings.data.query,
+                    response = {
+                        query: query,
+                        suggestions: []
+                    };
+                ajaxExecuted = true;
+                this.responseText = JSON.stringify(response);
+            }
+        });
+
+        input.value = 'A';
+        autocomplete.onValueChange();
+
+        waitsFor(function () {
+            return ajaxExecuted;
+        }, 'Ajax call never completed.', 100);
+
+        runs(function () {
+            expect(ajaxExecuted).toBe(true);
+            expect(startQuery).toBe('A');
+            expect(completeQuery).toBe('A');
+        });
+    });
 });

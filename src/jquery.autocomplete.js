@@ -49,7 +49,8 @@
     }());
 
     function Autocomplete(el, options) {
-        var that = this,
+        var noop = function () { },
+        that = this,
             defaults = {
                 serviceUrl: null,
                 lookup: null,
@@ -63,7 +64,9 @@
                 delimiter: null,
                 zIndex: 9999,
                 type: 'GET',
-                noCache: false
+                noCache: false,
+                onSearchStart: noop,
+                onSearchComplete: noop
             };
 
         // Shared variables:
@@ -294,7 +297,7 @@
         onValueChange: function () {
             clearInterval(this.onChangeInterval);
             this.currentValue = this.element.value;
-            
+
             var q = this.getQuery(this.currentValue);
             this.selectedIndex = -1;
 
@@ -342,7 +345,8 @@
                 that.suggestions = response.suggestions;
                 that.suggest();
             } else if (!that.isBadQuery(q)) {
-                that.options.params.query = q;
+                options.onSearchStart.call(that.element, q);
+                options.params.query = q;
                 $.ajax({
                     url: options.serviceUrl,
                     data: options.params,
@@ -350,6 +354,7 @@
                     dataType: 'text'
                 }).done(function (txt) {
                     that.processResponse(txt);
+                    options.onSearchComplete.call(that.element, q);
                 });
             }
         },
