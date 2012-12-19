@@ -57,4 +57,14 @@ describe('Autocomplete', function () {
         expect(data).toEqual('B');
     });
 
+    it('Should convert suggestions format', function () {
+        var input = document.createElement('input'),
+            autocomplete = new $.Autocomplete(input, {
+                lookup: ['A', 'B']
+            });
+
+        expect(autocomplete.options.lookup[0].value).toBe('A');
+        expect(autocomplete.options.lookup[1].value).toBe('B');
+    });
+
 });

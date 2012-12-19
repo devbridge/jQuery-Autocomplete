@@ -5,7 +5,7 @@
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
 *  For details, see the web site: http://www.devbridge.com/projects/autocomplete/jquery/
 *
-*  Last Review: 12/18/2012
+*  Last Review: 12/19/2012
 */
 
 /*jslint  browser: true, white: true, plusplus: true, vars: true */
@@ -51,18 +51,19 @@
     function Autocomplete(el, options) {
         var that = this,
             defaults = {
+                serviceUrl: null,
+                lookup: null,
+                onSelect: null,
+                width: 'auto',
                 minChars: 1,
                 maxHeight: 300,
                 deferRequestBy: 0,
-                width: 0,
-                highlight: true,
                 params: {},
                 formatResult: Autocomplete.formatResult,
                 delimiter: null,
                 zIndex: 9999,
                 type: 'GET',
-                noCache: false,
-                enforce: false
+                noCache: false
             };
 
         // Shared variables:
@@ -124,7 +125,7 @@
                 this.options.width = this.el.outerWidth();
             }
 
-            this.suggestionsContainer = Autocomplete.utils.createNode('<div class="autocomplete" style="position: absolute; display: none;"></div>');
+            this.suggestionsContainer = Autocomplete.utils.createNode('<div class="autocomplete-suggestions" style="position: absolute; display: none;"></div>');
 
             var container = $(this.suggestionsContainer);
 
@@ -165,17 +166,14 @@
 
             this.isLocal = $.isArray(options.lookup);
 
-            // Transform lookup array if it's string array:
-            if (this.isLocal && typeof options.lookup[0] === 'string') {
-                options.lookup = $.map(options.lookup, function (value) {
-                    return { value: value, data: null };
-                });
+            if (this.isLocal) {
+                options.lookup = this.verifySuggestionsFormat(options.lookup);
             }
 
             // Adjust height, width and z-index:
             $(this.suggestionsContainer).css({
                 'max-height': options.maxHeight + 'px',
-                'width': options.width,
+                'width': options.width + 'px',
                 'z-index': options.zIndex
             });
         },
@@ -277,17 +275,18 @@
                     return;
             }
 
-            clearInterval(this.onChangeInterval);
+            var that = this;
 
-            if (this.currentValue !== this.el.val()) {
-                if (this.options.deferRequestBy > 0) {
+            clearInterval(that.onChangeInterval);
+
+            if (that.currentValue !== that.el.val()) {
+                if (that.options.deferRequestBy > 0) {
                     // Defer lookup in case when value changes very quickly:
-                    var me = this;
-                    this.onChangeInterval = setInterval(function () {
-                        me.onValueChange();
-                    }, this.options.deferRequestBy);
+                    that.onChangeInterval = setInterval(function () {
+                        that.onValueChange();
+                    }, that.options.deferRequestBy);
                 } else {
-                    this.onValueChange();
+                    that.onValueChange();
                 }
             }
         },
@@ -295,6 +294,7 @@
         onValueChange: function () {
             clearInterval(this.onChangeInterval);
             this.currentValue = this.element.value;
+
             var q = this.getQuery(this.currentValue);
             this.selectedIndex = -1;
 
@@ -379,21 +379,17 @@
                 return;
             }
 
-            var len = this.suggestions.length,
-                formatResults = this.options.formatResult,
+            var formatResult = this.options.formatResult,
                 value = this.getQuery(this.currentValue),
-                suggestion,
                 className = this.classes.suggestion,
                 classSelected = this.classes.selected,
                 container = $(this.suggestionsContainer),
-                html = '',
-                i;
+                html = '';
 
             // Build suggestions inner HTML:
-            for (i = 0; i < len; i++) {
-                suggestion = this.suggestions[i];
-                html += '<div class="' + className + '" data-index="' + i + '">' + formatResults(suggestion, value) + '</div>';
-            }
+            $.each(this.suggestions, function (i, suggestion) {
+                html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
+            });
 
             container.html(html).show();
             this.visible = true;
@@ -403,15 +399,21 @@
             container.children().first().addClass(classSelected);
         },
 
-        processResponse: function (text) {
-            var response = $.parseJSON(text);
-
+        verifySuggestionsFormat: function (suggestions) {
             // If suggestions is string array, convert them to supported format:
-            if (typeof response.suggestions[0] === 'string') {
-                response.suggestions = $.map(response.suggestions, function (value) {
+            if (suggestions.length && typeof suggestions[0] === 'string') {
+                return $.map(suggestions, function (value) {
                     return { value: value, data: null };
                 });
             }
+
+            return suggestions;
+        },
+
+        processResponse: function (text) {
+            var response = $.parseJSON(text);
+
+            response.suggestions = this.verifySuggestionsFormat(response.suggestions);
 
             // Cache results if cache is not disabled:
             if (!this.options.noCache) {
@@ -455,23 +457,6 @@
                 this.ignoreValueChange = true;
                 this.hide();
                 this.onSelect(i);
-            }
-        },
-
-        change: function (i) {
-            var onChange,
-                me = this,
-                selectedValue = this.suggestions[i],
-                suggestion;
-
-            if (selectedValue) {
-                suggestion = me.suggestions[i];
-                me.el.val(me.getValue(suggestion.value));
-
-                onChange = me.options.onChange;
-                if ($.isFunction(onChange)) {
-                    onChange(suggestion, me.el);
-                }
             }
         },
 
