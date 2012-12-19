@@ -3,6 +3,28 @@
 Ajax Autocomplete for jQuery allows you to easily create 
 autocomplete/autosuggest boxes for text input fields.
 
+##API
+
+* `$(selector).autocomplete(options);`
+    * Sets up autocomplete for input field(s).
+    * `options`: An object literal which defines the settings to use for the autocomplete plugin.
+        * `serviceUrl`: Server side URL that provides results for suggestions. Optional if local lookup data is provided.
+        * `lookup`: Lookup array for the suggestions. It may be array of strings or `suggestion` object literals.
+            * `suggestion`: An object literal with the following format: `{ value: 'string', data: any }`.
+        * `onSelect`: `function (suggestion) {}` Callback function invoked when user selects suggestion 
+          from the list. `this` inside callback refers to input HtmlElement.
+        * `minChars`: Minimum number of characters required to trigger autosuggest. Default: `1`.
+        * `maxHeight`: Maximum height of the suggestions container in pixels. Default: `300`.
+        * `deferRequestBy`: Number of miliseconds to defer ajax request. Default: `0`.
+        * `width`: Suggestions container width in pixels, e.g.: 300. Default: `auto`, takes input field width.
+        * `params`: Additional parameters to pass with the request, optional.
+        * `formatResult`: `function (suggestion, currentValue) {}` custom function to 
+          format suggestion entry inside suggestions container, optional. 
+        * `delimiter`: String or RegExp, that splits input value and takes last part to as query for suggestions.
+          Useful when for example you need to fill list of  coma separated values.
+        * `zIndex`: 'z-index' for suggestions container. Default: `9999`.
+        * `type`: Ajax request type to get suggestions. Default: `GET`.
+        * `noCache`: Boolean value indicating whether to cache suggestion results. Default `true`.
 
 ##Usage
 
