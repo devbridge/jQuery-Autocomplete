@@ -103,7 +103,7 @@ field, otherwise suggestions will not be displayed.
 ##License
 
 Ajax Autocomplete for jQuery is freely distributable under the 
-terms of an MIT-style [license](https://github.com/devbridge/jQuery-Autocomplete/dist/license.txt).
+terms of an MIT-style [license](https://github.com/devbridge/jQuery-Autocomplete/blob/master/dist/license.txt).
 
 Copyright notice and permission notice shall be included in all 
 copies or substantial portions of the Software.
