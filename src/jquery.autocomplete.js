@@ -50,7 +50,7 @@
 
     function Autocomplete(el, options) {
         var noop = function () { },
-        that = this,
+            that = this,
             defaults = {
                 serviceUrl: null,
                 lookup: null,
