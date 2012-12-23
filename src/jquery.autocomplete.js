@@ -5,7 +5,7 @@
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
 *  For details, see the web site: http://www.devbridge.com/projects/autocomplete/jquery/
 *
-*  Last Review: 12/19/2012
+*  Last Review: 12/22/2012
 */
 
 /*jslint  browser: true, white: true, plusplus: true, vars: true */
@@ -47,6 +47,14 @@
 
         };
     }());
+
+    var keys = {
+        ESC: 27,
+        TAB: 9,
+        RETURN: 13,
+        UP: 38,
+        DOWN: 40
+    };
 
     function Autocomplete(el, options) {
         var noop = function () { },
@@ -227,7 +235,7 @@
 
         onKeyPress: function (e) {
             // If suggestions are hidden and user presses arrow down, display suggestions:
-            if (!this.disabled && !this.visible && e.keyCode === 40 && this.currentValue) {
+            if (!this.disabled && !this.visible && e.keyCode === keys.DOWN && this.currentValue) {
                 this.suggest();
                 return;
             }
@@ -237,25 +245,25 @@
             }
 
             switch (e.keyCode) {
-                case 27: //KEY_ESC:
+                case keys.ESC:
                     this.el.val(this.currentValue);
                     this.hide();
                     break;
-                case 9: //KEY_TAB:
-                case 13: //KEY_RETURN:
+                case keys.TAB:
+                case keys.RETURN:
                     if (this.selectedIndex === -1) {
                         this.hide();
                         return;
                     }
                     this.select(this.selectedIndex);
-                    if (e.keyCode === 9) {
+                    if (e.keyCode === keys.TAB) {
                         return;
                     }
                     break;
-                case 38: //KEY_UP:
+                case keys.UP:
                     this.moveUp();
                     break;
-                case 40: //KEY_DOWN:
+                case keys.DOWN:
                     this.moveDown();
                     break;
                 default:
@@ -273,8 +281,8 @@
             }
 
             switch (e.keyCode) {
-                case 38: //KEY_UP:
-                case 40: //KEY_DOWN:
+                case keys.UP:
+                case keys.DOWN:
                     return;
             }
 
