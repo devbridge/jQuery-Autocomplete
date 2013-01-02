@@ -74,7 +74,8 @@
                 type: 'GET',
                 noCache: false,
                 onSearchStart: noop,
-                onSearchComplete: noop
+                onSearchComplete: noop,
+                containerClass: 'autocomplete-suggestions'
             };
 
         // Shared variables:
@@ -122,21 +123,21 @@
                 suggestionSelector = '.' + that.classes.suggestion;
 
             // Remove autocomplete attribute to prevent native suggestions:
-            this.element.setAttribute('autocomplete', 'off');
+            that.element.setAttribute('autocomplete', 'off');
 
-            this.killerFn = function (e) {
-                if ($(e.target).closest('.autocomplete').length === 0) {
+            that.killerFn = function (e) {
+                if ($(e.target).closest('.' + that.options.containerClass).length === 0) {
                     that.killSuggestions();
                     that.disableKillerFn();
                 }
             };
 
             // Determine suggestions width:
-            if (!this.options.width || this.options.width === 'auto') {
-                this.options.width = this.el.outerWidth();
+            if (!that.options.width || that.options.width === 'auto') {
+                that.options.width = that.el.outerWidth();
             }
 
-            this.suggestionsContainer = Autocomplete.utils.createNode('<div class="autocomplete-suggestions" style="position: absolute; display: none;"></div>');
+            that.suggestionsContainer = Autocomplete.utils.createNode('<div class="' + that.options.containerClass + '" style="position: absolute; display: none;"></div>');
 
             var container = $(this.suggestionsContainer);
 
