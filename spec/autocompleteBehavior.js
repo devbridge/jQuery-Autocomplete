@@ -137,4 +137,54 @@ describe('Autocomplete', function () {
             expect(completeQuery).toBe('A');
         });
     });
+
+    it('Should should not preventDefault when tabDisabled is set to false', function () {
+        var input = document.createElement('input'),
+            autocomplete = new $.Autocomplete(input, {
+                lookup: [{ value: 'Jamaica', data: 'B' }],
+                tabDisabled: false});
+        input.value = 'Jam';
+        autocomplete.onValueChange();
+
+        var event = $.Event('keydown');
+        event.keyCode = 9; // the tab keycode
+        spyOn(event, 'stopImmediatePropagation');
+        spyOn(event, 'preventDefault');
+        spyOn(autocomplete, 'suggest');
+
+        expect(autocomplete.visible).toBe(true);
+        expect(autocomplete.disabled).toBe(undefined);
+        expect(autocomplete.selectedIndex).not.toBe(-1);
+
+        $(input).trigger(event);
+
+        expect(event.stopImmediatePropagation).not.toHaveBeenCalled();
+        expect(event.preventDefault).not.toHaveBeenCalled();
+        expect(autocomplete.suggest).not.toHaveBeenCalled();
+    });
+
+    it('Should should preventDefault when tabDisabled is set to true', function () {
+        var input = document.createElement('input'),
+            autocomplete = new $.Autocomplete(input, {
+                lookup: [{ value: 'Jamaica', data: 'B' }],
+                tabDisabled: true});
+        input.value = 'Jam';
+        autocomplete.onValueChange();
+
+        var event = $.Event('keydown');
+        event.keyCode = 9; // the tab keycode
+        spyOn(event, 'stopImmediatePropagation');
+        spyOn(event, 'preventDefault');
+        spyOn(autocomplete, 'suggest');
+
+        expect(autocomplete.visible).toBe(true);
+        expect(autocomplete.disabled).toBe(undefined);
+        expect(autocomplete.selectedIndex).not.toBe(-1);
+
+        $(input).trigger(event);
+
+        expect(event.stopImmediatePropagation).toHaveBeenCalled();
+        expect(event.preventDefault).toHaveBeenCalled();
+        expect(autocomplete.suggest).not.toHaveBeenCalled();
+    });
 });
