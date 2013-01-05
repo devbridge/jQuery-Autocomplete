@@ -75,7 +75,8 @@
                 noCache: false,
                 onSearchStart: noop,
                 onSearchComplete: noop,
-                containerClass: 'autocomplete-suggestions'
+                containerClass: 'autocomplete-suggestions',
+                tabDisabled: false
             };
 
         // Shared variables:
@@ -257,7 +258,7 @@
                         return;
                     }
                     this.select(this.selectedIndex);
-                    if (e.keyCode === keys.TAB) {
+                    if (e.keyCode === keys.TAB && this.options.tabDisabled === false) {
                         return;
                     }
                     break;
