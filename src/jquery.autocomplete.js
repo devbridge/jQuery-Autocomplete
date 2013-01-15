@@ -8,7 +8,7 @@
 *  Last Review: 01/15/2013
 */
 
-/*jslint  browser: true, white: true, plusplus: true, vars: true */
+/*jslint  browser: true, white: true, plusplus: true */
 /*global define, window, document, jQuery */
 
 // Expose plugin as an AMD module if AMD loader is present:
@@ -24,47 +24,48 @@
 }(function ($) {
     'use strict';
 
-    var utils = (function () {
-        return {
+    var
+        utils = (function () {
+            return {
 
-            extend: function (target, source) {
-                return $.extend(target, source);
-            },
+                extend: function (target, source) {
+                    return $.extend(target, source);
+                },
 
-            addEvent: function (element, eventType, handler) {
-                if (element.addEventListener) {
-                    element.addEventListener(eventType, handler, false);
-                } else if (element.attachEvent) {
-                    element.attachEvent('on' + eventType, handler);
-                } else {
-                    throw new Error('Browser doesn\'t support addEventListener or attachEvent');
+                addEvent: function (element, eventType, handler) {
+                    if (element.addEventListener) {
+                        element.addEventListener(eventType, handler, false);
+                    } else if (element.attachEvent) {
+                        element.attachEvent('on' + eventType, handler);
+                    } else {
+                        throw new Error('Browser doesn\'t support addEventListener or attachEvent');
+                    }
+                },
+
+                removeEvent: function (element, eventType, handler) {
+                    if (element.removeEventListener) {
+                        element.removeEventListener(eventType, handler, false);
+                    } else if (element.detachEvent) {
+                        element.detachEvent('on' + eventType, handler);
+                    }
+                },
+
+                createNode: function (html) {
+                    var div = document.createElement('div');
+                    div.innerHTML = html;
+                    return div.firstChild;
                 }
-            },
 
-            removeEvent: function (element, eventType, handler) {
-                if (element.removeEventListener) {
-                    element.removeEventListener(eventType, handler, false);
-                } else if (element.detachEvent) {
-                    element.detachEvent('on' + eventType, handler);
-                }
-            },
+            };
+        }()),
 
-            createNode: function (html) {
-                var div = document.createElement('div');
-                div.innerHTML = html;
-                return div.firstChild;
-            }
-
+        keys = {
+            ESC: 27,
+            TAB: 9,
+            RETURN: 13,
+            UP: 38,
+            DOWN: 40
         };
-    }());
-
-    var keys = {
-        ESC: 27,
-        TAB: 9,
-        RETURN: 13,
-        UP: 38,
-        DOWN: 40
-    };
 
     function Autocomplete(el, options) {
         var noop = function () { },
@@ -130,7 +131,8 @@
 
         initialize: function () {
             var that = this,
-                suggestionSelector = '.' + that.classes.suggestion;
+                suggestionSelector = '.' + that.classes.suggestion,
+                container;
 
             // Remove autocomplete attribute to prevent native suggestions:
             that.element.setAttribute('autocomplete', 'off');
@@ -149,7 +151,7 @@
 
             that.suggestionsContainer = Autocomplete.utils.createNode('<div class="' + that.options.containerClass + '" style="position: absolute; display: none;"></div>');
 
-            var container = $(this.suggestionsContainer);
+            container = $(that.suggestionsContainer);
 
             container.appendTo('body').width(this.options.width);
 
@@ -163,18 +165,18 @@
                 that.select($(this).data('index'));
             });
 
-            this.fixPosition();
+            that.fixPosition();
 
             // Opera does not like keydown:
             if (window.opera) {
-                this.el.on('keypress', function (e) { that.onKeyPress(e); });
+                that.el.on('keypress', function (e) { that.onKeyPress(e); });
             } else {
-                this.el.on('keydown', function (e) { that.onKeyPress(e); });
+                that.el.on('keydown', function (e) { that.onKeyPress(e); });
             }
 
-            this.el.on('keyup', function (e) { that.onKeyUp(e); });
-            this.el.on('blur', function () { that.onBlur(); });
-            this.el.on('focus', function () { that.fixPosition(); });
+            that.el.on('keyup', function (e) { that.onKeyUp(e); });
+            that.el.on('blur', function () { that.onBlur(); });
+            that.el.on('focus', function () { that.fixPosition(); });
         },
 
         onBlur: function () {
