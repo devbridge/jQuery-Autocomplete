@@ -86,7 +86,10 @@
                 noCache: false,
                 onSearchStart: noop,
                 onSearchComplete: noop,
-                containerClass: 'autocomplete-suggestions'
+                containerClass: 'autocomplete-suggestions',
+                lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
+                    return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
+                }
             };
 
         // Shared variables:
@@ -249,7 +252,7 @@
 
         onKeyPress: function (e) {
             var that = this;
-            
+
             // If suggestions are hidden and user presses arrow down, display suggestions:
             if (!that.disabled && !that.visible && e.keyCode === keys.DOWN && that.currentValue) {
                 that.suggest();
@@ -351,12 +354,14 @@
             return $.trim(parts[parts.length - 1]);
         },
 
-        getSuggestionsLocal: function (q) {
-            q = q.toLowerCase();
+        getSuggestionsLocal: function (query) {
+            var that = this,
+                queryLowerCase = query.toLowerCase(),
+                filter = that.options.lookupFilter;
 
             return {
-                suggestions: $.grep(this.options.lookup, function (suggestion) {
-                    return suggestion.value.toLowerCase().indexOf(q) !== -1;
+                suggestions: $.grep(that.options.lookup, function (suggestion) {
+                    return filter(suggestion, query, queryLowerCase);
                 })
             };
         },
@@ -499,7 +504,7 @@
 
         moveUp: function () {
             var that = this;
-            
+
             if (that.selectedIndex === -1) {
                 return;
             }
