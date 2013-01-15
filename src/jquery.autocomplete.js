@@ -87,6 +87,7 @@
                 onSearchStart: noop,
                 onSearchComplete: noop,
                 containerClass: 'autocomplete-suggestions',
+                tabDisabled: false,
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 }
@@ -275,7 +276,7 @@
                         return;
                     }
                     that.select(that.selectedIndex);
-                    if (e.keyCode === keys.TAB) {
+                    if (e.keyCode === keys.TAB && this.options.tabDisabled === false) {
                         return;
                     }
                     break;
