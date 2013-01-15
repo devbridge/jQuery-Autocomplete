@@ -153,7 +153,7 @@
 
             container = $(that.suggestionsContainer);
 
-            container.appendTo('body').width(this.options.width);
+            container.appendTo('body').width(that.options.width);
 
             // Listen for mouse over event on suggestions list:
             container.on('mouseover', suggestionSelector, function () {
@@ -184,18 +184,19 @@
         },
 
         setOptions: function (suppliedOptions) {
-            var options = this.options;
+            var that = this,
+                options = that.options;
 
             utils.extend(options, suppliedOptions);
 
-            this.isLocal = $.isArray(options.lookup);
+            that.isLocal = $.isArray(options.lookup);
 
-            if (this.isLocal) {
-                options.lookup = this.verifySuggestionsFormat(options.lookup);
+            if (that.isLocal) {
+                options.lookup = that.verifySuggestionsFormat(options.lookup);
             }
 
             // Adjust height, width and z-index:
-            $(this.suggestionsContainer).css({
+            $(that.suggestionsContainer).css({
                 'max-height': options.maxHeight + 'px',
                 'width': options.width + 'px',
                 'z-index': options.zIndex
@@ -247,37 +248,39 @@
         },
 
         onKeyPress: function (e) {
+            var that = this;
+            
             // If suggestions are hidden and user presses arrow down, display suggestions:
-            if (!this.disabled && !this.visible && e.keyCode === keys.DOWN && this.currentValue) {
-                this.suggest();
+            if (!that.disabled && !that.visible && e.keyCode === keys.DOWN && that.currentValue) {
+                that.suggest();
                 return;
             }
 
-            if (this.disabled || !this.visible) {
+            if (that.disabled || !that.visible) {
                 return;
             }
 
             switch (e.keyCode) {
                 case keys.ESC:
-                    this.el.val(this.currentValue);
-                    this.hide();
+                    that.el.val(that.currentValue);
+                    that.hide();
                     break;
                 case keys.TAB:
                 case keys.RETURN:
-                    if (this.selectedIndex === -1) {
-                        this.hide();
+                    if (that.selectedIndex === -1) {
+                        that.hide();
                         return;
                     }
-                    this.select(this.selectedIndex);
+                    that.select(that.selectedIndex);
                     if (e.keyCode === keys.TAB) {
                         return;
                     }
                     break;
                 case keys.UP:
-                    this.moveUp();
+                    that.moveUp();
                     break;
                 case keys.DOWN:
-                    this.moveDown();
+                    that.moveDown();
                     break;
                 default:
                     return;
@@ -289,7 +292,9 @@
         },
 
         onKeyUp: function (e) {
-            if (this.disabled) {
+            var that = this;
+
+            if (that.disabled) {
                 return;
             }
 
@@ -298,8 +303,6 @@
                 case keys.DOWN:
                     return;
             }
-
-            var that = this;
 
             clearInterval(that.onChangeInterval);
 
@@ -316,21 +319,24 @@
         },
 
         onValueChange: function () {
-            clearInterval(this.onChangeInterval);
-            this.currentValue = this.element.value;
+            var that = this,
+                q;
 
-            var q = this.getQuery(this.currentValue);
-            this.selectedIndex = -1;
+            clearInterval(that.onChangeInterval);
+            that.currentValue = that.element.value;
 
-            if (this.ignoreValueChange) {
-                this.ignoreValueChange = false;
+            q = that.getQuery(that.currentValue);
+            that.selectedIndex = -1;
+
+            if (that.ignoreValueChange) {
+                that.ignoreValueChange = false;
                 return;
             }
 
-            if (q === '' || q.length < this.options.minChars) {
-                this.hide();
+            if (q === '' || q.length < that.options.minChars) {
+                that.hide();
             } else {
-                this.getSuggestions(q);
+                that.getSuggestions(q);
             }
         },
 
@@ -394,9 +400,10 @@
         },
 
         hide: function () {
-            this.visible = false;
-            this.selectedIndex = -1;
-            $(this.suggestionsContainer).hide();
+            var that = this;
+            that.visible = false;
+            that.selectedIndex = -1;
+            $(that.suggestionsContainer).hide();
         },
 
         suggest: function () {
@@ -405,23 +412,24 @@
                 return;
             }
 
-            var formatResult = this.options.formatResult,
-                value = this.getQuery(this.currentValue),
-                className = this.classes.suggestion,
-                classSelected = this.classes.selected,
-                container = $(this.suggestionsContainer),
+            var that = this,
+                formatResult = that.options.formatResult,
+                value = that.getQuery(that.currentValue),
+                className = that.classes.suggestion,
+                classSelected = that.classes.selected,
+                container = $(that.suggestionsContainer),
                 html = '';
 
             // Build suggestions inner HTML:
-            $.each(this.suggestions, function (i, suggestion) {
+            $.each(that.suggestions, function (i, suggestion) {
                 html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
             });
 
             container.html(html).show();
-            this.visible = true;
+            that.visible = true;
 
             // Select first value by default:
-            this.selectedIndex = 0;
+            that.selectedIndex = 0;
             container.children().first().addClass(classSelected);
         },
 
@@ -437,37 +445,39 @@
         },
 
         processResponse: function (text) {
-            var response = $.parseJSON(text);
+            var that = this,
+                response = $.parseJSON(text);
 
-            response.suggestions = this.verifySuggestionsFormat(response.suggestions);
+            response.suggestions = that.verifySuggestionsFormat(response.suggestions);
 
             // Cache results if cache is not disabled:
-            if (!this.options.noCache) {
-                this.cachedResponse[response.query] = response;
+            if (!that.options.noCache) {
+                that.cachedResponse[response.query] = response;
                 if (response.suggestions.length === 0) {
-                    this.badQueries.push(response.query);
+                    that.badQueries.push(response.query);
                 }
             }
 
             // Display suggestions only if returned query matches current value:
-            if (response.query === this.getQuery(this.currentValue)) {
-                this.suggestions = response.suggestions;
-                this.suggest();
+            if (response.query === that.getQuery(that.currentValue)) {
+                that.suggestions = response.suggestions;
+                that.suggest();
             }
         },
 
         activate: function (index) {
-            var activeItem,
-                selected = this.classes.selected,
-                container = $(this.suggestionsContainer),
+            var that = this,
+                activeItem,
+                selected = that.classes.selected,
+                container = $(that.suggestionsContainer),
                 children = container.children();
 
             container.children('.' + selected).removeClass(selected);
 
-            this.selectedIndex = index;
+            that.selectedIndex = index;
 
-            if (this.selectedIndex !== -1 && children.length > this.selectedIndex) {
-                activeItem = children.get(this.selectedIndex);
+            if (that.selectedIndex !== -1 && children.length > that.selectedIndex) {
+                activeItem = children.get(that.selectedIndex);
                 $(activeItem).addClass(selected);
                 return activeItem;
             }
@@ -476,41 +486,47 @@
         },
 
         select: function (i) {
-            var selectedValue = this.suggestions[i];
+            var that = this,
+                selectedValue = that.suggestions[i];
 
             if (selectedValue) {
-                this.el.val(selectedValue);
-                this.ignoreValueChange = true;
-                this.hide();
-                this.onSelect(i);
+                that.el.val(selectedValue);
+                that.ignoreValueChange = true;
+                that.hide();
+                that.onSelect(i);
             }
         },
 
         moveUp: function () {
-            if (this.selectedIndex === -1) {
+            var that = this;
+            
+            if (that.selectedIndex === -1) {
                 return;
             }
 
-            if (this.selectedIndex === 0) {
-                $(this.suggestionsContainer).children().first().removeClass(this.classes.selected);
-                this.selectedIndex = -1;
-                this.el.val(this.currentValue);
+            if (that.selectedIndex === 0) {
+                $(that.suggestionsContainer).children().first().removeClass(that.classes.selected);
+                that.selectedIndex = -1;
+                that.el.val(that.currentValue);
                 return;
             }
 
-            this.adjustScroll(this.selectedIndex - 1);
+            that.adjustScroll(that.selectedIndex - 1);
         },
 
         moveDown: function () {
-            if (this.selectedIndex === (this.suggestions.length - 1)) {
+            var that = this;
+
+            if (that.selectedIndex === (that.suggestions.length - 1)) {
                 return;
             }
 
-            this.adjustScroll(this.selectedIndex + 1);
+            that.adjustScroll(that.selectedIndex + 1);
         },
 
         adjustScroll: function (index) {
-            var activeItem = this.activate(index),
+            var that = this,
+                activeItem = that.activate(index),
                 offsetTop,
                 upperBound,
                 lowerBound,
@@ -521,16 +537,16 @@
             }
 
             offsetTop = activeItem.offsetTop;
-            upperBound = $(this.suggestionsContainer).scrollTop();
-            lowerBound = upperBound + this.options.maxHeight - heightDelta;
+            upperBound = $(that.suggestionsContainer).scrollTop();
+            lowerBound = upperBound + that.options.maxHeight - heightDelta;
 
             if (offsetTop < upperBound) {
-                $(this.suggestionsContainer).scrollTop(offsetTop);
+                $(that.suggestionsContainer).scrollTop(offsetTop);
             } else if (offsetTop > lowerBound) {
-                $(this.suggestionsContainer).scrollTop(offsetTop - this.options.maxHeight + heightDelta);
+                $(that.suggestionsContainer).scrollTop(offsetTop - that.options.maxHeight + heightDelta);
             }
 
-            this.el.val(this.getValue(this.suggestions[index].value));
+            that.el.val(that.getValue(that.suggestions[index].value));
         },
 
         onSelect: function (index) {
