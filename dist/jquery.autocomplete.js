@@ -1,55 +1,75 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2
-*  (c) 2012 Tomas Kirda
+*  Ajax Autocomplete for jQuery, version 1.2.1
+*  (c) 2013 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
 *  For details, see the web site: http://www.devbridge.com/projects/autocomplete/jquery/
 *
-*  Last Review: 12/19/2012
+*  Last Review: 01/15/2013
 */
 
-/*jslint  browser: true, white: true, plusplus: true, vars: true */
-/*global window: true, document: true, clearInterval: true, setInterval: true, jQuery: true */
+/*jslint  browser: true, white: true, plusplus: true */
+/*global define, window, document, jQuery */
 
-(function ($) {
+// Expose plugin as an AMD module if AMD loader is present:
+(function (factory) {
+    'use strict';
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['jquery'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
     'use strict';
 
-    var utils = (function () {
-        return {
+    var
+        utils = (function () {
+            return {
 
-            extend: function (target, source) {
-                return $.extend(target, source);
-            },
+                extend: function (target, source) {
+                    return $.extend(target, source);
+                },
 
-            addEvent: function (element, eventType, handler) {
-                if (element.addEventListener) {
-                    element.addEventListener(eventType, handler, false);
-                } else if (element.attachEvent) {
-                    element.attachEvent('on' + eventType, handler);
-                } else {
-                    throw new Error('Browser doesn\'t support addEventListener or attachEvent');
+                addEvent: function (element, eventType, handler) {
+                    if (element.addEventListener) {
+                        element.addEventListener(eventType, handler, false);
+                    } else if (element.attachEvent) {
+                        element.attachEvent('on' + eventType, handler);
+                    } else {
+                        throw new Error('Browser doesn\'t support addEventListener or attachEvent');
+                    }
+                },
+
+                removeEvent: function (element, eventType, handler) {
+                    if (element.removeEventListener) {
+                        element.removeEventListener(eventType, handler, false);
+                    } else if (element.detachEvent) {
+                        element.detachEvent('on' + eventType, handler);
+                    }
+                },
+
+                createNode: function (html) {
+                    var div = document.createElement('div');
+                    div.innerHTML = html;
+                    return div.firstChild;
                 }
-            },
 
-            removeEvent: function (element, eventType, handler) {
-                if (element.removeEventListener) {
-                    element.removeEventListener(eventType, handler, false);
-                } else if (element.detachEvent) {
-                    element.detachEvent('on' + eventType, handler);
-                }
-            },
+            };
+        }()),
 
-            createNode: function (html) {
-                var div = document.createElement('div');
-                div.innerHTML = html;
-                return div.firstChild;
-            }
-
+        keys = {
+            ESC: 27,
+            TAB: 9,
+            RETURN: 13,
+            UP: 38,
+            DOWN: 40
         };
-    }());
 
     function Autocomplete(el, options) {
-        var that = this,
+        var noop = function () { },
+            that = this,
             defaults = {
                 serviceUrl: null,
                 lookup: null,
@@ -63,7 +83,13 @@
                 delimiter: null,
                 zIndex: 9999,
                 type: 'GET',
-                noCache: false
+                noCache: false,
+                onSearchStart: noop,
+                onSearchComplete: noop,
+                containerClass: 'autocomplete-suggestions',
+                lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
+                    return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
+                }
             };
 
         // Shared variables:
@@ -108,28 +134,29 @@
 
         initialize: function () {
             var that = this,
-                suggestionSelector = '.' + that.classes.suggestion;
+                suggestionSelector = '.' + that.classes.suggestion,
+                container;
 
             // Remove autocomplete attribute to prevent native suggestions:
-            this.element.setAttribute('autocomplete', 'off');
+            that.element.setAttribute('autocomplete', 'off');
 
-            this.killerFn = function (e) {
-                if ($(e.target).closest('.autocomplete').length === 0) {
+            that.killerFn = function (e) {
+                if ($(e.target).closest('.' + that.options.containerClass).length === 0) {
                     that.killSuggestions();
                     that.disableKillerFn();
                 }
             };
 
             // Determine suggestions width:
-            if (!this.options.width || this.options.width === 'auto') {
-                this.options.width = this.el.outerWidth();
+            if (!that.options.width || that.options.width === 'auto') {
+                that.options.width = that.el.outerWidth();
             }
 
-            this.suggestionsContainer = Autocomplete.utils.createNode('<div class="autocomplete-suggestions" style="position: absolute; display: none;"></div>');
+            that.suggestionsContainer = Autocomplete.utils.createNode('<div class="' + that.options.containerClass + '" style="position: absolute; display: none;"></div>');
 
-            var container = $(this.suggestionsContainer);
+            container = $(that.suggestionsContainer);
 
-            container.appendTo('body').width(this.options.width);
+            container.appendTo('body').width(that.options.width);
 
             // Listen for mouse over event on suggestions list:
             container.on('mouseover', suggestionSelector, function () {
@@ -141,18 +168,18 @@
                 that.select($(this).data('index'));
             });
 
-            this.fixPosition();
+            that.fixPosition();
 
             // Opera does not like keydown:
             if (window.opera) {
-                this.el.on('keypress', function (e) { that.onKeyPress(e); });
+                that.el.on('keypress', function (e) { that.onKeyPress(e); });
             } else {
-                this.el.on('keydown', function (e) { that.onKeyPress(e); });
+                that.el.on('keydown', function (e) { that.onKeyPress(e); });
             }
 
-            this.el.on('keyup', function (e) { that.onKeyUp(e); });
-            this.el.on('blur', function () { that.onBlur(); });
-            this.el.on('focus', function () { that.fixPosition(); });
+            that.el.on('keyup', function (e) { that.onKeyUp(e); });
+            that.el.on('blur', function () { that.onBlur(); });
+            that.el.on('focus', function () { that.fixPosition(); });
         },
 
         onBlur: function () {
@@ -160,18 +187,19 @@
         },
 
         setOptions: function (suppliedOptions) {
-            var options = this.options;
+            var that = this,
+                options = that.options;
 
             utils.extend(options, suppliedOptions);
 
-            this.isLocal = $.isArray(options.lookup);
+            that.isLocal = $.isArray(options.lookup);
 
-            if (this.isLocal) {
-                options.lookup = this.verifySuggestionsFormat(options.lookup);
+            if (that.isLocal) {
+                options.lookup = that.verifySuggestionsFormat(options.lookup);
             }
 
             // Adjust height, width and z-index:
-            $(this.suggestionsContainer).css({
+            $(that.suggestionsContainer).css({
                 'max-height': options.maxHeight + 'px',
                 'width': options.width + 'px',
                 'z-index': options.zIndex
@@ -223,37 +251,39 @@
         },
 
         onKeyPress: function (e) {
+            var that = this;
+
             // If suggestions are hidden and user presses arrow down, display suggestions:
-            if (!this.disabled && !this.visible && e.keyCode === 40 && this.currentValue) {
-                this.suggest();
+            if (!that.disabled && !that.visible && e.keyCode === keys.DOWN && that.currentValue) {
+                that.suggest();
                 return;
             }
 
-            if (this.disabled || !this.visible) {
+            if (that.disabled || !that.visible) {
                 return;
             }
 
             switch (e.keyCode) {
-                case 27: //KEY_ESC:
-                    this.el.val(this.currentValue);
-                    this.hide();
+                case keys.ESC:
+                    that.el.val(that.currentValue);
+                    that.hide();
                     break;
-                case 9: //KEY_TAB:
-                case 13: //KEY_RETURN:
-                    if (this.selectedIndex === -1) {
-                        this.hide();
+                case keys.TAB:
+                case keys.RETURN:
+                    if (that.selectedIndex === -1) {
+                        that.hide();
                         return;
                     }
-                    this.select(this.selectedIndex);
-                    if (e.keyCode === 9) {
+                    that.select(that.selectedIndex);
+                    if (e.keyCode === keys.TAB) {
                         return;
                     }
                     break;
-                case 38: //KEY_UP:
-                    this.moveUp();
+                case keys.UP:
+                    that.moveUp();
                     break;
-                case 40: //KEY_DOWN:
-                    this.moveDown();
+                case keys.DOWN:
+                    that.moveDown();
                     break;
                 default:
                     return;
@@ -265,17 +295,17 @@
         },
 
         onKeyUp: function (e) {
-            if (this.disabled) {
+            var that = this;
+
+            if (that.disabled) {
                 return;
             }
 
             switch (e.keyCode) {
-                case 38: //KEY_UP:
-                case 40: //KEY_DOWN:
+                case keys.UP:
+                case keys.DOWN:
                     return;
             }
-
-            var that = this;
 
             clearInterval(that.onChangeInterval);
 
@@ -292,21 +322,24 @@
         },
 
         onValueChange: function () {
-            clearInterval(this.onChangeInterval);
-            this.currentValue = this.element.value;
+            var that = this,
+                q;
 
-            var q = this.getQuery(this.currentValue);
-            this.selectedIndex = -1;
+            clearInterval(that.onChangeInterval);
+            that.currentValue = that.element.value;
 
-            if (this.ignoreValueChange) {
-                this.ignoreValueChange = false;
+            q = that.getQuery(that.currentValue);
+            that.selectedIndex = -1;
+
+            if (that.ignoreValueChange) {
+                that.ignoreValueChange = false;
                 return;
             }
 
-            if (q === '' || q.length < this.options.minChars) {
-                this.hide();
+            if (q === '' || q.length < that.options.minChars) {
+                that.hide();
             } else {
-                this.getSuggestions(q);
+                that.getSuggestions(q);
             }
         },
 
@@ -321,12 +354,14 @@
             return $.trim(parts[parts.length - 1]);
         },
 
-        getSuggestionsLocal: function (q) {
-            q = q.toLowerCase();
+        getSuggestionsLocal: function (query) {
+            var that = this,
+                queryLowerCase = query.toLowerCase(),
+                filter = that.options.lookupFilter;
 
             return {
-                suggestions: $.grep(this.options.lookup, function (suggestion) {
-                    return suggestion.value.toLowerCase().indexOf(q) !== -1;
+                suggestions: $.grep(that.options.lookup, function (suggestion) {
+                    return filter(suggestion, query, queryLowerCase);
                 })
             };
         },
@@ -342,7 +377,8 @@
                 that.suggestions = response.suggestions;
                 that.suggest();
             } else if (!that.isBadQuery(q)) {
-                that.options.params.query = q;
+                options.onSearchStart.call(that.element, q);
+                options.params.query = q;
                 $.ajax({
                     url: options.serviceUrl,
                     data: options.params,
@@ -350,6 +386,7 @@
                     dataType: 'text'
                 }).done(function (txt) {
                     that.processResponse(txt);
+                    options.onSearchComplete.call(that.element, q);
                 });
             }
         },
@@ -368,9 +405,10 @@
         },
 
         hide: function () {
-            this.visible = false;
-            this.selectedIndex = -1;
-            $(this.suggestionsContainer).hide();
+            var that = this;
+            that.visible = false;
+            that.selectedIndex = -1;
+            $(that.suggestionsContainer).hide();
         },
 
         suggest: function () {
@@ -379,23 +417,24 @@
                 return;
             }
 
-            var formatResult = this.options.formatResult,
-                value = this.getQuery(this.currentValue),
-                className = this.classes.suggestion,
-                classSelected = this.classes.selected,
-                container = $(this.suggestionsContainer),
+            var that = this,
+                formatResult = that.options.formatResult,
+                value = that.getQuery(that.currentValue),
+                className = that.classes.suggestion,
+                classSelected = that.classes.selected,
+                container = $(that.suggestionsContainer),
                 html = '';
 
             // Build suggestions inner HTML:
-            $.each(this.suggestions, function (i, suggestion) {
+            $.each(that.suggestions, function (i, suggestion) {
                 html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
             });
 
             container.html(html).show();
-            this.visible = true;
+            that.visible = true;
 
             // Select first value by default:
-            this.selectedIndex = 0;
+            that.selectedIndex = 0;
             container.children().first().addClass(classSelected);
         },
 
@@ -411,37 +450,39 @@
         },
 
         processResponse: function (text) {
-            var response = $.parseJSON(text);
+            var that = this,
+                response = $.parseJSON(text);
 
-            response.suggestions = this.verifySuggestionsFormat(response.suggestions);
+            response.suggestions = that.verifySuggestionsFormat(response.suggestions);
 
             // Cache results if cache is not disabled:
-            if (!this.options.noCache) {
-                this.cachedResponse[response.query] = response;
+            if (!that.options.noCache) {
+                that.cachedResponse[response.query] = response;
                 if (response.suggestions.length === 0) {
-                    this.badQueries.push(response.query);
+                    that.badQueries.push(response.query);
                 }
             }
 
             // Display suggestions only if returned query matches current value:
-            if (response.query === this.getQuery(this.currentValue)) {
-                this.suggestions = response.suggestions;
-                this.suggest();
+            if (response.query === that.getQuery(that.currentValue)) {
+                that.suggestions = response.suggestions;
+                that.suggest();
             }
         },
 
         activate: function (index) {
-            var activeItem,
-                selected = this.classes.selected,
-                container = $(this.suggestionsContainer),
+            var that = this,
+                activeItem,
+                selected = that.classes.selected,
+                container = $(that.suggestionsContainer),
                 children = container.children();
 
             container.children('.' + selected).removeClass(selected);
 
-            this.selectedIndex = index;
+            that.selectedIndex = index;
 
-            if (this.selectedIndex !== -1 && children.length > this.selectedIndex) {
-                activeItem = children.get(this.selectedIndex);
+            if (that.selectedIndex !== -1 && children.length > that.selectedIndex) {
+                activeItem = children.get(that.selectedIndex);
                 $(activeItem).addClass(selected);
                 return activeItem;
             }
@@ -450,41 +491,47 @@
         },
 
         select: function (i) {
-            var selectedValue = this.suggestions[i];
+            var that = this,
+                selectedValue = that.suggestions[i];
 
             if (selectedValue) {
-                this.el.val(selectedValue);
-                this.ignoreValueChange = true;
-                this.hide();
-                this.onSelect(i);
+                that.el.val(selectedValue);
+                that.ignoreValueChange = true;
+                that.hide();
+                that.onSelect(i);
             }
         },
 
         moveUp: function () {
-            if (this.selectedIndex === -1) {
+            var that = this;
+
+            if (that.selectedIndex === -1) {
                 return;
             }
 
-            if (this.selectedIndex === 0) {
-                $(this.suggestionsContainer).children().first().removeClass(this.classes.selected);
-                this.selectedIndex = -1;
-                this.el.val(this.currentValue);
+            if (that.selectedIndex === 0) {
+                $(that.suggestionsContainer).children().first().removeClass(that.classes.selected);
+                that.selectedIndex = -1;
+                that.el.val(that.currentValue);
                 return;
             }
 
-            this.adjustScroll(this.selectedIndex - 1);
+            that.adjustScroll(that.selectedIndex - 1);
         },
 
         moveDown: function () {
-            if (this.selectedIndex === (this.suggestions.length - 1)) {
+            var that = this;
+
+            if (that.selectedIndex === (that.suggestions.length - 1)) {
                 return;
             }
 
-            this.adjustScroll(this.selectedIndex + 1);
+            that.adjustScroll(that.selectedIndex + 1);
         },
 
         adjustScroll: function (index) {
-            var activeItem = this.activate(index),
+            var that = this,
+                activeItem = that.activate(index),
                 offsetTop,
                 upperBound,
                 lowerBound,
@@ -495,16 +542,16 @@
             }
 
             offsetTop = activeItem.offsetTop;
-            upperBound = $(this.suggestionsContainer).scrollTop();
-            lowerBound = upperBound + this.options.maxHeight - heightDelta;
+            upperBound = $(that.suggestionsContainer).scrollTop();
+            lowerBound = upperBound + that.options.maxHeight - heightDelta;
 
             if (offsetTop < upperBound) {
-                $(this.suggestionsContainer).scrollTop(offsetTop);
+                $(that.suggestionsContainer).scrollTop(offsetTop);
             } else if (offsetTop > lowerBound) {
-                $(this.suggestionsContainer).scrollTop(offsetTop - this.options.maxHeight + heightDelta);
+                $(that.suggestionsContainer).scrollTop(offsetTop - that.options.maxHeight + heightDelta);
             }
 
-            this.el.val(this.getValue(this.suggestions[index].value));
+            that.el.val(that.getValue(that.suggestions[index].value));
         },
 
         onSelect: function (index) {
@@ -558,5 +605,4 @@
             }
         });
     };
-
-}(jQuery));
+}));
