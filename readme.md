@@ -115,7 +115,7 @@ you can supply the "paramName" and "transformResult" options:
             return $.map(response.myData, function(dataItem) {
                 return {value: dataItem.valueField, data: dataItem.dataField};
             });
-	}
+        }
     })
         
 
