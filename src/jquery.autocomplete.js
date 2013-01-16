@@ -90,6 +90,10 @@
                 tabDisabled: false,
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
+                },
+                paramName: 'query',
+                transformResult: function(response) {
+                    return response.suggestions;
                 }
             };
 
@@ -379,7 +383,7 @@
                 that.suggest();
             } else if (!that.isBadQuery(q)) {
                 options.onSearchStart.call(that.element, q);
-                options.params.query = q;
+                options.params[options.paramName] = q;
                 $.ajax({
                     url: options.serviceUrl,
                     data: options.params,
@@ -454,18 +458,18 @@
             var that = this,
                 response = $.parseJSON(text);
 
-            response.suggestions = that.verifySuggestionsFormat(response.suggestions);
+            response.suggestions = that.verifySuggestionsFormat(that.options.transformResult(response));
 
             // Cache results if cache is not disabled:
             if (!that.options.noCache) {
-                that.cachedResponse[response.query] = response;
+                that.cachedResponse[response[that.options.paramName]] = response;
                 if (response.suggestions.length === 0) {
-                    that.badQueries.push(response.query);
+                    that.badQueries.push(response[that.options.paramName]);
                 }
             }
 
             // Display suggestions only if returned query matches current value:
-            if (response.query === that.getQuery(that.currentValue)) {
+            if (response[that.options.paramName] === that.getQuery(that.currentValue)) {
                 that.suggestions = response.suggestions;
                 that.suggest();
             }

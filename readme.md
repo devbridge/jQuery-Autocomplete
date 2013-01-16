@@ -33,7 +33,8 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
         * `onSearchStart`: `function (query) {}` called before ajax request. `this` is bound to input element.
         * `onSearchComplete`: `function (query) {}` called after ajax response is processed. `this` is bound to input element.
         * `tabDisabled`: Default `false`. Set to true to leave the cursor in the input field after the user tabs to select a suggestion.
-
+        * `paramName`: Default `query`. The name of the request parameter that contains the query.
+        * `transformResult`: `function(response) {}` called after the result of the query is ready. Converts the result into response.suggestions format.
 ##Usage
 
 Html:
@@ -102,6 +103,21 @@ supply just a string array for suggestions:
         query: "Unit",
         suggestions: ["United Arab Emirates", "United Kingdom", "United States"]
     }
+
+## Non standard query/results
+
+If your ajax service expects the query in a different format, and returns data in a different format then the standard response,
+you can supply the "paramName" and "transformResult" options:
+
+    $('#autocomplete').autocomplere({
+        paramName: 'searchString',
+        transformResult: function(response) {
+            return $.map(response.myData, function(dataItem) {
+                return {value: dataItem.valueField, data: dataItem.dataField};
+            });
+        }
+    })
+        
 
 Important: query value must match original value in the input 
 field, otherwise suggestions will not be displayed.
