@@ -106,10 +106,10 @@ supply just a string array for suggestions:
 
 ## Non standard query/results
 
-If your ajax service expects the query in a different format, and returns data in a different format then the standard response,
+If your ajax service expects the query in a different format, and returns data in a different format than the standard response,
 you can supply the "paramName" and "transformResult" options:
 
-    $('#autocomplete').autocomplere({
+    $('#autocomplete').autocomplete({
         paramName: 'searchString',
         transformResult: function(response) {
             return $.map(response.myData, function(dataItem) {
