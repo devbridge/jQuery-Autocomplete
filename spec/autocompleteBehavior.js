@@ -1,5 +1,5 @@
 ﻿/*jslint vars: true*/
-/*global describe, it, expect, waitsFor, runs, afterEach, $*/
+/*global describe, it, expect, waitsFor, runs, afterEach, spyOn, $*/
 
 describe('Autocomplete', function () {
     'use strict';
@@ -142,7 +142,8 @@ describe('Autocomplete', function () {
         var input = document.createElement('input'),
             autocomplete = new $.Autocomplete(input, {
                 lookup: [{ value: 'Jamaica', data: 'B' }],
-                tabDisabled: false});
+                tabDisabled: false
+            });
         input.value = 'Jam';
         autocomplete.onValueChange();
 
@@ -167,7 +168,8 @@ describe('Autocomplete', function () {
         var input = document.createElement('input'),
             autocomplete = new $.Autocomplete(input, {
                 lookup: [{ value: 'Jamaica', data: 'B' }],
-                tabDisabled: true});
+                tabDisabled: true
+            });
         input.value = 'Jam';
         autocomplete.onValueChange();
 
