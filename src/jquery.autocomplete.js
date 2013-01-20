@@ -71,6 +71,7 @@
         var noop = function () { },
             that = this,
             defaults = {
+                autoSelectFirst: false,
                 serviceUrl: null,
                 lookup: null,
                 onSelect: null,
@@ -92,7 +93,7 @@
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
                 paramName: 'query',
-                transformResult: function(response) {
+                transformResult: function (response) {
                     return response.suggestions;
                 }
             };
@@ -439,8 +440,10 @@
             that.visible = true;
 
             // Select first value by default:
-            that.selectedIndex = 0;
-            container.children().first().addClass(classSelected);
+            if (that.options.autoSelectFirst) {
+                that.selectedIndex = 0;
+                container.children().first().addClass(classSelected);
+            }
         },
 
         verifySuggestionsFormat: function (suggestions) {

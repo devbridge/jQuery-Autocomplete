@@ -142,7 +142,8 @@ describe('Autocomplete', function () {
         var input = document.createElement('input'),
             autocomplete = new $.Autocomplete(input, {
                 lookup: [{ value: 'Jamaica', data: 'B' }],
-                tabDisabled: false
+                tabDisabled: false,
+                autoSelectFirst: true
             });
         input.value = 'Jam';
         autocomplete.onValueChange();
@@ -168,7 +169,8 @@ describe('Autocomplete', function () {
         var input = document.createElement('input'),
             autocomplete = new $.Autocomplete(input, {
                 lookup: [{ value: 'Jamaica', data: 'B' }],
-                tabDisabled: true
+                tabDisabled: true,
+                autoSelectFirst: true
             });
         input.value = 'Jam';
         autocomplete.onValueChange();
@@ -188,5 +190,30 @@ describe('Autocomplete', function () {
         expect(event.stopImmediatePropagation).toHaveBeenCalled();
         expect(event.preventDefault).toHaveBeenCalled();
         expect(autocomplete.suggest).not.toHaveBeenCalled();
+    });
+
+    it('Should not autoselect first item by default', function () {
+        var input = document.createElement('input'),
+            autocomplete = new $.Autocomplete(input, {
+                lookup: ['Jamaica', 'Jamaica', 'Jamaica']
+            });
+
+        input.value = 'Jam';
+        autocomplete.onValueChange();
+
+        expect(autocomplete.selectedIndex).toBe(-1);
+    });
+
+    it('Should autoselect first item autoSelectFirst set to true', function () {
+        var input = document.createElement('input'),
+            autocomplete = new $.Autocomplete(input, {
+                lookup: ['Jamaica', 'Jamaica', 'Jamaica'],
+                autoSelectFirst: true
+            });
+
+        input.value = 'Jam';
+        autocomplete.onValueChange();
+
+        expect(autocomplete.selectedIndex).toBe(0);
     });
 });

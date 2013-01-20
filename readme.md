@@ -35,6 +35,7 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
         * `tabDisabled`: Default `false`. Set to true to leave the cursor in the input field after the user tabs to select a suggestion.
         * `paramName`: Default `query`. The name of the request parameter that contains the query.
         * `transformResult`: `function(response) {}` called after the result of the query is ready. Converts the result into response.suggestions format.
+		* `autoSelectFirst`: if set to `true`, first item will be selected when showing suggestions. Default value `false`.
 ##Usage
 
 Html:
