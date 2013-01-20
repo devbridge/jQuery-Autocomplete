@@ -72,6 +72,7 @@
             that = this,
             defaults = {
                 autoSelectFirst: false,
+                appendTo: 'body',
                 serviceUrl: null,
                 lookup: null,
                 onSelect: null,
@@ -112,7 +113,7 @@
         that.ignoreValueChange = false;
         that.isLocal = false;
         that.suggestionsContainer = null;
-        that.options = defaults;
+        that.options = $.extend({}, defaults, options);
         that.classes = {
             selected: 'autocomplete-selected',
             suggestion: 'autocomplete-suggestion'
@@ -142,6 +143,7 @@
             var that = this,
                 suggestionSelector = '.' + that.classes.suggestion,
                 selected = that.classes.selected,
+                options = that.options,
                 container;
 
             // Remove autocomplete attribute to prevent native suggestions:
@@ -155,15 +157,16 @@
             };
 
             // Determine suggestions width:
-            if (!that.options.width || that.options.width === 'auto') {
-                that.options.width = that.el.outerWidth();
+            if (!options.width || options.width === 'auto') {
+                options.width = that.el.outerWidth();
             }
 
-            that.suggestionsContainer = Autocomplete.utils.createNode('<div class="' + that.options.containerClass + '" style="position: absolute; display: none;"></div>');
+            that.suggestionsContainer = Autocomplete.utils.createNode('<div class="' + options.containerClass + '" style="position: absolute; display: none;"></div>');
 
             container = $(that.suggestionsContainer);
 
-            container.appendTo('body').width(that.options.width);
+            console.log(options.appendTo);
+            container.appendTo(options.appendTo).width(options.width);
 
             // Listen for mouse over event on suggestions list:
             container.on('mouseover', suggestionSelector, function () {
@@ -171,7 +174,7 @@
             });
 
             // Deselect active element when mouse leaves suggestions container:
-            container.on('mouseout', function() {
+            container.on('mouseout', function () {
                 that.selectedIndex = -1;
                 container.children('.' + selected).removeClass(selected);
             });
@@ -233,9 +236,18 @@
         },
 
         fixPosition: function () {
-            var offset = this.el.offset();
-            $(this.suggestionsContainer).css({
-                top: (offset.top + this.el.outerHeight()) + 'px',
+            var that = this,
+                offset;
+
+            // Don't adjsut position if custom container has been specified:
+            if (that.options.appendTo !== 'body') {
+                return;
+            }
+
+            offset = that.el.offset();
+            
+            $(that.suggestionsContainer).css({
+                top: (offset.top + that.el.outerHeight()) + 'px',
                 left: offset.left + 'px'
             });
         },

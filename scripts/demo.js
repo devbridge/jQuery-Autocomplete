@@ -48,6 +48,12 @@ $(function () {
             }
         });
         
+        // Initialize autocomplete with custom appendTo:
+        $('#autocomplete-custom-append').autocomplete({
+            lookup: countriesArray,
+            appendTo: '#suggestions-container'
+        });
+        
     });
 
 });
