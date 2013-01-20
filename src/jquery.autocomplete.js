@@ -141,6 +141,7 @@
         initialize: function () {
             var that = this,
                 suggestionSelector = '.' + that.classes.suggestion,
+                selected = that.classes.selected,
                 container;
 
             // Remove autocomplete attribute to prevent native suggestions:
@@ -167,6 +168,12 @@
             // Listen for mouse over event on suggestions list:
             container.on('mouseover', suggestionSelector, function () {
                 that.activate($(this).data('index'));
+            });
+
+            // Deselect active element when mouse leaves suggestions container:
+            container.on('mouseout', function() {
+                that.selectedIndex = -1;
+                container.children('.' + selected).removeClass(selected);
             });
 
             // Listen for click event on suggestions list:
