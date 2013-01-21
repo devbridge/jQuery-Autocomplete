@@ -1,5 +1,5 @@
 ﻿/*jslint vars: true*/
-/*global describe, it, expect, waitsFor, runs, afterEach, spyOn, $*/
+/*global describe, it, expect, waits, waitsFor, runs, afterEach, spyOn, $*/
 
 describe('Autocomplete', function () {
     'use strict';
@@ -119,7 +119,6 @@ describe('Autocomplete', function () {
                         query: query,
                         suggestions: []
                     };
-                ajaxExecuted = true;
                 this.responseText = JSON.stringify(response);
             }
         });
@@ -215,5 +214,37 @@ describe('Autocomplete', function () {
         autocomplete.onValueChange();
 
         expect(autocomplete.selectedIndex).toBe(0);
+    });
+
+    it('Should use custom query parameter name', function () {
+        var input = document.createElement('input'),
+            paramName = 'custom',
+            paramValue = null,
+            autocomplete = new $.Autocomplete(input, {
+                serviceUrl: '/test-query',
+                paramName: paramName
+            });
+
+        $.mockjax({
+            url: '/test-query',
+            responseTime: 5,
+            response: function (settings) {
+                paramValue = settings.data[paramName];
+                var response = {
+                    query: paramValue,
+                    suggestions: []
+                };
+                this.responseText = JSON.stringify(response);
+            }
+        });
+
+        input.value = 'Jam';
+        autocomplete.onValueChange();
+
+        waits(10);
+
+        runs(function () {
+            expect(paramValue).toBe('Jam');
+        });
     });
 });
