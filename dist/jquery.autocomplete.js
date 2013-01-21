@@ -1,4 +1,5 @@
 /**
+*  Ajax Autocomplete for jQuery, version 1.2.1
 *  Ajax Autocomplete for jQuery, version 1.2.2
 *  (c) 2013 Tomas Kirda
 *
