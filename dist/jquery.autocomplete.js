@@ -1,11 +1,10 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.1
+*  Ajax Autocomplete for jQuery, version 1.2.2
 *  (c) 2013 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
 *  For details, see the web site: http://www.devbridge.com/projects/autocomplete/jquery/
 *
-*  Last Review: 01/15/2013
 */
 
 /*jslint  browser: true, white: true, plusplus: true */
@@ -71,6 +70,8 @@
         var noop = function () { },
             that = this,
             defaults = {
+                autoSelectFirst: false,
+                appendTo: 'body',
                 serviceUrl: null,
                 lookup: null,
                 onSelect: null,
@@ -87,8 +88,13 @@
                 onSearchStart: noop,
                 onSearchComplete: noop,
                 containerClass: 'autocomplete-suggestions',
+                tabDisabled: false,
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
+                },
+                paramName: 'query',
+                transformResult: function (response) {
+                    return response.suggestions;
                 }
             };
 
@@ -106,7 +112,7 @@
         that.ignoreValueChange = false;
         that.isLocal = false;
         that.suggestionsContainer = null;
-        that.options = defaults;
+        that.options = $.extend({}, defaults, options);
         that.classes = {
             selected: 'autocomplete-selected',
             suggestion: 'autocomplete-suggestion'
@@ -135,6 +141,8 @@
         initialize: function () {
             var that = this,
                 suggestionSelector = '.' + that.classes.suggestion,
+                selected = that.classes.selected,
+                options = that.options,
                 container;
 
             // Remove autocomplete attribute to prevent native suggestions:
@@ -148,19 +156,26 @@
             };
 
             // Determine suggestions width:
-            if (!that.options.width || that.options.width === 'auto') {
-                that.options.width = that.el.outerWidth();
+            if (!options.width || options.width === 'auto') {
+                options.width = that.el.outerWidth();
             }
 
-            that.suggestionsContainer = Autocomplete.utils.createNode('<div class="' + that.options.containerClass + '" style="position: absolute; display: none;"></div>');
+            that.suggestionsContainer = Autocomplete.utils.createNode('<div class="' + options.containerClass + '" style="position: absolute; display: none;"></div>');
 
             container = $(that.suggestionsContainer);
 
-            container.appendTo('body').width(that.options.width);
+            console.log(options.appendTo);
+            container.appendTo(options.appendTo).width(options.width);
 
             // Listen for mouse over event on suggestions list:
             container.on('mouseover', suggestionSelector, function () {
                 that.activate($(this).data('index'));
+            });
+
+            // Deselect active element when mouse leaves suggestions container:
+            container.on('mouseout', function () {
+                that.selectedIndex = -1;
+                container.children('.' + selected).removeClass(selected);
             });
 
             // Listen for click event on suggestions list:
@@ -220,9 +235,18 @@
         },
 
         fixPosition: function () {
-            var offset = this.el.offset();
-            $(this.suggestionsContainer).css({
-                top: (offset.top + this.el.outerHeight()) + 'px',
+            var that = this,
+                offset;
+
+            // Don't adjsut position if custom container has been specified:
+            if (that.options.appendTo !== 'body') {
+                return;
+            }
+
+            offset = that.el.offset();
+
+            $(that.suggestionsContainer).css({
+                top: (offset.top + that.el.outerHeight()) + 'px',
                 left: offset.left + 'px'
             });
         },
@@ -275,7 +299,7 @@
                         return;
                     }
                     that.select(that.selectedIndex);
-                    if (e.keyCode === keys.TAB) {
+                    if (e.keyCode === keys.TAB && this.options.tabDisabled === false) {
                         return;
                     }
                     break;
@@ -378,7 +402,7 @@
                 that.suggest();
             } else if (!that.isBadQuery(q)) {
                 options.onSearchStart.call(that.element, q);
-                options.params.query = q;
+                options.params[options.paramName] = q;
                 $.ajax({
                     url: options.serviceUrl,
                     data: options.params,
@@ -434,8 +458,10 @@
             that.visible = true;
 
             // Select first value by default:
-            that.selectedIndex = 0;
-            container.children().first().addClass(classSelected);
+            if (that.options.autoSelectFirst) {
+                that.selectedIndex = 0;
+                container.children().first().addClass(classSelected);
+            }
         },
 
         verifySuggestionsFormat: function (suggestions) {
@@ -453,18 +479,18 @@
             var that = this,
                 response = $.parseJSON(text);
 
-            response.suggestions = that.verifySuggestionsFormat(response.suggestions);
+            response.suggestions = that.verifySuggestionsFormat(that.options.transformResult(response));
 
             // Cache results if cache is not disabled:
             if (!that.options.noCache) {
-                that.cachedResponse[response.query] = response;
+                that.cachedResponse[response[that.options.paramName]] = response;
                 if (response.suggestions.length === 0) {
-                    that.badQueries.push(response.query);
+                    that.badQueries.push(response[that.options.paramName]);
                 }
             }
 
             // Display suggestions only if returned query matches current value:
-            if (response.query === that.getQuery(that.currentValue)) {
+            if (response[that.options.paramName] === that.getQuery(that.currentValue)) {
                 that.suggestions = response.suggestions;
                 that.suggest();
             }
