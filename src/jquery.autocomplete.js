@@ -359,7 +359,7 @@
                 return;
             }
 
-            if (q === '' || q.length < that.options.minChars) {
+            if (q.length < that.options.minChars) {
                 that.hide();
             } else {
                 that.getSuggestions(q);
