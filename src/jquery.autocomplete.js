@@ -179,7 +179,7 @@
 
             // Listen for click event on suggestions list:
             container.on('click', suggestionSelector, function () {
-                that.select($(this).data('index'));
+                that.select($(this).data('index'), false);
             });
 
             that.fixPosition();
@@ -297,7 +297,7 @@
                         that.hide();
                         return;
                     }
-                    that.select(that.selectedIndex);
+                    that.select(that.selectedIndex, e.keyCode === keys.RETURN);
                     if (e.keyCode === keys.TAB && this.options.tabDisabled === false) {
                         return;
                     }
@@ -515,13 +515,13 @@
             return null;
         },
 
-        select: function (i) {
+        select: function (i, shouldIgnoreNextValueChange) {
             var that = this,
                 selectedValue = that.suggestions[i];
 
             if (selectedValue) {
                 that.el.val(selectedValue);
-                that.ignoreValueChange = true;
+                that.ignoreValueChange = shouldIgnoreNextValueChange;
                 that.hide();
                 that.onSelect(i);
             }
