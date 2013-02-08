@@ -1,5 +1,5 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.3
+*  Ajax Autocomplete for jQuery, version 1.2.4
 *  (c) 2013 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
@@ -89,6 +89,7 @@
                 onSearchComplete: noop,
                 containerClass: 'autocomplete-suggestions',
                 tabDisabled: false,
+                dataType : 'text',
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
@@ -179,7 +180,7 @@
 
             // Listen for click event on suggestions list:
             container.on('click', suggestionSelector, function () {
-                that.select($(this).data('index'));
+                that.select($(this).data('index'), false);
             });
 
             that.fixPosition();
@@ -243,7 +244,7 @@
             }
 
             offset = that.el.offset();
-
+            
             $(that.suggestionsContainer).css({
                 top: (offset.top + that.el.outerHeight()) + 'px',
                 left: offset.left + 'px'
@@ -297,7 +298,7 @@
                         that.hide();
                         return;
                     }
-                    that.select(that.selectedIndex);
+                    that.select(that.selectedIndex, e.keyCode === keys.RETURN);
                     if (e.keyCode === keys.TAB && this.options.tabDisabled === false) {
                         return;
                     }
@@ -359,7 +360,7 @@
                 return;
             }
 
-            if (q === '' || q.length < that.options.minChars) {
+            if (q.length < that.options.minChars) {
                 that.hide();
             } else {
                 that.getSuggestions(q);
@@ -406,7 +407,7 @@
                     url: options.serviceUrl,
                     data: options.params,
                     type: options.type,
-                    dataType: 'text'
+                    dataType: options.dataType
                 }).done(function (txt) {
                     that.processResponse(txt);
                     options.onSearchComplete.call(that.element, q);
@@ -476,7 +477,7 @@
 
         processResponse: function (text) {
             var that = this,
-                response = $.parseJSON(text);
+                response = typeof text == 'string' ? $.parseJSON(text) : text;
 
             response.suggestions = that.verifySuggestionsFormat(that.options.transformResult(response));
 
@@ -515,13 +516,13 @@
             return null;
         },
 
-        select: function (i) {
+        select: function (i, shouldIgnoreNextValueChange) {
             var that = this,
                 selectedValue = that.suggestions[i];
 
             if (selectedValue) {
                 that.el.val(selectedValue);
-                that.ignoreValueChange = true;
+                that.ignoreValueChange = shouldIgnoreNextValueChange;
                 that.hide();
                 that.onSelect(i);
             }
