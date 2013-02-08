@@ -89,6 +89,7 @@
                 onSearchComplete: noop,
                 containerClass: 'autocomplete-suggestions',
                 tabDisabled: false,
+                dataType : 'text',
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
@@ -406,7 +407,7 @@
                     url: options.serviceUrl,
                     data: options.params,
                     type: options.type,
-                    dataType: 'text'
+                    dataType: options.dataType
                 }).done(function (txt) {
                     that.processResponse(txt);
                     options.onSearchComplete.call(that.element, q);
@@ -476,7 +477,7 @@
 
         processResponse: function (text) {
             var that = this,
-                response = $.parseJSON(text);
+                response = typeof text == 'string' ? $.parseJSON(text) : text;
 
             response.suggestions = that.verifySuggestionsFormat(that.options.transformResult(response));
 
