@@ -11,7 +11,7 @@
 /*global define, window, document, jQuery */
 
 // Expose plugin as an AMD module if AMD loader is present:
-(function (factory) {
+$(function (factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
