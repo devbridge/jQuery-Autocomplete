@@ -96,6 +96,9 @@
                 paramName: 'query',
                 transformResult: function (response) {
                     return response.suggestions;
+                },
+                suggestionFilter: function(suggestion) {
+                  return true;
                 }
             };
 
@@ -398,7 +401,7 @@
             response = that.isLocal ? that.getSuggestionsLocal(q) : that.cachedResponse[q];
 
             if (response && $.isArray(response.suggestions)) {
-                that.suggestions = response.suggestions;
+                that.suggestions = $.grep(response.suggestions, that.options.suggestionFilter);
                 that.suggest();
             } else if (!that.isBadQuery(q)) {
                 options.onSearchStart.call(that.element, q);
@@ -479,6 +482,7 @@
             var that = this,
                 response = typeof text == 'string' ? $.parseJSON(text) : text;
 
+            response.suggestions = $.grep(response.suggestions, that.options.suggestionFilter);
             response.suggestions = that.verifySuggestionsFormat(that.options.transformResult(response));
 
             // Cache results if cache is not disabled:
