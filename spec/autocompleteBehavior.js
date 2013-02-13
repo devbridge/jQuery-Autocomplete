@@ -61,6 +61,33 @@ describe('Autocomplete', function () {
         expect(counter).toEqual(3);
     });
 
+    it('Should filter out suggestions', function() {
+        var input = document.createElement('input'),
+            context,
+            value,
+            data,
+            autocomplete = new $.Autocomplete(input, {
+              lookup: [
+                { data: 0, value: "A" },
+                { data: 1, value: "AA" },
+                { data: 2, value: "AAA" },
+                { data: 3, value: "AAAA" },
+                { data: 4, value: "AAAAA" },
+                { data: 5, value: "AAAAAA" },
+                { data: 6, value: "AAAAAAA" },
+                { data: 7, value: "AAAAAAAA" },
+                { data: 8, value: "AAAAAAAAA" },
+                { data: 9, value: "AAAAAAAAAA" }
+              ],
+              suggestionFilter: function(response) {
+                return response.value.length > 4 && response.value.length < 10;
+              }
+            });
+        input.value = 'A';
+        autocomplete.onValueChange();
+        expect(autocomplete.suggestions.length).toEqual(5);
+    });
+
     it('Verify onSelect callback', function () {
         var input = document.createElement('input'),
             context,
