@@ -89,7 +89,7 @@
                 onSearchComplete: noop,
                 containerClass: 'autocomplete-suggestions',
                 tabDisabled: false,
-                dataType : 'text',
+                dataType: 'text',
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
@@ -244,7 +244,7 @@
             }
 
             offset = that.el.offset();
-            
+
             $(that.suggestionsContainer).css({
                 top: (offset.top + that.el.outerHeight()) + 'px',
                 left: offset.left + 'px'
@@ -401,8 +401,8 @@
                 that.suggestions = response.suggestions;
                 that.suggest();
             } else if (!that.isBadQuery(q)) {
-                options.onSearchStart.call(that.element, q);
                 options.params[options.paramName] = q;
+                options.onSearchStart.call(that.element, options.params);
                 $.ajax({
                     url: options.serviceUrl,
                     data: options.params,
