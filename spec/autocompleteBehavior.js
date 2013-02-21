@@ -171,6 +171,45 @@ describe('Autocomplete', function () {
         });
     });
 
+    it('Should transform results', function () {
+        var input = document.createElement('input'),
+            ajaxExecuted = false,
+            url = '/test-transform',
+            autocomplete = new $.Autocomplete(input, {
+                serviceUrl: url,
+                transformResult: function (result, query) {
+                    return {
+                        query: query,
+                        suggestions: $.map(result.split(','), function (item) {
+                            return { value: item, data: null };
+                        })
+                    };
+                }
+            });
+
+        $.mockjax({
+            url: url,
+            responseTime: 50,
+            response: function () {
+                ajaxExecuted = true;
+                this.responseText = 'Andora,Angola,Argentina';
+            }
+        });
+
+        input.value = 'A';
+        autocomplete.onValueChange();
+
+        waitsFor(function () {
+            return ajaxExecuted;
+        }, 'Ajax call never completed.', 100);
+
+        runs(function () {
+            expect(ajaxExecuted).toBe(true);
+            expect(autocomplete.suggestions.length).toBe(3);
+            expect(autocomplete.suggestions[0].value).toBe('Andora');
+        });
+    });
+
     it('Should should not preventDefault when tabDisabled is set to false', function () {
         var input = document.createElement('input'),
             autocomplete = new $.Autocomplete(input, {

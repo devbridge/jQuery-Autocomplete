@@ -94,8 +94,8 @@
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
                 paramName: 'query',
-                transformResult: function (response) {
-                    return response.suggestions;
+                transformResult: function (response, originalQuery) {
+                    return typeof response === 'string' ? $.parseJSON(response) : response;
                 }
             };
 
@@ -408,8 +408,8 @@
                     data: options.params,
                     type: options.type,
                     dataType: options.dataType
-                }).done(function (txt) {
-                    that.processResponse(txt);
+                }).done(function (data) {
+                    that.processResponse(data, q);
                     options.onSearchComplete.call(that.element, q);
                 });
             }
@@ -475,23 +475,24 @@
             return suggestions;
         },
 
-        processResponse: function (text) {
+        processResponse: function (response, originalQuery) {
             var that = this,
-                response = typeof text == 'string' ? $.parseJSON(text) : text;
+                options = that.options,
+                result = that.options.transformResult(response, originalQuery);
 
-            response.suggestions = that.verifySuggestionsFormat(that.options.transformResult(response));
+            result.suggestions = that.verifySuggestionsFormat(result.suggestions);
 
             // Cache results if cache is not disabled:
-            if (!that.options.noCache) {
-                that.cachedResponse[response[that.options.paramName]] = response;
-                if (response.suggestions.length === 0) {
-                    that.badQueries.push(response[that.options.paramName]);
+            if (!options.noCache) {
+                that.cachedResponse[result[options.paramName]] = result;
+                if (result.suggestions.length === 0) {
+                    that.badQueries.push(result[options.paramName]);
                 }
             }
 
             // Display suggestions only if returned query matches current value:
-            if (response[that.options.paramName] === that.getQuery(that.currentValue)) {
-                that.suggestions = response.suggestions;
+            if (result[options.paramName] === that.getQuery(that.currentValue)) {
+                that.suggestions = result.suggestions;
                 that.suggest();
             }
         },
