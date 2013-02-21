@@ -94,18 +94,14 @@ describe('Autocomplete', function () {
         expect(autocomplete.options.lookup[1].value).toBe('B');
     });
 
-    it('Should execute onSearchStart and onSearchCompleted', function () {
+    it('Should execute onSearchStart', function () {
         var input = document.createElement('input'),
             startQuery,
-            completeQuery,
             ajaxExecuted = false,
             autocomplete = new $.Autocomplete(input, {
                 serviceUrl: '/test',
-                onSearchStart: function (query) {
-                    startQuery = query;
-                },
-                onSearchComplete: function (query) {
-                    completeQuery = query;
+                onSearchStart: function (params) {
+                    startQuery = params.query;
                 }
             });
 
@@ -133,6 +129,44 @@ describe('Autocomplete', function () {
         runs(function () {
             expect(ajaxExecuted).toBe(true);
             expect(startQuery).toBe('A');
+        });
+    });
+
+    it('Should execute onSearchCompleted', function () {
+        var input = document.createElement('input'),
+            completeQuery,
+            ajaxExecuted = false,
+            url = '/test-completed',
+            autocomplete = new $.Autocomplete(input, {
+                serviceUrl: url,
+                onSearchComplete: function (query) {
+                    completeQuery = query;
+                }
+            });
+
+        $.mockjax({
+            url: url,
+            responseTime: 50,
+            response: function (settings) {
+                ajaxExecuted = true;
+                var query = settings.data.query,
+                    response = {
+                        query: query,
+                        suggestions: []
+                    };
+                this.responseText = JSON.stringify(response);
+            }
+        });
+
+        input.value = 'A';
+        autocomplete.onValueChange();
+
+        waitsFor(function () {
+            return ajaxExecuted;
+        }, 'Ajax call never completed.', 100);
+
+        runs(function () {
+            expect(ajaxExecuted).toBe(true);
             expect(completeQuery).toBe('A');
         });
     });
