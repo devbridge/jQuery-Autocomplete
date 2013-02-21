@@ -95,7 +95,9 @@
                 },
                 paramName: 'query',
                 transformResult: function (response, originalQuery) {
-                    return typeof response === 'string' ? $.parseJSON(response) : response;
+                    var result = typeof response === 'string' ? $.parseJSON(response) : response;
+                    result.query = originalQuery;
+                    return result;
                 }
             };
 
@@ -491,7 +493,7 @@
             }
 
             // Display suggestions only if returned query matches current value:
-            if (result[options.paramName] === that.getQuery(that.currentValue)) {
+            if (result.query === that.getQuery(that.currentValue)) {
                 that.suggestions = result.suggestions;
                 that.suggest();
             }

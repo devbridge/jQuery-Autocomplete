@@ -210,6 +210,41 @@ describe('Autocomplete', function () {
         });
     });
 
+    it('Should not require orginal query value from the server', function () {
+        var input = document.createElement('input'),
+            ajaxExecuted = false,
+            url = '/test-original-query',
+            autocomplete = new $.Autocomplete(input, {
+                serviceUrl: url
+            });
+
+        $.mockjax({
+            url: url,
+            responseTime: 50,
+            response: function () {
+                ajaxExecuted = true;
+                var response = {
+                    query: null,
+                    suggestions: ['A', 'B', 'C']
+                };
+                this.responseText = JSON.stringify(response);
+            }
+        });
+
+        input.value = 'A';
+        autocomplete.onValueChange();
+
+        waitsFor(function () {
+            return ajaxExecuted;
+        }, 'Ajax call never completed.', 100);
+
+        runs(function () {
+            expect(ajaxExecuted).toBe(true);
+            expect(autocomplete.suggestions.length).toBe(3);
+            expect(autocomplete.suggestions[0].value).toBe('A');
+        });
+    });
+
     it('Should should not preventDefault when tabDisabled is set to false', function () {
         var input = document.createElement('input'),
             autocomplete = new $.Autocomplete(input, {
