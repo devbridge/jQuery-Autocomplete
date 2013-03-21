@@ -580,7 +580,15 @@
                 $(that.suggestionsContainer).scrollTop(offsetTop - that.options.maxHeight + heightDelta);
             }
 
-            that.el.val(that.getValue(that.suggestions[index].value));
+            // FIX: Special characters appears with numerical html entity encoding like "c&#39;est la vie" instead of "c'est la vie"
+            // ------------------------------------------------------------------------------------------------------------------
+            var value = that.getValue(that.suggestions[index].value);
+            // Apply regex to decode special characters
+            value = value.replace(/&#([^\s]*);/g, function (match, match2) { return String.fromCharCode(Number(match2)); });
+            that.el.val(value);
+
+            // Original Code:
+            //that.el.val(that.getValue(that.suggestions[index].value));
         },
 
         onSelect: function (index) {
