@@ -1,5 +1,5 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.4
+*  Ajax Autocomplete for jQuery, version 1.2.5
 *  (c) 2013 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
@@ -94,10 +94,8 @@
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
                 paramName: 'query',
-                transformResult: function (response, originalQuery) {
-                    var result = typeof response === 'string' ? $.parseJSON(response) : response;
-                    result.query = originalQuery;
-                    return result;
+                transformResult: function (response) {
+                    return typeof response === 'string' ? $.parseJSON(response) : response;
                 }
             };
 
@@ -480,7 +478,7 @@
         processResponse: function (response, originalQuery) {
             var that = this,
                 options = that.options,
-                result = that.options.transformResult(response, originalQuery);
+                result = options.transformResult(response, originalQuery);
 
             result.suggestions = that.verifySuggestionsFormat(result.suggestions);
 
@@ -493,7 +491,7 @@
             }
 
             // Display suggestions only if returned query matches current value:
-            if (result.query === that.getQuery(that.currentValue)) {
+            if (originalQuery === that.getQuery(that.currentValue)) {
                 that.suggestions = result.suggestions;
                 that.suggest();
             }

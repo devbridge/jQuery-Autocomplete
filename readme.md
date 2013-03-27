@@ -91,6 +91,7 @@ Style sample:
 Response from the server must be JSON formatted following JavaScript object:
 
     {
+	    // Query is not required as of version 1.2.5
         query: "Unit",
         suggestions: [
             { value: "United Arab Emirates", data: "AE" },
@@ -115,9 +116,8 @@ you can supply the "paramName" and "transformResult" options:
 
     $('#autocomplete').autocomplete({
         paramName: 'searchString',
-        transformResult: function(response, originalQuery) {
+        transformResult: function(response) {
             return {
-                query: originalQuery,
                 suggestions: $.map(response.myData, function(dataItem) {
                     return { value: dataItem.valueField, data: dataItem.dataField };
                 })
@@ -125,9 +125,6 @@ you can supply the "paramName" and "transformResult" options:
         }
     })
 
-
-Important: query value must match original value in the input 
-field, otherwise suggestions will not be displayed.
 
 ##License
 

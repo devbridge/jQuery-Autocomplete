@@ -1,5 +1,5 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.4
+*  Ajax Autocomplete for jQuery, version 1.2.5
 *  (c) 2013 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
@@ -89,13 +89,13 @@
                 onSearchComplete: noop,
                 containerClass: 'autocomplete-suggestions',
                 tabDisabled: false,
-                dataType : 'text',
+                dataType: 'text',
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
                 paramName: 'query',
                 transformResult: function (response) {
-                    return response.suggestions;
+                    return typeof response === 'string' ? $.parseJSON(response) : response;
                 }
             };
 
@@ -244,7 +244,7 @@
             }
 
             offset = that.el.offset();
-            
+
             $(that.suggestionsContainer).css({
                 top: (offset.top + that.el.outerHeight()) + 'px',
                 left: offset.left + 'px'
@@ -401,15 +401,15 @@
                 that.suggestions = response.suggestions;
                 that.suggest();
             } else if (!that.isBadQuery(q)) {
-                options.onSearchStart.call(that.element, q);
                 options.params[options.paramName] = q;
+                options.onSearchStart.call(that.element, options.params);
                 $.ajax({
                     url: options.serviceUrl,
                     data: options.params,
                     type: options.type,
                     dataType: options.dataType
-                }).done(function (txt) {
-                    that.processResponse(txt);
+                }).done(function (data) {
+                    that.processResponse(data, q);
                     options.onSearchComplete.call(that.element, q);
                 });
             }
@@ -475,23 +475,24 @@
             return suggestions;
         },
 
-        processResponse: function (text) {
+        processResponse: function (response, originalQuery) {
             var that = this,
-                response = typeof text == 'string' ? $.parseJSON(text) : text;
+                options = that.options,
+                result = options.transformResult(response, originalQuery);
 
-            response.suggestions = that.verifySuggestionsFormat(that.options.transformResult(response));
+            result.suggestions = that.verifySuggestionsFormat(result.suggestions);
 
             // Cache results if cache is not disabled:
-            if (!that.options.noCache) {
-                that.cachedResponse[response[that.options.paramName]] = response;
-                if (response.suggestions.length === 0) {
-                    that.badQueries.push(response[that.options.paramName]);
+            if (!options.noCache) {
+                that.cachedResponse[result[options.paramName]] = result;
+                if (result.suggestions.length === 0) {
+                    that.badQueries.push(result[options.paramName]);
                 }
             }
 
             // Display suggestions only if returned query matches current value:
-            if (response[that.options.paramName] === that.getQuery(that.currentValue)) {
-                that.suggestions = response.suggestions;
+            if (originalQuery === that.getQuery(that.currentValue)) {
+                that.suggestions = result.suggestions;
                 that.suggest();
             }
         },
