@@ -226,6 +226,12 @@
             this.badQueries = [];
         },
 
+        clear: function () {
+            this.clearCache();
+            this.currentValue = null;
+            this.suggestions = [];
+        },
+
         disable: function () {
             this.disabled = true;
         },
