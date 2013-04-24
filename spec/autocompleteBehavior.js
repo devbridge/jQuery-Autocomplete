@@ -385,4 +385,40 @@ describe('Autocomplete', function () {
 
         expect(instance instanceof $.Autocomplete).toBe(true);
     });
+
+    it('Should construct serviceUrl via callback function.', function () {
+        var input = $(document.createElement('input')),
+            dynamicUrl,
+            data;
+
+        input.autocomplete({
+            ignoreParams: true,
+            serviceUrl: function (query) {
+                return '/dynamic-url/' + encodeURIComponent(query).replace(/%20/g, "+");
+            }
+        });
+
+        $.mockjax({
+            url: '/dynamic-url/*',
+            responseTime: 5,
+            response: function (settings) {
+                dynamicUrl = settings.url;
+                data = settings.data;
+                var response = {
+                    suggestions: []
+                };
+                this.responseText = JSON.stringify(response);
+            }
+        });
+
+        input.val('Hello World');
+        input.autocomplete().onValueChange();
+
+        waits(10);
+
+        runs(function () {
+            expect(dynamicUrl).toBe('/dynamic-url/Hello+World');
+            expect(data).toBeFalsy();
+        });
+    });
 });
