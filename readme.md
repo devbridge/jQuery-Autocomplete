@@ -12,7 +12,7 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
 * `$(selector).autocomplete(options);`
     * Sets up autocomplete for input field(s).
     * `options`: An object literal which defines the settings to use for the autocomplete plugin.
-        * `serviceUrl`: Server side URL that provides results for suggestions. Optional if local lookup data is provided.
+        * `serviceUrl`: Server side URL or callback function that returns serviceUrl string. Optional if local lookup data is provided.
         * `lookup`: Lookup array for the suggestions. It may be array of strings or `suggestion` object literals.
             * `suggestion`: An object literal with the following format: `{ value: 'string', data: any }`.
         * `lookupFilter`: `function (suggestion, query, queryLowerCase) {}` filter function for local lookups. By default it does partial string match (case insensitive).
@@ -38,6 +38,27 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
         * `autoSelectFirst`: if set to `true`, first item will be selected when showing suggestions. Default value `false`.
         * `appendTo`: container where suggestions will be appended. Default value `body`. Can be jQuery object, selector or html element. Make sure to set `position: absolute` or `position: relative` for that element.
         * `dataType`: type of data returned from server. Either 'text' (default) or 'jsonp', which will cause the autocomplete to use jsonp. You may return a json object in your callback when using jsonp.
+
+Autocomplete instance has following methods:
+
+* `setOptions(options)`: you may update any option at any time. Options are listed above.
+* `clear`: clears suggestion cache and current suggestions suggestions.
+* `clearCache`: clears suggestion cache.
+* `disable`: deactivate autocomplete.
+* `enable`: activates autocomplete if it was deactivated before.
+* `hide`: hides suggestions.
+* `dispose`: destroys autocomplete instance. All events are detached and suggestion containers removed.
+
+There are two ways that you can invoke Autocomplete method. One is calling autocomplete on jQuery object and passing method name as string literal. 
+If method has arguments, arguments are passed as consecutive parameters:
+
+    $('#autocomplete').autocomplete('disable');
+    $('#autocomplete').autocomplete('setOptions', options);
+
+Or you can get Autocomplete instance by calling autcomplete on jQuery object without any parameters and then invoke desired method.
+
+    $('#autocomplete').autocomplete().disable();
+    $('#autocomplete').autocomplete().setOptions(options);
 
 ##Usage
 
@@ -91,7 +112,7 @@ Style sample:
 Response from the server must be JSON formatted following JavaScript object:
 
     {
-	    // Query is not required as of version 1.2.5
+        // Query is not required as of version 1.2.5
         query: "Unit",
         suggestions: [
             { value: "United Arab Emirates", data: "AE" },
