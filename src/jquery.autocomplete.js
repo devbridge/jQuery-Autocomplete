@@ -392,8 +392,8 @@
                 options.params[options.paramName] = q;
                 options.onSearchStart.call(that.element, options.params);
                 $.ajax({
-                    url: options.serviceUrl,
-                    data: options.params,
+                    url: options.paramName ? options.serviceUrl : options.serviceUrl+q,
+                    data: options.paramName ? options.params : null,
                     type: options.type,
                     dataType: options.dataType
                 }).done(function (data) {
