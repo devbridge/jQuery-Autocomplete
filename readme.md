@@ -31,7 +31,7 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
         * `type`: Ajax request type to get suggestions. Default: `GET`.
         * `noCache`: Boolean value indicating whether to cache suggestion results. Default `false`.
         * `onSearchStart`: `function (query) {}` called before ajax request. `this` is bound to input element.
-        * `onSearchComplete`: `function (query) {}` called after ajax response is processed. `this` is bound to input element.
+        * `onSearchComplete`: `function (query) {}` called after ajax response is processed. `this` is bound to input element. If return true, the ajax call will be cancelled.
         * `tabDisabled`: Default `false`. Set to true to leave the cursor in the input field after the user tabs to select a suggestion.
         * `paramName`: Default `query`. The name of the request parameter that contains the query.
         * `transformResult`: `function(response, originalQuery) {}` called after the result of the query is ready. Converts the result into response.suggestions format.
