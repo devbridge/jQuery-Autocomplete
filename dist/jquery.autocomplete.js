@@ -1,5 +1,5 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.5
+*  Ajax Autocomplete for jQuery, version 1.2.6
 *  (c) 2013 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
@@ -29,24 +29,6 @@
 
                 extend: function (target, source) {
                     return $.extend(target, source);
-                },
-
-                addEvent: function (element, eventType, handler) {
-                    if (element.addEventListener) {
-                        element.addEventListener(eventType, handler, false);
-                    } else if (element.attachEvent) {
-                        element.attachEvent('on' + eventType, handler);
-                    } else {
-                        throw new Error('Browser doesn\'t support addEventListener or attachEvent');
-                    }
-                },
-
-                removeEvent: function (element, eventType, handler) {
-                    if (element.removeEventListener) {
-                        element.removeEventListener(eventType, handler, false);
-                    } else if (element.detachEvent) {
-                        element.detachEvent('on' + eventType, handler);
-                    }
                 },
 
                 createNode: function (html) {
@@ -168,18 +150,18 @@
             container.appendTo(options.appendTo).width(options.width);
 
             // Listen for mouse over event on suggestions list:
-            container.on('mouseover', suggestionSelector, function () {
+            container.on('mouseover.autocomplete', suggestionSelector, function () {
                 that.activate($(this).data('index'));
             });
 
             // Deselect active element when mouse leaves suggestions container:
-            container.on('mouseout', function () {
+            container.on('mouseout.autocomplete', function () {
                 that.selectedIndex = -1;
                 container.children('.' + selected).removeClass(selected);
             });
 
             // Listen for click event on suggestions list:
-            container.on('click', suggestionSelector, function () {
+            container.on('click.autocomplete', suggestionSelector, function () {
                 that.select($(this).data('index'), false);
             });
 
@@ -187,14 +169,14 @@
 
             // Opera does not like keydown:
             if (window.opera) {
-                that.el.on('keypress', function (e) { that.onKeyPress(e); });
+                that.el.on('keypress.autocomplete', function (e) { that.onKeyPress(e); });
             } else {
-                that.el.on('keydown', function (e) { that.onKeyPress(e); });
+                that.el.on('keydown.autocomplete', function (e) { that.onKeyPress(e); });
             }
 
-            that.el.on('keyup', function (e) { that.onKeyUp(e); });
-            that.el.on('blur', function () { that.onBlur(); });
-            that.el.on('focus', function () { that.fixPosition(); });
+            that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
+            that.el.on('blur.autocomplete', function () { that.onBlur(); });
+            that.el.on('focus.autocomplete', function () { that.fixPosition(); });
         },
 
         onBlur: function () {
@@ -226,6 +208,12 @@
             this.badQueries = [];
         },
 
+        clear: function () {
+            this.clearCache();
+            this.currentValue = null;
+            this.suggestions = [];
+        },
+
         disable: function () {
             this.disabled = true;
         },
@@ -253,12 +241,12 @@
 
         enableKillerFn: function () {
             var that = this;
-            $(document).on('click', that.killerFn);
+            $(document).on('click.autocomplete', that.killerFn);
         },
 
         disableKillerFn: function () {
             var that = this;
-            $(document).off('click', that.killerFn);
+            $(document).off('click.autocomplete', that.killerFn);
         },
 
         killSuggestions: function () {
@@ -611,22 +599,38 @@
             }
 
             return currentValue.substr(0, currentValue.length - parts[parts.length - 1].length) + value;
+        },
+
+        dispose: function () {
+            var that = this;
+            that.el.off('.autocomplete').removeData('autocomplete');
+            that.disableKillerFn();
+            $(that.suggestionsContainer).remove();
         }
     };
 
     // Create chainable jQuery plugin:
     $.fn.autocomplete = function (options, args) {
+        var dataKey = 'autocomplete';
+        // If function invoked without argument return
+        // instance of the first matched element:
+        if (arguments.length === 0) {
+            return this.first().data(dataKey);
+        }
+
         return this.each(function () {
-            var dataKey = 'autocomplete',
-                inputElement = $(this),
-                instance;
+            var inputElement = $(this),
+                instance = inputElement.data(dataKey);
 
             if (typeof options === 'string') {
-                instance = inputElement.data(dataKey);
-                if (typeof instance[options] === 'function') {
+                if (instance && typeof instance[options] === 'function') {
                     instance[options](args);
                 }
             } else {
+                // If instance already exists, destroy it:
+                if (instance && instance.dispose) {
+                    instance.dispose();
+                }
                 instance = new Autocomplete(this, options);
                 inputElement.data(dataKey, instance);
             }
