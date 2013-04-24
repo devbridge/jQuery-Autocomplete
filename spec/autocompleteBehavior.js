@@ -373,4 +373,16 @@ describe('Autocomplete', function () {
         expect(input.data('autocomplete')).toBeUndefined();
         expect(div.children().length).toBe(0);
     });
+
+    it('Should return Autocomplete instance if called without arguments', function () {
+        var input = $(document.createElement('input'));
+
+        input.autocomplete({
+            serviceUrl: '/test-dispose'
+        });
+
+        var instance = input.autocomplete();
+
+        expect(instance instanceof $.Autocomplete).toBe(true);
+    });
 });

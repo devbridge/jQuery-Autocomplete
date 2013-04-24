@@ -600,8 +600,8 @@
 
             return currentValue.substr(0, currentValue.length - parts[parts.length - 1].length) + value;
         },
-        
-        dispose: function() {
+
+        dispose: function () {
             var that = this;
             that.el.off('.autocomplete').removeData('autocomplete');
             that.disableKillerFn();
@@ -611,9 +611,15 @@
 
     // Create chainable jQuery plugin:
     $.fn.autocomplete = function (options, args) {
+        var dataKey = 'autocomplete';
+        // If function invoked without argument return
+        // instance of the first matched element:
+        if (arguments.length === 0) {
+            return this.first().data(dataKey);
+        }
+
         return this.each(function () {
-            var dataKey = 'autocomplete',
-                inputElement = $(this),
+            var inputElement = $(this),
                 instance = inputElement.data(dataKey);
 
             if (typeof options === 'string') {
