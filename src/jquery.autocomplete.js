@@ -390,7 +390,9 @@
                 that.suggest();
             } else if (!that.isBadQuery(q)) {
                 options.params[options.paramName] = q;
-                options.onSearchStart.call(that.element, options.params);
+                if (options.onSearchStart.call(that.element, options.params) === false) {
+                    return;
+                }
                 $.ajax({
                     url: options.serviceUrl,
                     data: options.params,
