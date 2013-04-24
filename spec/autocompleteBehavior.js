@@ -355,4 +355,22 @@ describe('Autocomplete', function () {
             expect(paramValue).toBe('Jam');
         });
     });
+
+    it('Should destroy autocomplete instance', function () {
+        var input = $(document.createElement('input')),
+            div = $(document.createElement('div'));
+
+        input.autocomplete({
+            serviceUrl: '/test-dispose',
+            appendTo: div
+        });
+
+        expect(input.data('autocomplete')).toBeDefined();
+        expect(div.children().length).toBeGreaterThan(0);
+
+        input.autocomplete('dispose');
+
+        expect(input.data('autocomplete')).toBeUndefined();
+        expect(div.children().length).toBe(0);
+    });
 });
