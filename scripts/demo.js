@@ -53,6 +53,11 @@ $(function () {
             lookup: countriesArray,
             appendTo: '#suggestions-container'
         });
+
+        // Initialize autocomplete with custom appendTo:
+        $('#autocomplete-dynamic').autocomplete({
+            lookup: countriesArray
+        });
         
     });
 

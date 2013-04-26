@@ -138,16 +138,16 @@
                 }
             };
 
-            // Determine suggestions width:
-            if (!options.width || options.width === 'auto') {
-                options.width = that.el.outerWidth();
-            }
-
             that.suggestionsContainer = Autocomplete.utils.createNode('<div class="' + options.containerClass + '" style="position: absolute; display: none;"></div>');
 
             container = $(that.suggestionsContainer);
 
-            container.appendTo(options.appendTo).width(options.width);
+            container.appendTo(options.appendTo);
+            
+            // Only set width if it was provided:
+            if (options.width !== 'auto') {
+                container.width(options.width);
+            }
 
             // Listen for mouse over event on suggestions list:
             container.on('mouseover.autocomplete', suggestionSelector, function () {
@@ -441,12 +441,22 @@
                 className = that.classes.suggestion,
                 classSelected = that.classes.selected,
                 container = $(that.suggestionsContainer),
-                html = '';
+                html = '',
+                width;
 
             // Build suggestions inner HTML:
             $.each(that.suggestions, function (i, suggestion) {
                 html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
             });
+
+            // If width is auto, adjust width before displaying suggestions,
+            // because if instance was created before input had width, it will be zero.
+            // Also it adjusts if input width has changed.
+            // -2px to account for suggestions border.
+            if (that.options.width === 'auto') {
+                width = that.el.outerWidth() - 2;
+                container.width(width > 0  ? width : 300);
+            }
 
             container.html(html).show();
             that.visible = true;

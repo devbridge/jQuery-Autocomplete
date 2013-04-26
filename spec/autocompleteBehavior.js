@@ -132,7 +132,7 @@ describe('Autocomplete', function () {
         });
     });
 
-    it('Should execute onSearchCompleted', function () {
+    it('Should execute onSearchComplete', function () {
         var input = document.createElement('input'),
             completeQuery,
             ajaxExecuted = false,
@@ -420,5 +420,22 @@ describe('Autocomplete', function () {
             expect(dynamicUrl).toBe('/dynamic-url/Hello+World');
             expect(data).toBeFalsy();
         });
+    });
+
+    it('Should set width to be greater than zero', function () {
+        var input = $(document.createElement('input')),
+            instance,
+            width;
+
+        input.autocomplete({
+            lookup: [{ value: 'Jamaica', data: 'B' }]
+        });
+
+        input.val('Jam');
+        instance = input.autocomplete();
+        instance.onValueChange();
+        width = $(instance.suggestionsContainer).width();
+
+        expect(width).toBeGreaterThan(0);
     });
 });
