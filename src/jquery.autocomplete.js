@@ -69,6 +69,7 @@
                 noCache: false,
                 onSearchStart: noop,
                 onSearchComplete: noop,
+                onScroll: null,
                 containerClass: 'autocomplete-suggestions',
                 tabDisabled: false,
                 dataType: 'text',
@@ -562,6 +563,7 @@
 
         adjustScroll: function (index) {
             var that = this,
+                onScrollCallback = that.options.onScroll,
                 activeItem = that.activate(index),
                 offsetTop,
                 upperBound,
@@ -582,7 +584,12 @@
                 $(that.suggestionsContainer).scrollTop(offsetTop - that.options.maxHeight + heightDelta);
             }
 
-            that.el.val(that.getValue(that.suggestions[index].value));
+            if ($.isFunction(onScrollCallback)) {
+                onScrollCallback.call(that.element, that.getValue(that.suggestions[index].value), that.element);
+            }
+            else {
+                that.el.val(that.getValue(that.suggestions[index].value));
+            }
         },
 
         onSelect: function (index) {
