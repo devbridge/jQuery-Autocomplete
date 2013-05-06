@@ -167,13 +167,7 @@
 
             that.fixPosition();
 
-            // Opera does not like keydown:
-            if (window.opera) {
-                that.el.on('keypress.autocomplete', function (e) { that.onKeyPress(e); });
-            } else {
-                that.el.on('keydown.autocomplete', function (e) { that.onKeyPress(e); });
-            }
-
+            that.el.on('keydown.autocomplete', function (e) { that.onKeyPress(e); });
             that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
             that.el.on('blur.autocomplete', function () { that.onBlur(); });
             that.el.on('focus.autocomplete', function () { that.fixPosition(); });
