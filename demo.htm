@@ -10,8 +10,9 @@
 
         <h2>Ajax Lookup</h2>
         <p>Type country name in english:</p>
-        <div>
-            <input type="text" name="country" id="autocomplete-ajax"/>
+        <div style="position: relative; height: 80px;">
+            <input type="text" name="country" id="autocomplete-ajax" style="position: absolute; z-index: 2; background: transparent;"/>
+            <input type="text" name="country" id="autocomplete-ajax-x" disabled="disabled" style="color: #CCC; position: absolute; background: transparent; z-index: 1;"/>
         </div>
         <div id="selction-ajax"></div>
         

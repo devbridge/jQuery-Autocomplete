@@ -318,6 +318,8 @@
                     return;
             }
 
+            that.findBestHint();
+
             clearInterval(that.onChangeInterval);
 
             if (that.currentValue !== that.el.val()) {
@@ -421,6 +423,7 @@
             that.visible = false;
             that.selectedIndex = -1;
             $(that.suggestionsContainer).hide();
+            that.signalHint(null);
         },
 
         suggest: function () {
@@ -460,6 +463,32 @@
                 that.selectedIndex = 0;
                 container.children().first().addClass(classSelected);
             }
+
+            that.findBestHint();
+        },
+
+        findBestHint: function () {
+            var that = this,
+                value = that.el.val().toLowerCase(),
+                bestMatch = null;
+
+            $.each(that.suggestions, function (i, suggestion) {
+                var foundMatch = suggestion.value.toLowerCase().indexOf(value) === 0;
+                if (foundMatch) {
+                    bestMatch = suggestion;
+                }
+                return !foundMatch;
+            });
+
+            that.signalHint(bestMatch);
+        },
+
+        signalHint: function (suggestion) {
+            var hintValue = '';
+            if (suggestion) {
+                hintValue = this.currentValue + suggestion.value.substr(this.currentValue.length);
+            }
+            (this.options.onHint || $.noop)(hintValue);
         },
 
         verifySuggestionsFormat: function (suggestions) {
@@ -532,6 +561,7 @@
                 $(that.suggestionsContainer).children().first().removeClass(that.classes.selected);
                 that.selectedIndex = -1;
                 that.el.val(that.currentValue);
+                that.findBestHint();
                 return;
             }
 
@@ -571,6 +601,7 @@
             }
 
             that.el.val(that.getValue(that.suggestions[index].value));
+            that.signalHint(null);
         },
 
         onSelect: function (index) {
@@ -580,6 +611,7 @@
 
             that.currentValue = that.getValue(suggestion.value);
             that.el.val(that.currentValue);
+            that.signalHint(null);
             that.suggestions = [];
 
             if ($.isFunction(onSelectCallback)) {
