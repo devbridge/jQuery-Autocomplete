@@ -142,7 +142,7 @@
             container = $(that.suggestionsContainer);
 
             container.appendTo(options.appendTo);
-            
+
             // Only set width if it was provided:
             if (options.width !== 'auto') {
                 container.width(options.width);
@@ -165,6 +165,12 @@
             });
 
             that.fixPosition();
+
+            that.fixPositionCapture = function () {
+                that.fixPosition();
+            };
+
+            $(window).on('resize', that.fixPositionCapture);
 
             that.el.on('keydown.autocomplete', function (e) { that.onKeyPress(e); });
             that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
@@ -219,8 +225,8 @@
             var that = this,
                 offset;
 
-            // Don't adjsut position if custom container has been specified:
-            if (that.options.appendTo !== 'body') {
+            // Don't adjsut position if not visible or custom container has been specified:
+            if (!that.visible || that.options.appendTo !== 'body') {
                 return;
             }
 
@@ -605,6 +611,7 @@
             var that = this;
             that.el.off('.autocomplete').removeData('autocomplete');
             that.disableKillerFn();
+            $(window).off('resize', that.fixPositionCapture);
             $(that.suggestionsContainer).remove();
         }
     };
