@@ -167,7 +167,9 @@
             that.fixPosition();
 
             that.fixPositionCapture = function () {
-                that.fixPosition();
+                if (that.visible) {
+                    that.fixPosition();
+                }
             };
 
             $(window).on('resize', that.fixPositionCapture);
@@ -225,8 +227,8 @@
             var that = this,
                 offset;
 
-            // Don't adjsut position if not visible or custom container has been specified:
-            if (!that.visible || that.options.appendTo !== 'body') {
+            // Don't adjsut position if custom container has been specified:
+            if (that.options.appendTo !== 'body') {
                 return;
             }
 
