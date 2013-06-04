@@ -92,7 +92,6 @@
         that.cachedResponse = [];
         that.onChangeInterval = null;
         that.onChange = null;
-        that.ignoreValueChange = false;
         that.isLocal = false;
         that.suggestionsContainer = null;
         that.options = $.extend({}, defaults, options);
@@ -162,7 +161,7 @@
 
             // Listen for click event on suggestions list:
             container.on('click.autocomplete', suggestionSelector, function () {
-                that.select($(this).data('index'), false);
+                that.select($(this).data('index'));
             });
 
             that.fixPosition();
@@ -204,7 +203,7 @@
 
         clear: function () {
             this.clearCache();
-            this.currentValue = null;
+            this.currentValue = '';
             this.suggestions = [];
         },
 
@@ -269,7 +268,7 @@
                 return;
             }
 
-            switch (e.keyCode) {
+            switch (e.which) {
                 case keys.ESC:
                     that.el.val(that.currentValue);
                     that.hide();
@@ -280,7 +279,7 @@
                         that.hide();
                         return;
                     }
-                    that.select(that.selectedIndex, e.keyCode === keys.RETURN);
+                    that.select(that.selectedIndex);
                     if (e.keyCode === keys.TAB && this.options.tabDisabled === false) {
                         return;
                     }
@@ -332,15 +331,10 @@
                 q;
 
             clearInterval(that.onChangeInterval);
-            that.currentValue = that.element.value;
+            that.currentValue = that.el.val();
 
             q = that.getQuery(that.currentValue);
             that.selectedIndex = -1;
-
-            if (that.ignoreValueChange) {
-                that.ignoreValueChange = false;
-                return;
-            }
 
             if (q.length < that.options.minChars) {
                 that.hide();
@@ -449,7 +443,7 @@
             // -2px to account for suggestions border.
             if (that.options.width === 'auto') {
                 width = that.el.outerWidth() - 2;
-                container.width(width > 0  ? width : 300);
+                container.width(width > 0 ? width : 300);
             }
 
             container.html(html).show();
@@ -515,16 +509,10 @@
             return null;
         },
 
-        select: function (i, shouldIgnoreNextValueChange) {
-            var that = this,
-                selectedValue = that.suggestions[i];
-
-            if (selectedValue) {
-                that.el.val(selectedValue);
-                that.ignoreValueChange = shouldIgnoreNextValueChange;
-                that.hide();
-                that.onSelect(i);
-            }
+        select: function (i) {
+            var that = this;
+            that.hide();
+            that.onSelect(i);
         },
 
         moveUp: function () {
@@ -584,7 +572,9 @@
                 onSelectCallback = that.options.onSelect,
                 suggestion = that.suggestions[index];
 
-            that.el.val(that.getValue(suggestion.value));
+            that.currentValue = that.getValue(suggestion.value);
+            that.el.val(that.currentValue);
+            that.suggestions = [];
 
             if ($.isFunction(onSelectCallback)) {
                 onSelectCallback.call(that.element, suggestion);
