@@ -44,7 +44,9 @@
             ESC: 27,
             TAB: 9,
             RETURN: 13,
+            LEFT: 37,
             UP: 38,
+            RIGHT: 39,
             DOWN: 40
         };
 
@@ -99,6 +101,7 @@
             selected: 'autocomplete-selected',
             suggestion: 'autocomplete-suggestion'
         };
+        that.hint = null;
 
         // Initialize and set options:
         that.initialize();
@@ -263,11 +266,28 @@
             window.clearInterval(this.intervalId);
         },
 
+        isCursorAtEnd: function () {
+            var that = this,
+                valLength = that.el.val().length,
+                selectionStart = that.element.selectionStart,
+                range;
+
+            if (typeof selectionStart === 'number') {
+                return selectionStart === valLength;
+            }
+            if (document.selection) {
+                range = document.selection.createRange();
+                range.moveStart('character', -valLength);
+                return valLength === range.text.length;
+            }
+            return true;
+        },
+
         onKeyPress: function (e) {
             var that = this;
 
             // If suggestions are hidden and user presses arrow down, display suggestions:
-            if (!that.disabled && !that.visible && e.keyCode === keys.DOWN && that.currentValue) {
+            if (!that.disabled && !that.visible && e.which === keys.DOWN && that.currentValue) {
                 that.suggest();
                 return;
             }
@@ -281,14 +301,24 @@
                     that.el.val(that.currentValue);
                     that.hide();
                     break;
+                case keys.RIGHT:
+                    if (that.hint && that.options.onHint && that.isCursorAtEnd()) {
+                        that.selectHint();
+                        break;
+                    }
+                    return;
                 case keys.TAB:
                 case keys.RETURN:
+                    if (e.which === keys.TAB && that.hint) {
+                        that.selectHint();
+                        return;
+                    }
                     if (that.selectedIndex === -1) {
                         that.hide();
                         return;
                     }
                     that.select(that.selectedIndex);
-                    if (e.keyCode === keys.TAB && this.options.tabDisabled === false) {
+                    if (e.which === keys.TAB && that.options.tabDisabled === false) {
                         return;
                     }
                     break;
@@ -314,7 +344,7 @@
                 return;
             }
 
-            switch (e.keyCode) {
+            switch (e.which) {
                 case keys.UP:
                 case keys.DOWN:
                     return;
@@ -486,11 +516,15 @@
         },
 
         signalHint: function (suggestion) {
-            var hintValue = '';
+            var hintValue = '',
+                that = this;
             if (suggestion) {
-                hintValue = this.currentValue + suggestion.value.substr(this.currentValue.length);
+                hintValue = that.currentValue + suggestion.value.substr(that.currentValue.length);
             }
-            (this.options.onHint || $.noop)(hintValue);
+            if (that.hint !== suggestion) {
+                that.hint = suggestion;
+                (this.options.onHint || $.noop)(hintValue);
+            }
         },
 
         verifySuggestionsFormat: function (suggestions) {
@@ -544,6 +578,13 @@
             }
 
             return null;
+        },
+
+        selectHint: function () {
+            var that = this,
+                i = $.inArray(that.hint, that.suggestions);
+
+            that.select(i);
         },
 
         select: function (i) {
