@@ -26,17 +26,14 @@
     var
         utils = (function () {
             return {
-
-                extend: function (target, source) {
-                    return $.extend(target, source);
+                escapeRegExChars: function (value) {
+                    return value.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
                 },
-
                 createNode: function (html) {
                     var div = document.createElement('div');
                     div.innerHTML = html;
                     return div.firstChild;
                 }
-
             };
         }()),
 
@@ -102,6 +99,7 @@
             suggestion: 'autocomplete-suggestion'
         };
         that.hint = null;
+        that.hintValue = '';
 
         // Initialize and set options:
         that.initialize();
@@ -113,8 +111,7 @@
     $.Autocomplete = Autocomplete;
 
     Autocomplete.formatResult = function (suggestion, currentValue) {
-        var reEscape = new RegExp('(\\' + ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'].join('|\\') + ')', 'g'),
-            pattern = '(' + currentValue.replace(reEscape, '\\$1') + ')';
+        var pattern = '(' + utils.escapeRegExChars(currentValue) + ')';
 
         return suggestion.value.replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>');
     };
@@ -191,7 +188,7 @@
             var that = this,
                 options = that.options;
 
-            utils.extend(options, suppliedOptions);
+            $.extend(options, suppliedOptions);
 
             that.isLocal = $.isArray(options.lookup);
 
@@ -521,7 +518,8 @@
             if (suggestion) {
                 hintValue = that.currentValue + suggestion.value.substr(that.currentValue.length);
             }
-            if (that.hint !== suggestion) {
+            if (that.hintValue !== hintValue) {
+                that.hintValue = hintValue;
                 that.hint = suggestion;
                 (this.options.onHint || $.noop)(hintValue);
             }
