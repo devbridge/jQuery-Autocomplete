@@ -20,7 +20,7 @@ $(function () {
             response: function (settings) {
                 var query = settings.data.query,
                     queryLowerCase = query.toLowerCase(),
-                    re = new RegExp('\\b' + queryLowerCase, 'gi'),
+                    re = new RegExp('\\b' + $.Autocomplete.utils.escapeRegExChars(queryLowerCase), 'gi'),
                     suggestions = $.grep(countriesArray, function (country) {
                          // return country.value.toLowerCase().indexOf(queryLowerCase) === 0;
                         return re.test(country.value);
@@ -39,7 +39,7 @@ $(function () {
             // serviceUrl: '/autosuggest/service/url',
             lookup: countriesArray,
             lookupFilter: function(suggestion, originalQuery, queryLowerCase) {
-                var re = new RegExp('\\b' + queryLowerCase, 'gi');
+                var re = new RegExp('\\b' + $.Autocomplete.utils.escapeRegExChars(queryLowerCase), 'gi');
                 return re.test(suggestion.value);
             },
             onSelect: function(suggestion) {
