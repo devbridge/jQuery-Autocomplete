@@ -100,6 +100,7 @@
         };
         that.hint = null;
         that.hintValue = '';
+        that.selection = null;
 
         // Initialize and set options:
         that.initialize();
@@ -178,6 +179,7 @@
             that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
             that.el.on('blur.autocomplete', function () { that.onBlur(); });
             that.el.on('focus.autocomplete', function () { that.fixPosition(); });
+            that.el.on('change.autocomplete', function (e) { that.onKeyUp(e); });
         },
 
         onBlur: function () {
@@ -347,11 +349,10 @@
                     return;
             }
 
-            that.findBestHint();
-
             clearInterval(that.onChangeInterval);
 
             if (that.currentValue !== that.el.val()) {
+                that.findBestHint();
                 if (that.options.deferRequestBy > 0) {
                     // Defer lookup in case when value changes very quickly:
                     that.onChangeInterval = setInterval(function () {
@@ -366,6 +367,11 @@
         onValueChange: function () {
             var that = this,
                 q;
+
+            if (that.selection) {
+                that.selection = null;
+                (that.options.onInvalidateSelection || $.noop)();
+            }
 
             clearInterval(that.onChangeInterval);
             that.currentValue = that.el.val();
@@ -654,6 +660,7 @@
             that.el.val(that.currentValue);
             that.signalHint(null);
             that.suggestions = [];
+            that.selection = suggestion;
 
             if ($.isFunction(onSelectCallback)) {
                 onSelectCallback.call(that.element, suggestion);

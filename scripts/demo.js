@@ -47,6 +47,9 @@ $(function () {
             },
             onHint: function (hint) {
                 $('#autocomplete-ajax-x').val(hint);
+            },
+            onInvalidateSelection: function() {
+                $('#selction-ajax').html('You selected: none');
             }
         });
 
