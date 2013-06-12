@@ -74,4 +74,27 @@ $(function () {
         
     });
 
+    
+    // Load data for groups and then initialize plugin:
+    $.ajax({
+        url: 'content/group.json',
+        dataType: 'json'
+    }).done(function (data) {
+        var groupsArray = data;
+
+        // Initialize autocomplete with local lookup:
+        $('#autocomplete-group').autocomplete({
+            lookup: groupsArray.suggestions,
+            onSelect: function (suggestion) {
+                $('#selection-group').html('You selected: ' + suggestion.value + ' <b>(' + suggestion.category + ')</b>' );
+            },
+            onHint: function (hint) {
+                $('#autocomplete-group-x').val(hint);
+            },
+            categories: true,
+        });
+
+    });
+
+
 });

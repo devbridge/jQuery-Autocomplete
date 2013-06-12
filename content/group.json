@@ -1,0 +1,10 @@
+{
+	"suggestions": [
+		{ "value": "Andorra", "data": "AE", "category": "Country" },
+		{ "value": "Spain", "data": "SP", "category": "Country" },
+		{ "value": "Greece", "data": "GK", "category": "Country" },
+		{ "value": "Berlin", "data": "BR", "category": "City" },
+		{ "value": "Granada", "data": "GR", "category": "City" },
+		{ "value": "Luxemburgo", "data": "LX", "category": "City" }
+	]
+}

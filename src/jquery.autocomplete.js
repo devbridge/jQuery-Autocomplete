@@ -77,7 +77,8 @@
                 paramName: 'query',
                 transformResult: function (response) {
                     return typeof response === 'string' ? $.parseJSON(response) : response;
-                }
+                },
+                categories: false,
             };
 
         // Shared variables:
@@ -96,7 +97,8 @@
         that.options = $.extend({}, defaults, options);
         that.classes = {
             selected: 'autocomplete-selected',
-            suggestion: 'autocomplete-suggestion'
+            suggestion: 'autocomplete-suggestion',
+            group: 'autocomplete-group'
         };
         that.hint = null;
         that.hintValue = '';
@@ -472,14 +474,31 @@
                 value = that.getQuery(that.currentValue),
                 className = that.classes.suggestion,
                 classSelected = that.classes.selected,
+                classGroup = that.classes.group,
                 container = $(that.suggestionsContainer),
+                categories = that.options.categories,
                 html = '',
                 width;
 
             // Build suggestions inner HTML:
-            $.each(that.suggestions, function (i, suggestion) {
-                html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
-            });
+            if ( categories )
+            {
+                var actual_category = "";
+                $.each(that.suggestions, function (i, suggestion) {
+                    if ( suggestion.category != actual_category )
+                    {
+                        html += '<div class="' + classGroup + '" ><b>' + suggestion.category + '</b></div>';
+                        actual_category = suggestion.category;
+                    };
+                    html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
+                });
+            }
+            else
+            {
+                $.each(that.suggestions, function (i, suggestion) {
+                    html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
+                });
+            }
 
             // If width is auto, adjust width before displaying suggestions,
             // because if instance was created before input had width, it will be zero.
@@ -568,9 +587,9 @@
             var that = this,
                 activeItem,
                 selected = that.classes.selected,
+                suggestion = that.classes.suggestion,
                 container = $(that.suggestionsContainer),
-                children = container.children();
-
+                children = container.children( '.' + suggestion );
             container.children('.' + selected).removeClass(selected);
 
             that.selectedIndex = index;
