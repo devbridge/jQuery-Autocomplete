@@ -132,7 +132,7 @@ supply just a string array for suggestions:
         suggestions: ["United Arab Emirates", "United Kingdom", "United States"]
     }
 
-If categories are set to true, the format include categorie:
+If categories are set to true, the format include category:
 
     {
         suggestions: [
