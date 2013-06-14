@@ -515,7 +515,7 @@
             // Select first value by default:
             if (that.options.autoSelectFirst) {
                 that.selectedIndex = 0;
-                container.children().first().addClass(classSelected);
+                container.children( '.' + that.classes.suggestion ).first().addClass(classSelected);
             }
 
             that.findBestHint();
