@@ -38,6 +38,7 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
         * `autoSelectFirst`: if set to `true`, first item will be selected when showing suggestions. Default value `false`.
         * `appendTo`: container where suggestions will be appended. Default value `body`. Can be jQuery object, selector or html element. Make sure to set `position: absolute` or `position: relative` for that element.
         * `dataType`: type of data returned from server. Either 'text' (default) or 'jsonp', which will cause the autocomplete to use jsonp. You may return a json object in your callback when using jsonp.
+        * `categories`: Default `false`. Set to true to allow categories in the dropdown.
 
 Autocomplete instance has following methods:
 
@@ -106,6 +107,7 @@ Style sample:
     .autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
     .autocomplete-selected { background: #F0F0F0; }
     .autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
+    .autocomplete-group { background-color: rgb(231, 231, 231); border-top: 1px solid rgb(140, 155, 187); padding-left: 6px; font-size: 13px; }
 
 ##Response Format
 
@@ -128,6 +130,19 @@ supply just a string array for suggestions:
     {
         query: "Unit",
         suggestions: ["United Arab Emirates", "United Kingdom", "United States"]
+    }
+
+If categories are set to true, the format include category:
+
+    {
+        suggestions: [
+            { value: "United Arab Emirates",    data: "AE", category: "Country" },
+            { value: "United Kingdom",          data: "UK", category: "Country" },
+            { value: "United States",           data: "US", category: "Country" },
+            { value: "Berlin",                  data: "BE", category: "City" },
+            { value: "Granada",                 data: "GR", category: "City" },
+            { value: "Brooklyn",                data: "BR", category: "City" },
+        ]
     }
 
 ## Non standard query/results

@@ -26,9 +26,17 @@
         <h2>Custom Lookup Container</h2>
         <p>Type country name in english:</p>
         <div>
-            <input type="text" name="country" id="autocomplete-custom-append" style="float: left;"/>
-            <div id="suggestions-container" style="position: relative; float: left; width: 400px; margin: 10px;"></div>
+            <input type="text" name="country" id="autocomplete-custom-append"/>
+            <div id="suggestions-container"></div>
         </div>
+
+        <h2>Group Lookup with cities and countries</h2>
+        <p>Type a or g:</p>
+        <div style="position: relative; height: 80px;">
+            <input type="text" name="country" id="autocomplete-group" style="position: absolute; z-index: 2; background: transparent;"/>
+            <input type="text" name="country" id="autocomplete-group-x" disabled="disabled" style="color: #CCC; position: absolute; background: transparent; z-index: 1;"/>
+        </div>
+        <div id="selection-group"></div>
     </div>
     
     <div style="width: 50%; margin: 0 auto; clear: both;">
