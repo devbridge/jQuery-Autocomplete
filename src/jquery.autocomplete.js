@@ -93,6 +93,7 @@
         that.onChange = null;
         that.isLocal = false;
         that.suggestionsContainer = null;
+        that.innerContainer = null;
         that.options = $.extend({}, defaults, options);
         that.classes = {
             selected: 'autocomplete-selected',
@@ -126,7 +127,8 @@
                 suggestionSelector = '.' + that.classes.suggestion,
                 selected = that.classes.selected,
                 options = that.options,
-                container;
+                container,
+                innerContainer;
 
             // Remove autocomplete attribute to prevent native suggestions:
             that.element.setAttribute('autocomplete', 'off');
@@ -138,11 +140,12 @@
                 }
             };
 
-            that.suggestionsContainer = Autocomplete.utils.createNode('<div class="' + options.containerClass + '" style="position: absolute; display: none;"></div>');
+            that.suggestionsContainer = Autocomplete.utils.createNode('<div class="' + options.containerClass + '" style="position: absolute; display: none;"><div class="autocomplete-inner"></div></div>');
 
             container = $(that.suggestionsContainer);
-
             container.appendTo(options.appendTo);
+
+            that.innerContainer = $('.autocomplete-inner', container);
 
             // Only set width if it was provided:
             if (options.width !== 'auto') {
@@ -473,6 +476,7 @@
                 className = that.classes.suggestion,
                 classSelected = that.classes.selected,
                 container = $(that.suggestionsContainer),
+                innerContainer = that.innerContainer,
                 html = '',
                 width;
 
@@ -490,13 +494,14 @@
                 container.width(width > 0 ? width : 300);
             }
 
-            container.html(html).show();
+            innerContainer.html(html);
+            container.show();
             that.visible = true;
 
             // Select first value by default:
             if (that.options.autoSelectFirst) {
                 that.selectedIndex = 0;
-                container.children().first().addClass(classSelected);
+                innerContainer.children().first().addClass(classSelected);
             }
 
             that.findBestHint();
