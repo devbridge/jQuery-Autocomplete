@@ -71,6 +71,7 @@
                 containerClass: 'autocomplete-suggestions',
                 tabDisabled: false,
                 dataType: 'text',
+                currentRequest: null,
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
@@ -428,7 +429,10 @@
                 if ($.isFunction(options.serviceUrl)) {
                     serviceUrl = options.serviceUrl.call(that.element, q);
                 }
-                $.ajax({
+                if(this.currentRequest != null) {
+                    this.currentRequest.abort();
+                }
+                this.currentRequest = $.ajax({
                     url: serviceUrl,
                     data: options.ignoreParams ? null : options.params,
                     type: options.type,
