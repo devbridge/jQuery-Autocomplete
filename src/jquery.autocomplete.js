@@ -308,11 +308,12 @@
                     }
                     return;
                 case keys.TAB:
-                case keys.RETURN:
-                    if (e.which === keys.TAB && that.hint) {
+                    if (that.hint && that.options.onHint) {
                         that.selectHint();
                         return;
                     }
+                    // Fall through to RETURN
+                case keys.RETURN:
                     if (that.selectedIndex === -1) {
                         that.hide();
                         return;
