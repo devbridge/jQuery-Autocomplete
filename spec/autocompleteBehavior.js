@@ -256,7 +256,7 @@ describe('Autocomplete', function () {
         autocomplete.onValueChange();
 
         var event = $.Event('keydown');
-        event.keyCode = 9; // the tab keycode
+        event.which = 9; // the tab keycode
         spyOn(event, 'stopImmediatePropagation');
         spyOn(event, 'preventDefault');
         spyOn(autocomplete, 'suggest');
@@ -283,7 +283,7 @@ describe('Autocomplete', function () {
         autocomplete.onValueChange();
 
         var event = $.Event('keydown');
-        event.keyCode = 9; // the tab keycode
+        event.which = 9; // the tab keycode
         spyOn(event, 'stopImmediatePropagation');
         spyOn(event, 'preventDefault');
         spyOn(autocomplete, 'suggest');
