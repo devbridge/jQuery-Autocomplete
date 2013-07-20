@@ -29,9 +29,12 @@
                 escapeRegExChars: function (value) {
                     return value.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
                 },
-                createNode: function (html) {
+                createNode: function (classname) {
                     var div = document.createElement('div');
-                    div.innerHTML = html;
+                    div.appendChild(document.createElement('div'));
+                    div.firstChild.style.position = "absolute";
+                    div.firstChild.style.display  = "none";
+                    div.firstChild.className = classname;
                     return div.firstChild;
                 }
             };
@@ -139,7 +142,7 @@
                 }
             };
 
-            that.suggestionsContainer = Autocomplete.utils.createNode('<div class="' + options.containerClass + '" style="position: absolute; display: none;"></div>');
+            that.suggestionsContainer = Autocomplete.utils.createNode(options.containerClass);
 
             container = $(that.suggestionsContainer);
 
