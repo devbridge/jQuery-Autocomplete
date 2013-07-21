@@ -228,7 +228,8 @@
 
         fixPosition: function () {
             var that = this,
-                offset;
+                offset,
+                width;
 
             // Don't adjsut position if custom container has been specified:
             if (that.options.appendTo !== 'body') {
@@ -236,10 +237,12 @@
             }
 
             offset = that.el.offset();
+            width = that.el.outerWidth() - 2;
 
             $(that.suggestionsContainer).css({
                 top: (offset.top + that.el.outerHeight()) + 'px',
-                left: offset.left + 'px'
+                left: offset.left + 'px',
+                width: width + 'px'
             });
         },
 
