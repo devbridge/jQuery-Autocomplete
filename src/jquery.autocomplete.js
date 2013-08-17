@@ -102,6 +102,7 @@
         that.hint = null;
         that.hintValue = '';
         that.selection = null;
+        that.cachedLookupFn = null;
 
         // Initialize and set options:
         that.initialize();
@@ -197,11 +198,12 @@
             that.isLocal = $.isArray(options.lookup) || $.isFunction(options.lookup);
 
             if (that.isLocal) {
-                if ($.isFunction(options.lookup)) {
+                if ($.isFunction(options.lookup) && options.lookup !== that.cachedLookupFn) {
                     oldFn = options.lookup;
                     options.lookup = function () {
-                        return that.verifySuggestionsFormat(oldFn.apply(that, arguments));
+                      return that.verifySuggestionsFormat(oldFn.apply(that, arguments));
                     };
+                    that.cachedLookupFn = options.lookup;
                 } else {
                     options.lookup = that.verifySuggestionsFormat(options.lookup);
                 }
