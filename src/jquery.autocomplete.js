@@ -78,7 +78,8 @@
                 paramName: 'query',
                 transformResult: function (response) {
                     return typeof response === 'string' ? $.parseJSON(response) : response;
-                }
+                },
+                autoSelectBlur: false
             };
 
         // Shared variables:
@@ -157,8 +158,10 @@
 
             // Deselect active element when mouse leaves suggestions container:
             container.on('mouseout.autocomplete', function () {
-                that.selectedIndex = -1;
-                container.children('.' + selected).removeClass(selected);
+                if(!options.autoSelectBlur){
+                    that.selectedIndex = -1;
+                    container.children('.' + selected).removeClass(selected);
+                }
             });
 
             // Listen for click event on suggestions list:
@@ -184,6 +187,9 @@
         },
 
         onBlur: function () {
+            if(this.options.autoSelectBlur && this.selectedIndex){
+                this.select(this.selectedIndex);
+            }
             this.enableKillerFn();
         },
 
