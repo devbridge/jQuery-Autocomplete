@@ -187,7 +187,7 @@
         },
 
         onBlur: function () {
-            if(this.options.autoSelectBlur && this.selectedIndex){
+            if(this.options.autoSelectBlur && this.selectedIndex !== -1 ){
                 this.select(this.selectedIndex);
             }
             this.enableKillerFn();
