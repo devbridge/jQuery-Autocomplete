@@ -1,11 +1,11 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.7
-*  (c) 2013 Tomas Kirda
-*
-*  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
-*  For details, see the web site: http://www.devbridge.com/projects/autocomplete/jquery/
-*
-*/
+ *  Ajax Autocomplete for jQuery, version 1.2.7
+ *  (c) 2013 Tomas Kirda
+ *
+ *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
+ *  For details, see the web site: http://www.devbridge.com/projects/autocomplete/jquery/
+ *
+ */
 
 /*jslint  browser: true, white: true, plusplus: true */
 /*global define, window, document, jQuery */
@@ -220,6 +220,10 @@
 
         disable: function () {
             this.disabled = true;
+            clearInterval(this.onChangeInterval);
+            if(this.currentRequest){
+                this.currentRequest.abort();
+            }
         },
 
         enable: function () {
@@ -285,7 +289,6 @@
 
         onKeyPress: function (e) {
             var that = this;
-
             // If suggestions are hidden and user presses arrow down, display suggestions:
             if (!that.disabled && !that.visible && e.which === keys.DOWN && that.currentValue) {
                 that.suggest();
@@ -312,7 +315,7 @@
                         that.selectHint();
                         return;
                     }
-                    // Fall through to RETURN
+                // Fall through to RETURN
                 case keys.RETURN:
                     if (that.selectedIndex === -1) {
                         that.hide();
@@ -369,7 +372,6 @@
         onValueChange: function () {
             var that = this,
                 q;
-
             if (that.selection) {
                 that.selection = null;
                 (that.options.onInvalidateSelection || $.noop)();
@@ -439,9 +441,9 @@
                     type: options.type,
                     dataType: options.dataType
                 }).done(function (data) {
-                    that.processResponse(data, q);
-                    options.onSearchComplete.call(that.element, q);
-                });
+                        that.processResponse(data, q);
+                        options.onSearchComplete.call(that.element, q);
+                    });
             }
         },
 
