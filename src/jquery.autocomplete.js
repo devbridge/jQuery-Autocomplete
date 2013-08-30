@@ -289,7 +289,6 @@
 
         onKeyPress: function (e) {
             var that = this;
-            console.log(that.disabled);
             // If suggestions are hidden and user presses arrow down, display suggestions:
             if (!that.disabled && !that.visible && e.which === keys.DOWN && that.currentValue) {
                 that.suggest();
