@@ -220,6 +220,9 @@
 
         disable: function () {
             this.disabled = true;
+            if(this.currentRequest){
+                this.currentRequest.abort();
+            }
         },
 
         enable: function () {
