@@ -229,7 +229,11 @@
         },
 
         disable: function () {
-            this.disabled = true;
+            var that = this;
+            that.disabled = true;
+            if (that.currentRequest) {
+                that.currentRequest.abort();
+            }
         },
 
         enable: function () {
