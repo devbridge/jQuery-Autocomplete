@@ -179,8 +179,16 @@
             that.el.on('keydown.autocomplete', function (e) { that.onKeyPress(e); });
             that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
             that.el.on('blur.autocomplete', function () { that.onBlur(); });
-            that.el.on('focus.autocomplete', function () { that.fixPosition(); });
+            that.el.on('focus.autocomplete', function () { that.onFocus(); });
             that.el.on('change.autocomplete', function (e) { that.onKeyUp(e); });
+        },
+
+        onFocus: function () {
+            var that = this;
+            that.fixPosition();
+            if (that.options.minChars <= that.el.val().length) {
+                that.onValueChange();
+            }
         },
 
         onBlur: function () {
@@ -259,7 +267,7 @@
             that.intervalId = window.setInterval(function () {
                 that.hide();
                 that.stopKillSuggestions();
-            }, 300);
+            }, 50);
         },
 
         stopKillSuggestions: function () {
@@ -430,15 +438,16 @@
                 if ($.isFunction(options.serviceUrl)) {
                     serviceUrl = options.serviceUrl.call(that.element, q);
                 }
-                if(this.currentRequest != null) {
-                    this.currentRequest.abort();
+                if (that.currentRequest) {
+                    that.currentRequest.abort();
                 }
-                this.currentRequest = $.ajax({
+                that.currentRequest = $.ajax({
                     url: serviceUrl,
                     data: options.ignoreParams ? null : options.params,
                     type: options.type,
                     dataType: options.dataType
                 }).done(function (data) {
+                    that.currentRequest = null;
                     that.processResponse(data, q);
                     options.onSearchComplete.call(that.element, q);
                 });

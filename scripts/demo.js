@@ -56,6 +56,7 @@ $(function () {
         // Initialize autocomplete with local lookup:
         $('#autocomplete').autocomplete({
             lookup: countriesArray,
+            minChars: 0,
             onSelect: function (suggestion) {
                 $('#selection').html('You selected: ' + suggestion.value + ', ' + suggestion.data);
             }
