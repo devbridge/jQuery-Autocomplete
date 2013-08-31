@@ -500,6 +500,7 @@
                 className = that.classes.suggestion,
                 classSelected = that.classes.selected,
                 container = $(that.suggestionsContainer),
+                beforeRender = that.options.beforeRender,
                 html = '',
                 width;
 
@@ -517,14 +518,20 @@
                 container.width(width > 0 ? width : 300);
             }
 
-            container.html(html).show();
-            that.visible = true;
+            container.html(html);
 
             // Select first value by default:
             if (that.options.autoSelectFirst) {
                 that.selectedIndex = 0;
                 container.children().first().addClass(classSelected);
             }
+
+            if ($.isFunction(beforeRender)) {
+                beforeRender.call(that.element, container);
+            }
+
+            container.show();
+            that.visible = true;
 
             that.findBestHint();
         },

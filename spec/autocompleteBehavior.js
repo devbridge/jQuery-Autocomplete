@@ -438,4 +438,27 @@ describe('Autocomplete', function () {
 
         expect(width).toBeGreaterThan(0);
     });
+
+    it('Should call beforeRender and pass container jQuery object', function () {
+        var element = document.createElement('input'),
+            input = $(element),
+            instance,
+            elementCount,
+            context;
+
+        input.autocomplete({
+            lookup: [{ value: 'Jamaica', data: 'B' }],
+            beforeRender: function (container) {
+                context = this;
+                elementCount = container.length;
+            }
+        });
+
+        input.val('Jam');
+        instance = input.autocomplete();
+        instance.onValueChange();
+
+        expect(context).toBe(element);
+        expect(elementCount).toBe(1);
+    });
 });
