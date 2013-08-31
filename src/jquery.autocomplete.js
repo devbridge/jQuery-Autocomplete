@@ -176,7 +176,7 @@
                 }
             };
 
-            $(window).on('resize', that.fixPositionCapture);
+            $(window).on('resize.autocomplete', that.fixPositionCapture);
 
             that.el.on('keydown.autocomplete', function (e) { that.onKeyPress(e); });
             that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
@@ -242,7 +242,8 @@
 
         fixPosition: function () {
             var that = this,
-                offset;
+                offset,
+                styles;
 
             // Don't adjsut position if custom container has been specified:
             if (that.options.appendTo !== 'body') {
@@ -251,10 +252,16 @@
 
             offset = that.el.offset();
 
-            $(that.suggestionsContainer).css({
+            styles = {
                 top: (offset.top + that.el.outerHeight()) + 'px',
                 left: offset.left + 'px'
-            });
+            };
+
+            if (that.options.width === 'auto') {
+                styles.width = (that.el.outerWidth() - 2) + 'px';
+            }
+
+            $(that.suggestionsContainer).css(styles);
         },
 
         enableKillerFn: function () {
@@ -715,7 +722,7 @@
             var that = this;
             that.el.off('.autocomplete').removeData('autocomplete');
             that.disableKillerFn();
-            $(window).off('resize', that.fixPositionCapture);
+            $(window).off('resize.autocomplete', that.fixPositionCapture);
             $(that.suggestionsContainer).remove();
         }
     };
