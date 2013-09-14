@@ -20,7 +20,7 @@ $(function () {
             response: function (settings) {
                 var query = settings.data.query,
                     queryLowerCase = query.toLowerCase(),
-                    re = new RegExp('\\b' + $.Autocomplete.utils.escapeRegExChars(queryLowerCase), 'gi'),
+                    re = new RegExp('\\b' + $.Autocomplete.utils.escapeRegExChars(queryLowerCase), 'i'),
                     suggestions = $.grep(countriesArray, function (country) {
                          // return country.value.toLowerCase().indexOf(queryLowerCase) === 0;
                         return re.test(country.value);
@@ -36,21 +36,16 @@ $(function () {
 
         // Initialize ajax autocomplete:
         $('#autocomplete-ajax').autocomplete({
-            // serviceUrl: '/autosuggest/service/url',
-            lookup: countriesArray,
+            serviceUrl: '/autosuggest/service/url',
             triggerSelectOnValidInput: true,
             minChars: 0,
             showSuggestionsOnFocus: true,
-            hideSuggestionsOnBlurDelay: 3000,
-            lookupFilter: function(suggestion, originalQuery, queryLowerCase) {
-                var re = new RegExp('\\b' + $.Autocomplete.utils.escapeRegExChars(queryLowerCase), 'gi');
-                return re.test(suggestion.value);
+            hideSuggestionsOnBlurDelay: 0,
+            onHint: function (hint) {
+                $('#autocomplete-ajax-x').val(hint);
             },
             onSelect: function(suggestion) {
                 $('#selction-ajax').html('You selected: ' + suggestion.value + ', ' + suggestion.data);
-            },
-            onHint: function (hint) {
-                $('#autocomplete-ajax-x').val(hint);
             },
             onInvalidateSelection: function() {
                 $('#selction-ajax').html('You selected: none');
@@ -60,6 +55,10 @@ $(function () {
         // Initialize autocomplete with local lookup:
         $('#autocomplete').autocomplete({
             lookup: countriesArray,
+            lookupFilter: function(suggestion, originalQuery, queryLowerCase) {
+                var re = new RegExp('\\b' + $.Autocomplete.utils.escapeRegExChars(queryLowerCase), 'i');
+                return re.test(suggestion.value);
+            },
             triggerSelectOnValidInput: true,
             minChars: 0,
             showSuggestionsOnFocus: true,
