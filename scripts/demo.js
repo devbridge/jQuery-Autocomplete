@@ -38,6 +38,10 @@ $(function () {
         $('#autocomplete-ajax').autocomplete({
             // serviceUrl: '/autosuggest/service/url',
             lookup: countriesArray,
+            triggerSelectOnValidInput: true,
+            minChars: 0,
+            showSuggestionsOnFocus: true,
+            hideSuggestionsOnBlurDelay: 3000,
             lookupFilter: function(suggestion, originalQuery, queryLowerCase) {
                 var re = new RegExp('\\b' + $.Autocomplete.utils.escapeRegExChars(queryLowerCase), 'gi');
                 return re.test(suggestion.value);
@@ -56,8 +60,14 @@ $(function () {
         // Initialize autocomplete with local lookup:
         $('#autocomplete').autocomplete({
             lookup: countriesArray,
+            triggerSelectOnValidInput: true,
+            minChars: 0,
+            showSuggestionsOnFocus: true,
             onSelect: function (suggestion) {
                 $('#selection').html('You selected: ' + suggestion.value + ', ' + suggestion.data);
+            },
+            onInvalidateSelection: function() {
+                $('#selction').html('You selected: none');
             }
         });
         

@@ -18,7 +18,11 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
         * `lookupFilter`: `function (suggestion, query, queryLowerCase) {}` filter function for local lookups. By default it does partial string match (case insensitive).
         * `onSelect`: `function (suggestion) {}` Callback function invoked when user selects suggestion 
           from the list. `this` inside callback refers to input HtmlElement.
+        * `onInvalidateSelection`: `function () {}` Callback function invoked when user changes a previously selected or entered suggestion. `this` inside callback refers to input HtmlElement.
+        * `triggerSelectOnValidInput`: Setting this to `true` will trigger the `onSelect` callback also when a user enters an existing suggestion via keyboard (kase-insensitive match). Default: `false`.
         * `minChars`: Minimum number of characters required to trigger autosuggest. Default: `1`.
+        * `showSuggestionOnFocus`: Setting this to `true` will show the suggestions as soon as the input field is focused. (However, please note that `minChars` is still effective.) Default: `false`.
+        * `hideSuggestionsOnBlurDelay`: This defers hiding the suggestion when the user clicks somewhere else on the page by the given number of ms. Default: `300`.
         * `maxHeight`: Maximum height of the suggestions container in pixels. Default: `300`.
         * `deferRequestBy`: Number of miliseconds to defer ajax request. Default: `0`.
         * `width`: Suggestions container width in pixels, e.g.: 300. Default: `auto`, takes input field width.
