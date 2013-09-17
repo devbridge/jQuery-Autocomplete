@@ -35,9 +35,9 @@
                     return div.firstChild;
                 },
                 getSuggestionsValues: function (suggestions) {
-                    return suggestions.reduce(function (prev, curr) {
-                        return prev.concat(curr.value.toLowerCase()); // assume a lowercase comparison is ok
-                    }, []);
+                    return $.map(suggestions, function (curr) {
+                        return curr.value.toLowerCase(); // assume a lowercase comparison is ok
+                    });
                 }
             };
         }()),
