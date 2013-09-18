@@ -33,6 +33,11 @@
                     var div = document.createElement('div');
                     div.innerHTML = html;
                     return div.firstChild;
+                },
+                getSuggestionsValues: function (suggestions) {
+                    return $.map(suggestions, function (curr) {
+                        return curr.value.toLowerCase(); // assume a lowercase comparison is ok
+                    });
                 }
             };
         }()),
@@ -56,8 +61,12 @@
                 serviceUrl: null,
                 lookup: null,
                 onSelect: null,
+                onInvalidateSelection: null,
+                triggerSelectOnValidInput: false,
                 width: 'auto',
                 minChars: 1,
+                showSuggestionsOnFocus: false,
+                hideSuggestionsOnBlurDelay: 300,
                 maxHeight: 300,
                 deferRequestBy: 0,
                 params: {},
@@ -85,6 +94,7 @@
         that.element = el;
         that.el = $(el);
         that.suggestions = [];
+        that.suggestionsValues = [];
         that.badQueries = [];
         that.selectedIndex = -1;
         that.currentValue = that.element.value;
@@ -179,12 +189,27 @@
             that.el.on('keydown.autocomplete', function (e) { that.onKeyPress(e); });
             that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
             that.el.on('blur.autocomplete', function () { that.onBlur(); });
-            that.el.on('focus.autocomplete', function () { that.fixPosition(); });
+            that.el.on('click.autocomplete', function (e) { that.onClick(e); });
+            that.el.on('focus.autocomplete', function (e) { that.onFocus(e); });
             that.el.on('change.autocomplete', function (e) { that.onKeyUp(e); });
         },
 
         onBlur: function () {
             this.enableKillerFn();
+        },
+
+        onClick: function (e) {
+            if ($(e.target).is(':focus')) {
+                this.onFocus(e);
+            }
+        },
+
+        onFocus: function (e) {
+            if (!this.disabled && !this.visible && this.options.showSuggestionsOnFocus) {
+                this.getSuggestions(this.getQuery(this.currentValue)); // this will trigger onBlur, so we need to disable the killer function again:
+                this.disableKillerFn(); // (not a really clean solution)
+            }
+            this.fixPosition();
         },
 
         setOptions: function (suppliedOptions) {
@@ -259,7 +284,7 @@
             that.intervalId = window.setInterval(function () {
                 that.hide();
                 that.stopKillSuggestions();
-            }, 300);
+            }, that.options.hideSuggestionsOnBlurDelay);
         },
 
         stopKillSuggestions: function () {
@@ -288,7 +313,7 @@
 
             // If suggestions are hidden and user presses arrow down, display suggestions:
             if (!that.disabled && !that.visible && e.which === keys.DOWN && that.currentValue) {
-                that.suggest();
+                this.getSuggestions(this.getQuery(this.currentValue));
                 return;
             }
 
@@ -368,23 +393,31 @@
 
         onValueChange: function () {
             var that = this,
+                i,
                 q;
 
-            if (that.selection) {
-                that.selection = null;
-                (that.options.onInvalidateSelection || $.noop)();
+            if (that.options.triggerSelectOnValidInput && (i = $.inArray(that.el.val().toLowerCase(), that.suggestionsValues)) > -1) { // assume a lowercase match is ok
+                that.select(i);
             }
+            else {
+                if (that.selection) {
+                    that.selection = null;
+                    if ($.isFunction(that.options.onInvalidateSelection)) {
+                        that.options.onInvalidateSelection.call(that.element);
+                    }
+                }
 
-            clearInterval(that.onChangeInterval);
-            that.currentValue = that.el.val();
+                clearInterval(that.onChangeInterval);
+                that.currentValue = that.el.val();
 
-            q = that.getQuery(that.currentValue);
-            that.selectedIndex = -1;
+                q = that.getQuery(that.currentValue);
+                that.selectedIndex = -1;
 
-            if (q.length < that.options.minChars) {
-                that.hide();
-            } else {
-                that.getSuggestions(q);
+                if (q.length < that.options.minChars) {
+                    that.hide();
+                } else {
+                    that.getSuggestions(q);
+                }
             }
         },
 
@@ -421,6 +454,7 @@
 
             if (response && $.isArray(response.suggestions)) {
                 that.suggestions = response.suggestions;
+                that.suggestionsValues = utils.getSuggestionsValues(that.suggestions);
                 that.suggest();
             } else if (!that.isBadQuery(q)) {
                 options.params[options.paramName] = q;
@@ -569,6 +603,7 @@
             // Display suggestions only if returned query matches current value:
             if (originalQuery === that.getQuery(that.currentValue)) {
                 that.suggestions = result.suggestions;
+                that.suggestionsValues = utils.getSuggestionsValues(that.suggestions);
                 that.suggest();
             }
         },
