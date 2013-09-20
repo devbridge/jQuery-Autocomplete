@@ -143,6 +143,9 @@
 
             container = $(that.suggestionsContainer);
 
+            if ($.isFunction(options.appendTo)) {
+                options.appendTo = options.appendTo.call(that.element);
+            }
             container.appendTo(options.appendTo);
 
             // Only set width if it was provided:
