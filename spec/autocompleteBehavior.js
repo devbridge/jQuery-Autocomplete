@@ -171,6 +171,41 @@ describe('Autocomplete', function () {
         });
     });
 
+    it('Should execute onSearchError', function () {
+        var input = document.createElement('input'),
+            ajaxExecuted = false,
+            errorMessage = false,
+            url = '/test-error',
+            autocomplete = new $.Autocomplete(input, {
+                serviceUrl: url,
+                onSearchError: function (q, jqXHR, textStatus, errorThrown) {
+                    errorMessage = jqXHR.responseText;
+                }
+            });
+
+        $.mockjax({
+            url: url,
+            responseTime: 50,
+            status: 500,
+            response: function (settings) {
+                ajaxExecuted = true;
+                this.responseText = "An error occurred";
+            }
+        });
+
+        input.value = 'A';
+        autocomplete.onValueChange();
+
+        waitsFor(function () {
+            return ajaxExecuted;
+        }, 'Ajax call never completed.', 100);
+
+        runs(function () {
+            expect(ajaxExecuted).toBe(true);
+            expect(errorMessage).toBe("An error occurred");
+        });
+    });
+
     it('Should transform results', function () {
         var input = document.createElement('input'),
             ajaxExecuted = false,
