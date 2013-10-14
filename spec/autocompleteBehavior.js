@@ -497,6 +497,9 @@ describe('Autocomplete', function () {
     
             expect(autocomplete.visible).toBe(true);
             expect(autocomplete.currentValue).toEqual('Jam');
-            //console.log(autocomplete);
+            
+            input.value = 'Match';
+            autocomplete.onValueChange();
+            expect(autocomplete.suggestions).toEqual([]);
     });
 });
