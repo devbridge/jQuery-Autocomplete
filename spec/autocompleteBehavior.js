@@ -51,7 +51,7 @@ describe('Autocomplete', function () {
                     counter += 1;
                 }
             });
-
+        
         input.value = 'Jam';
         autocomplete.onValueChange();
 
@@ -456,6 +456,8 @@ describe('Autocomplete', function () {
             expect(data).toBeFalsy();
         });
     });
+    
+ 
 
     it('Should set width to be greater than zero', function () {
         var input = $(document.createElement('input')),
@@ -472,5 +474,28 @@ describe('Autocomplete', function () {
         width = $(instance.suggestionsContainer).width();
 
         expect(width).toBeGreaterThan(0);
+    });
+    
+    it("Should accept lookup param as a callback function", function () {
+        var input = document.createElement('input'),
+            data = ['Jamaica', 'Jamaica', 'Jamaica', 'Jammy', 'Jammin'],
+            
+           autocomplete = new $.Autocomplete(input, {
+                lookup: function (request, response) {
+                    console.log(data);
+                    response(data);
+                }
+            });
+            console.log(autocomplete.options.lookup, autocomplete.suggestions);
+            expect(autocomplete.isLocal).toBe(true);
+            expect(autocomplete.options.lookup).toEqual($.map(data, function (value) {
+                return { value: value, data: null };
+            }));
+            input.value = 'Jam';
+            autocomplete.onValueChange();
+    
+            expect(autocomplete.visible).toBe(true);
+            expect(autocomplete.currentValue).toEqual('Jam');
+            //console.log(autocomplete);
     });
 });
