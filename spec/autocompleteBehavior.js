@@ -482,17 +482,18 @@ describe('Autocomplete', function () {
             
            autocomplete = new $.Autocomplete(input, {
                 lookup: function (request, response) {
-                    console.log(data);
                     response(data);
                 }
             });
-            console.log(autocomplete.options.lookup, autocomplete.suggestions);
+            
             expect(autocomplete.isLocal).toBe(true);
+            
+            input.value = 'Jam';
+            autocomplete.onValueChange();
+            
             expect(autocomplete.options.lookup).toEqual($.map(data, function (value) {
                 return { value: value, data: null };
             }));
-            input.value = 'Jam';
-            autocomplete.onValueChange();
     
             expect(autocomplete.visible).toBe(true);
             expect(autocomplete.currentValue).toEqual('Jam');
