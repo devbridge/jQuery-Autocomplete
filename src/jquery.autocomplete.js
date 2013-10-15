@@ -194,7 +194,12 @@
 
             $.extend(options, suppliedOptions);
 
-            that.isLocal = $.isArray(options.lookup) || $.isFunction(options.lookup);
+             if($.isFunction(options.lookup)){
+                that.shouldResolve = true;
+                that.originalLookup = options.lookup;
+            }
+            
+            that.isLocal = $.isArray(options.lookup) || that.shouldResolve;
 
             if (that.isLocal) {
                 options.lookup = that.verifySuggestionsFormat(options.lookup);
@@ -386,10 +391,10 @@
                 that.hide();
             } else {
                 
-                if(!$.isFunction(that.options.lookup)){
+                if (!that.shouldResolve) {
                     that.getSuggestions(q);
-                }else {
-                    that.options.lookup(this.currentValue, that.resolveLookup(q));
+                } else {
+                    that.originalLookup(this.currentValue, that.resolveLookup(q));
                 }    
                 
             }
