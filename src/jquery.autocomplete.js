@@ -194,7 +194,12 @@
 
             $.extend(options, suppliedOptions);
 
-            that.isLocal = $.isArray(options.lookup);
+             if($.isFunction(options.lookup)){
+                that.shouldResolve = true;
+                that.originalLookup = options.lookup;
+            }
+            
+            that.isLocal = $.isArray(options.lookup) || that.shouldResolve;
 
             if (that.isLocal) {
                 options.lookup = that.verifySuggestionsFormat(options.lookup);
@@ -385,7 +390,13 @@
             if (q.length < that.options.minChars) {
                 that.hide();
             } else {
-                that.getSuggestions(q);
+                
+                if (!that.shouldResolve) {
+                    that.getSuggestions(q);
+                } else {
+                    that.originalLookup(this.currentValue, that.resolveLookup(q));
+                }    
+                
             }
         },
 
@@ -411,15 +422,23 @@
                 })
             };
         },
-
+        
+        resolveLookup: function(query){
+            var that = this;
+            return $.proxy(function( content ) {
+                that.options.lookup = that.verifySuggestionsFormat(content);
+                that.getSuggestions(query);
+            }, this );
+        },
+        
         getSuggestions: function (q) {
             var response,
                 that = this,
                 options = that.options,
                 serviceUrl = options.serviceUrl;
-
+                
             response = that.isLocal ? that.getSuggestionsLocal(q) : that.cachedResponse[q];
-
+           
             if (response && $.isArray(response.suggestions)) {
                 that.suggestions = response.suggestions;
                 that.suggest();
@@ -550,7 +569,6 @@
                     return { value: value, data: null };
                 });
             }
-
             return suggestions;
         },
 
