@@ -73,6 +73,7 @@
                 tabDisabled: false,
                 dataType: 'text',
                 currentRequest: null,
+                canUseCache: null,
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
@@ -434,17 +435,23 @@
                 if(this.currentRequest != null) {
                     this.currentRequest.abort();
                 }
-                this.currentRequest = $.ajax({
-                    url: serviceUrl,
-                    data: options.ignoreParams ? null : options.params,
-                    type: options.type,
-                    dataType: options.dataType
-                }).done(function (data) {
-                    that.processResponse(data, q);
+                if ($.isFunction(options.canUseCache) && options.canUseCache(q) && that.cachedData) {
+                    that.processResponse(that.cachedData, q);
                     options.onSearchComplete.call(that.element, q);
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    options.onSearchError.call(that.element, q, jqXHR, textStatus, errorThrown);
-                });
+                } else {
+                    this.currentRequest = $.ajax({
+                        url: serviceUrl,
+                        data: options.ignoreParams ? null : options.params,
+                        type: options.type,
+                        dataType: options.dataType
+                    }).done(function (data) {
+                        that.cachedData = data;
+                        that.processResponse(data, q);
+                        options.onSearchComplete.call(that.element, q);
+                    }).fail(function (jqXHR, textStatus, errorThrown) {
+                        options.onSearchError.call(that.element, q, jqXHR, textStatus, errorThrown);
+                    });
+                }
             }
         },
 
