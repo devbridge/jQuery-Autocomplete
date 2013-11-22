@@ -79,7 +79,8 @@
                 paramName: 'query',
                 transformResult: function (response) {
                     return typeof response === 'string' ? $.parseJSON(response) : response;
-                }
+                },
+				isBadQuery: null
             };
 
         // Shared variables:
@@ -176,6 +177,7 @@
             };
 
             $(window).on('resize', that.fixPositionCapture);
+			$(document).on('scroll', that.fixPositionCapture);
 
             that.el.on('keydown.autocomplete', function (e) { that.onKeyPress(e); });
             that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
@@ -449,6 +451,11 @@
         },
 
         isBadQuery: function (q) {
+			var that = this;
+			
+			if($.isFunction(that.options.isBadQuery))
+				return that.options.isBadQuery(q);
+			
             var badQueries = this.badQueries,
                 i = badQueries.length;
 
