@@ -79,7 +79,8 @@
                 paramName: 'query',
                 transformResult: function (response) {
                     return typeof response === 'string' ? $.parseJSON(response) : response;
-                }
+                },
+                isBadQuery: null
             };
 
         // Shared variables:
@@ -176,6 +177,7 @@
             };
 
             $(window).on('resize', that.fixPositionCapture);
+            $(document).on('scroll', that.fixPositionCapture);
 
             that.el.on('keydown.autocomplete', function (e) { that.onKeyPress(e); });
             that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
@@ -238,10 +240,22 @@
 
             offset = that.el.offset();
 
+            var topY = offset.top + that.el.outerHeight();
+
             $(that.suggestionsContainer).css({
-                top: (offset.top + that.el.outerHeight()) + 'px',
                 left: offset.left + 'px'
             });
+
+            if (topY + that.options.maxHeight > $(window).height())
+                $(that.suggestionsContainer).css({
+                    bottom: $(window).height()-offset.top + 'px',
+                    top: "inherit"
+                });
+            else
+                $(that.suggestionsContainer).css({
+                    top: (offset.top + that.el.outerHeight()) + 'px',
+                    bottom: "inherit"
+                });
         },
 
         enableKillerFn: function () {
@@ -449,6 +463,11 @@
         },
 
         isBadQuery: function (q) {
+            var that = this;
+            
+            if($.isFunction(that.options.isBadQuery))
+                return that.options.isBadQuery(q);
+            
             var badQueries = this.badQueries,
                 i = badQueries.length;
 
