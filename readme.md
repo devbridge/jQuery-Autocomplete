@@ -33,6 +33,7 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
         * `onSearchStart`: `function (query) {}` called before ajax request. `this` is bound to input element.
         * `onSearchComplete`: `function (query) {}` called after ajax response is processed. `this` is bound to input element.
         * `onSearchError`: `function (query, jqXHR, textStatus, errorThrown) {}` called if ajax request fails. `this` is bound to input element.
+        * `beforeRender`: `function (container) {}` called before displaying the suggestions. You may manipulate suggestions DOM before it is displayed.
         * `tabDisabled`: Default `false`. Set to true to leave the cursor in the input field after the user tabs to select a suggestion.
         * `paramName`: Default `query`. The name of the request parameter that contains the query.
         * `transformResult`: `function(response, originalQuery) {}` called after the result of the query is ready. Converts the result into response.suggestions format.

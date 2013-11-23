@@ -29,10 +29,12 @@
                 escapeRegExChars: function (value) {
                     return value.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
                 },
-                createNode: function (html) {
+                createNode: function (containerClass) {
                     var div = document.createElement('div');
-                    div.innerHTML = html;
-                    return div.firstChild;
+                    div.className = containerClass;
+                    div.style.position = 'absolute';
+                    div.style.display = 'none';
+                    return div;
                 }
             };
         }()),
@@ -140,7 +142,7 @@
                 }
             };
 
-            that.suggestionsContainer = Autocomplete.utils.createNode('<div class="' + options.containerClass + '" style="position: absolute; display: none;"></div>');
+            that.suggestionsContainer = Autocomplete.utils.createNode(options.containerClass);
 
             container = $(that.suggestionsContainer);
 
@@ -175,13 +177,21 @@
                 }
             };
 
-            $(window).on('resize', that.fixPositionCapture);
+            $(window).on('resize.autocomplete', that.fixPositionCapture);
 
             that.el.on('keydown.autocomplete', function (e) { that.onKeyPress(e); });
             that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
             that.el.on('blur.autocomplete', function () { that.onBlur(); });
-            that.el.on('focus.autocomplete', function () { that.fixPosition(); });
+            that.el.on('focus.autocomplete', function () { that.onFocus(); });
             that.el.on('change.autocomplete', function (e) { that.onKeyUp(e); });
+        },
+
+        onFocus: function () {
+            var that = this;
+            that.fixPosition();
+            if (that.options.minChars <= that.el.val().length) {
+                that.onValueChange();
+            }
         },
 
         onBlur: function () {
@@ -220,7 +230,11 @@
         },
 
         disable: function () {
-            this.disabled = true;
+            var that = this;
+            that.disabled = true;
+            if (that.currentRequest) {
+                that.currentRequest.abort();
+            }
         },
 
         enable: function () {
@@ -229,7 +243,8 @@
 
         fixPosition: function () {
             var that = this,
-                offset;
+                offset,
+                styles;
 
             // Don't adjsut position if custom container has been specified:
             if (that.options.appendTo !== 'body') {
@@ -238,10 +253,16 @@
 
             offset = that.el.offset();
 
-            $(that.suggestionsContainer).css({
+            styles = {
                 top: (offset.top + that.el.outerHeight()) + 'px',
                 left: offset.left + 'px'
-            });
+            };
+
+            if (that.options.width === 'auto') {
+                styles.width = (that.el.outerWidth() - 2) + 'px';
+            }
+
+            $(that.suggestionsContainer).css(styles);
         },
 
         enableKillerFn: function () {
@@ -260,7 +281,7 @@
             that.intervalId = window.setInterval(function () {
                 that.hide();
                 that.stopKillSuggestions();
-            }, 300);
+            }, 50);
         },
 
         stopKillSuggestions: function () {
@@ -431,15 +452,16 @@
                 if ($.isFunction(options.serviceUrl)) {
                     serviceUrl = options.serviceUrl.call(that.element, q);
                 }
-                if(this.currentRequest != null) {
-                    this.currentRequest.abort();
+                if (that.currentRequest) {
+                    that.currentRequest.abort();
                 }
-                this.currentRequest = $.ajax({
+                that.currentRequest = $.ajax({
                     url: serviceUrl,
                     data: options.ignoreParams ? null : options.params,
                     type: options.type,
                     dataType: options.dataType
                 }).done(function (data) {
+                    that.currentRequest = null;
                     that.processResponse(data, q);
                     options.onSearchComplete.call(that.element, q);
                 }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -481,6 +503,7 @@
                 className = that.classes.suggestion,
                 classSelected = that.classes.selected,
                 container = $(that.suggestionsContainer),
+                beforeRender = that.options.beforeRender,
                 html = '',
                 width;
 
@@ -498,14 +521,20 @@
                 container.width(width > 0 ? width : 300);
             }
 
-            container.html(html).show();
-            that.visible = true;
+            container.html(html);
 
             // Select first value by default:
             if (that.options.autoSelectFirst) {
                 that.selectedIndex = 0;
                 container.children().first().addClass(classSelected);
             }
+
+            if ($.isFunction(beforeRender)) {
+                beforeRender.call(that.element, container);
+            }
+
+            container.show();
+            that.visible = true;
 
             that.findBestHint();
         },
@@ -703,7 +732,7 @@
             var that = this;
             that.el.off('.autocomplete').removeData('autocomplete');
             that.disableKillerFn();
-            $(window).off('resize', that.fixPositionCapture);
+            $(window).off('resize.autocomplete', that.fixPositionCapture);
             $(that.suggestionsContainer).remove();
         }
     };
