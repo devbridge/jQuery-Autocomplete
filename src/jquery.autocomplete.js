@@ -106,6 +106,7 @@
         that.hint = null;
         that.hintValue = '';
         that.selection = null;
+        that.cachedLookupFn = null;
 
         // Initialize and set options:
         that.initialize();
@@ -201,14 +202,23 @@
 
         setOptions: function (suppliedOptions) {
             var that = this,
-                options = that.options;
+                options = that.options,
+                oldFn;
 
             $.extend(options, suppliedOptions);
 
-            that.isLocal = $.isArray(options.lookup);
+            that.isLocal = $.isArray(options.lookup) || $.isFunction(options.lookup);
 
             if (that.isLocal) {
-                options.lookup = that.verifySuggestionsFormat(options.lookup);
+                if ($.isFunction(options.lookup) && options.lookup !== that.cachedLookupFn) {
+                    oldFn = options.lookup;
+                    options.lookup = function () {
+                      return that.verifySuggestionsFormat(oldFn.apply(that, arguments));
+                    };
+                    that.cachedLookupFn = options.lookup;
+                } else {
+                    options.lookup = that.verifySuggestionsFormat(options.lookup);
+                }
             }
 
             // Adjust height, width and z-index:
@@ -453,7 +463,8 @@
                 filter = that.options.lookupFilter;
 
             return {
-                suggestions: $.grep(that.options.lookup, function (suggestion) {
+                suggestions: $.grep($.isFunction(that.options.lookup) ? that.options.lookup(query) : that.options.lookup,
+                  function (suggestion) {
                     return filter(suggestion, query, queryLowerCase);
                 })
             };
