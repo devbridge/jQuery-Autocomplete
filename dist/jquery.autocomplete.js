@@ -463,7 +463,7 @@
                 }).done(function (data) {
                     that.currentRequest = null;
                     that.processResponse(data, q);
-                    options.onSearchComplete.call(that.element, q);
+                    options.onSearchComplete.call(that.element, q, data);
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     options.onSearchError.call(that.element, q, jqXHR, textStatus, errorThrown);
                 });
