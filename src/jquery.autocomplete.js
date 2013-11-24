@@ -449,14 +449,23 @@
 
         getSuggestionsLocal: function (query) {
             var that = this,
+                options = that.options,
                 queryLowerCase = query.toLowerCase(),
-                filter = that.options.lookupFilter;
+                filter = options.lookupFilter,
+                limit = parseInt(options.lookupLimit, 10),
+                data;
 
-            return {
-                suggestions: $.grep(that.options.lookup, function (suggestion) {
+            data = {
+                suggestions: $.grep(options.lookup, function (suggestion) {
                     return filter(suggestion, query, queryLowerCase);
                 })
             };
+
+            if (limit && data.suggestions.length > limit) {
+                data.suggestions = data.suggestions.slice(0, limit);
+            }
+
+            return data;
         },
 
         getSuggestions: function (q) {

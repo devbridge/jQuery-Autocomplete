@@ -16,6 +16,7 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
         * `lookup`: Lookup array for the suggestions. It may be array of strings or `suggestion` object literals.
             * `suggestion`: An object literal with the following format: `{ value: 'string', data: any }`.
         * `lookupFilter`: `function (suggestion, query, queryLowerCase) {}` filter function for local lookups. By default it does partial string match (case insensitive).
+        * `lookupLimit`: Number of maximum results to display for local lookup. Default: no limit.
         * `onSelect`: `function (suggestion) {}` Callback function invoked when user selects suggestion 
           from the list. `this` inside callback refers to input HtmlElement.
         * `minChars`: Minimum number of characters required to trigger autosuggest. Default: `1`.

@@ -574,4 +574,27 @@ describe('Autocomplete', function () {
             expect(instance.cachedResponse[cacheKey]).toBeTruthy();
         });
     });
+
+    it('Should limit results for local request', function () {
+        var input = $('<input />'),
+            instance,
+            limit = 3;
+
+        input.autocomplete({
+            lookup: [{ value: 'Jamaica' }, { value: 'Jamaica' }, { value: 'Jamaica' }, { value: 'Jamaica' }, { value: 'Jamaica' }]
+        });
+
+        input.val('Jam');
+        instance = input.autocomplete();
+        instance.onValueChange();
+
+        // Expect all items to be displayed:
+        expect(instance.suggestions.length).toBe(5);
+
+        // Set lookup result limit and verify:
+        instance.setOptions({ lookupLimit: limit });
+        instance.onValueChange();
+
+        expect(instance.suggestions.length).toBe(limit);
+    });
 });
