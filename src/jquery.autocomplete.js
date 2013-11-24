@@ -75,6 +75,7 @@
                 tabDisabled: false,
                 dataType: 'text',
                 currentRequest: null,
+                triggerSelectOnValidInput: true,
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
@@ -390,24 +391,49 @@
 
         onValueChange: function () {
             var that = this,
-                q;
+                options = that.options,
+                value = that.el.val(),
+                query = that.getQuery(value),
+                index;
 
             if (that.selection) {
                 that.selection = null;
-                (that.options.onInvalidateSelection || $.noop)();
+                (options.onInvalidateSelection || $.noop).call(that.element);
             }
 
             clearInterval(that.onChangeInterval);
-            that.currentValue = that.el.val();
-
-            q = that.getQuery(that.currentValue);
+            that.currentValue = value;
             that.selectedIndex = -1;
 
-            if (q.length < that.options.minChars) {
+            // Check existing suggestion for the match before proceeding:
+            if (options.triggerSelectOnValidInput) {
+                index = that.findSuggestionIndex(query);
+                if (index !== -1) {
+                    that.select(index);
+                    return;
+                }
+            }
+
+            if (query.length < options.minChars) {
                 that.hide();
             } else {
-                that.getSuggestions(q);
+                that.getSuggestions(query);
             }
+        },
+
+        findSuggestionIndex: function (query) {
+            var that = this,
+                index = -1,
+                queryLowerCase = query.toLowerCase();
+
+            $.each(that.suggestions, function (i, suggestion) {
+                if (suggestion.value.toLowerCase() === queryLowerCase) {
+                    index = i;
+                    return false;
+                }
+            });
+
+            return index;
         },
 
         getQuery: function (value) {
@@ -415,7 +441,7 @@
                 parts;
 
             if (!delimiter) {
-                return $.trim(value);
+                return value;
             }
             parts = value.split(delimiter);
             return $.trim(parts[parts.length - 1]);
@@ -498,14 +524,24 @@
             }
 
             var that = this,
-                formatResult = that.options.formatResult,
+                options = that.options,
+                formatResult = options.formatResult,
                 value = that.getQuery(that.currentValue),
                 className = that.classes.suggestion,
                 classSelected = that.classes.selected,
                 container = $(that.suggestionsContainer),
-                beforeRender = that.options.beforeRender,
+                beforeRender = options.beforeRender,
                 html = '',
+                index,
                 width;
+
+            if (options.triggerSelectOnValidInput) {
+                index = that.findSuggestionIndex(value);
+                if (index !== -1) {
+                    that.select(index);
+                    return;
+                }
+            }
 
             // Build suggestions inner HTML:
             $.each(that.suggestions, function (i, suggestion) {
@@ -516,7 +552,7 @@
             // because if instance was created before input had width, it will be zero.
             // Also it adjusts if input width has changed.
             // -2px to account for suggestions border.
-            if (that.options.width === 'auto') {
+            if (options.width === 'auto') {
                 width = that.el.outerWidth() - 2;
                 container.width(width > 0 ? width : 300);
             }
@@ -524,7 +560,7 @@
             container.html(html);
 
             // Select first value by default:
-            if (that.options.autoSelectFirst) {
+            if (options.autoSelectFirst) {
                 that.selectedIndex = 0;
                 container.children().first().addClass(classSelected);
             }
@@ -598,11 +634,13 @@
                 }
             }
 
-            // Display suggestions only if returned query matches current value:
-            if (originalQuery === that.getQuery(that.currentValue)) {
-                that.suggestions = result.suggestions;
-                that.suggest();
+            // Return if originalQuery is not matching current query:
+            if (originalQuery !== that.getQuery(that.currentValue)) {
+                return;
             }
+
+            that.suggestions = result.suggestions;
+            that.suggest();
         },
 
         activate: function (index) {
