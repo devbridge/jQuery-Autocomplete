@@ -76,6 +76,7 @@
                 dataType: 'text',
                 currentRequest: null,
                 triggerSelectOnValidInput: true,
+                preventBadQueries: true,
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
@@ -515,6 +516,10 @@
         },
 
         isBadQuery: function (q) {
+            if (!this.options.preventBadQueries){
+                return false;
+            }
+
             var badQueries = this.badQueries,
                 i = badQueries.length;
 
@@ -647,8 +652,8 @@
             // Cache results if cache is not disabled:
             if (!options.noCache) {
                 that.cachedResponse[cacheKey] = result;
-                if (result.suggestions.length === 0) {
-                    that.badQueries.push(cacheKey);
+                if (options.preventBadQueries && result.suggestions.length === 0) {
+                    that.badQueries.push(originalQuery);
                 }
             }
 

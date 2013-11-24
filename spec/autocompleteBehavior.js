@@ -597,4 +597,56 @@ describe('Autocomplete', function () {
 
         expect(instance.suggestions.length).toBe(limit);
     });
+
+    it('Should prevent Ajax requests if previous query with matching root failed.', function () {
+        var input = $('<input />'),
+            instance,
+            serviceUrl = '/autocomplete/prevent/ajax',
+            ajaxCount = 0;
+
+        input.autocomplete({
+            serviceUrl: serviceUrl
+        });
+
+        $.mockjax({
+            url: serviceUrl,
+            responseTime: 5,
+            response: function (settings) {
+                ajaxCount++;
+                var response = { suggestions: [] };
+                this.responseText = JSON.stringify(response);
+            }
+        });
+
+        input.val('Jam');
+        instance = input.autocomplete();
+        instance.onValueChange();
+
+        waits(10);
+
+        runs(function (){
+            expect(ajaxCount).toBe(1);
+            input.val('Jama');
+            instance.onValueChange();
+        });
+
+        waits(10);
+
+        runs(function (){
+            // Ajax call should not have bee made:
+            expect(ajaxCount).toBe(1);
+
+            // Change setting and continue:
+            instance.setOptions({ preventBadQueries: false });
+            input.val('Jamai');
+            instance.onValueChange();
+        });
+
+        waits(10);
+
+        runs(function (){
+            // Ajax call should have been made:
+            expect(ajaxCount).toBe(2);
+        });
+    });
 });
