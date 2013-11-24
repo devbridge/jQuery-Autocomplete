@@ -66,14 +66,15 @@ describe('Autocomplete', function () {
             context,
             value,
             data,
-            autocomplete = new $.Autocomplete(input, {
+            autocomplete = $(input).autocomplete({
                 lookup: [{ value: 'A', data: 'B' }],
+                triggerSelectOnValidInput: false,
                 onSelect: function (suggestion) {
                     context = this;
                     value = suggestion.value;
                     data = suggestion.data;
                 }
-            });
+            }).autocomplete();
 
         input.value = 'A';
         autocomplete.onValueChange();
@@ -260,7 +261,7 @@ describe('Autocomplete', function () {
                 ajaxExecuted = true;
                 var response = {
                     query: null,
-                    suggestions: ['A', 'B', 'C']
+                    suggestions: ['Aa', 'Bb', 'Cc']
                 };
                 this.responseText = JSON.stringify(response);
             }
@@ -276,7 +277,7 @@ describe('Autocomplete', function () {
         runs(function () {
             expect(ajaxExecuted).toBe(true);
             expect(autocomplete.suggestions.length).toBe(3);
-            expect(autocomplete.suggestions[0].value).toBe('A');
+            expect(autocomplete.suggestions[0].value).toBe('Aa');
         });
     });
 
@@ -495,5 +496,45 @@ describe('Autocomplete', function () {
 
         expect(context).toBe(element);
         expect(elementCount).toBe(1);
+    });
+
+    it('Should trigger select when input value matches suggestion', function () {
+        var input = $('<input />'),
+            instance,
+            suggestionData = false;
+
+        input.autocomplete({
+            lookup: [{ value: 'Jamaica', data: 'J' }],
+            triggerSelectOnValidInput: true,
+            onSelect: function (suggestion) {
+                suggestionData = suggestion.data;
+            }
+        });
+
+        input.val('Jamaica');
+        instance = input.autocomplete();
+        instance.onValueChange();
+
+        expect(suggestionData).toBe('J');
+    });
+
+    it('Should NOT trigger select when input value matches suggestion', function () {
+        var input = $('<input />'),
+            instance,
+            suggestionData = null;
+
+        input.autocomplete({
+            lookup: [{ value: 'Jamaica', data: 'J' }],
+            triggerSelectOnValidInput: false,
+            onSelect: function (suggestion) {
+                suggestionData = suggestion.data;
+            }
+        });
+
+        input.val('Jamaica');
+        instance = input.autocomplete();
+        instance.onValueChange();
+
+        expect(suggestionData).toBeNull();
     });
 });
