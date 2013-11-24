@@ -537,4 +537,41 @@ describe('Autocomplete', function () {
 
         expect(suggestionData).toBeNull();
     });
+
+    it('Should use serviceUrl and params as cacheKey', function () {
+        var input = $('<input />'),
+            instance,
+            ajaxExecuted = false,
+            data = { a: 1, query: 'Jam' },
+            serviceUrl = '/autocomplete/cached/url',
+            cacheKey = serviceUrl + '?' + $.param(data);
+
+        input.autocomplete({
+            serviceUrl: serviceUrl,
+            params: data
+        });
+
+        $.mockjax({
+            url: serviceUrl,
+            responseTime: 5,
+            response: function (settings) {
+                ajaxExecuted = true;
+                var query = settings.data.query,
+                    response = {
+                        suggestions: [{ value: 'Jamaica' }, { value: 'Jamaica' }]
+                    };
+                this.responseText = JSON.stringify(response);
+            }
+        });
+
+        input.val('Jam');
+        instance = input.autocomplete();
+        instance.onValueChange();
+
+        waits(10);
+
+        runs(function () {
+            expect(instance.cachedResponse[cacheKey]).toBeTruthy();
+        });
+    });
 });

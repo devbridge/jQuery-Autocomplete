@@ -93,7 +93,7 @@
         that.selectedIndex = -1;
         that.currentValue = that.element.value;
         that.intervalId = 0;
-        that.cachedResponse = [];
+        that.cachedResponse = {};
         that.onChangeInterval = null;
         that.onChange = null;
         that.isLocal = false;
@@ -220,7 +220,7 @@
         },
 
         clearCache: function () {
-            this.cachedResponse = [];
+            this.cachedResponse = {};
             this.badQueries = [];
         },
 
@@ -463,32 +463,41 @@
             var response,
                 that = this,
                 options = that.options,
-                serviceUrl = options.serviceUrl;
+                serviceUrl = options.serviceUrl,
+                data,
+                cacheKey;
 
-            response = that.isLocal ? that.getSuggestionsLocal(q) : that.cachedResponse[q];
+            options.params[options.paramName] = q;
+            data = options.ignoreParams ? null : options.params;
+
+            if (that.isLocal) {
+                response = that.getSuggestionsLocal(q);
+            } else {
+                if ($.isFunction(serviceUrl)) {
+                    serviceUrl = serviceUrl.call(that.element, q);
+                }
+                cacheKey = serviceUrl + '?' + $.param(data || {});
+                response = that.cachedResponse[cacheKey];
+            }
 
             if (response && $.isArray(response.suggestions)) {
                 that.suggestions = response.suggestions;
                 that.suggest();
             } else if (!that.isBadQuery(q)) {
-                options.params[options.paramName] = q;
                 if (options.onSearchStart.call(that.element, options.params) === false) {
                     return;
-                }
-                if ($.isFunction(options.serviceUrl)) {
-                    serviceUrl = options.serviceUrl.call(that.element, q);
                 }
                 if (that.currentRequest) {
                     that.currentRequest.abort();
                 }
                 that.currentRequest = $.ajax({
                     url: serviceUrl,
-                    data: options.ignoreParams ? null : options.params,
+                    data: data,
                     type: options.type,
                     dataType: options.dataType
                 }).done(function (data) {
                     that.currentRequest = null;
-                    that.processResponse(data, q);
+                    that.processResponse(data, q, cacheKey);
                     options.onSearchComplete.call(that.element, q);
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     options.onSearchError.call(that.element, q, jqXHR, textStatus, errorThrown);
@@ -619,7 +628,7 @@
             return suggestions;
         },
 
-        processResponse: function (response, originalQuery) {
+        processResponse: function (response, originalQuery, cacheKey) {
             var that = this,
                 options = that.options,
                 result = options.transformResult(response, originalQuery);
@@ -628,9 +637,9 @@
 
             // Cache results if cache is not disabled:
             if (!options.noCache) {
-                that.cachedResponse[result[options.paramName]] = result;
+                that.cachedResponse[cacheKey] = result;
                 if (result.suggestions.length === 0) {
-                    that.badQueries.push(result[options.paramName]);
+                    that.badQueries.push(cacheKey);
                 }
             }
 
