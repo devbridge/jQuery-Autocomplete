@@ -474,11 +474,11 @@
                 that = this,
                 options = that.options,
                 serviceUrl = options.serviceUrl,
-                data,
+                params,
                 cacheKey;
 
             options.params[options.paramName] = q;
-            data = options.ignoreParams ? null : options.params;
+            params = options.ignoreParams ? null : options.params;
 
             if (that.isLocal) {
                 response = that.getSuggestionsLocal(q);
@@ -486,7 +486,7 @@
                 if ($.isFunction(serviceUrl)) {
                     serviceUrl = serviceUrl.call(that.element, q);
                 }
-                cacheKey = serviceUrl + '?' + $.param(data || {});
+                cacheKey = serviceUrl + '?' + $.param(params || {});
                 response = that.cachedResponse[cacheKey];
             }
 
@@ -502,7 +502,7 @@
                 }
                 that.currentRequest = $.ajax({
                     url: serviceUrl,
-                    data: data,
+                    data: params,
                     type: options.type,
                     dataType: options.dataType
                 }).done(function (data) {
