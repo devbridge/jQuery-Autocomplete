@@ -64,6 +64,7 @@
                 deferRequestBy: 0,
                 params: {},
                 formatResult: Autocomplete.formatResult,
+                onMouseEnter: function(suggestion, divEl) {},
                 delimiter: null,
                 zIndex: 9999,
                 type: 'GET',
@@ -153,14 +154,18 @@
             if (options.width !== 'auto') {
                 container.width(options.width);
             }
-
+            
+            // special on() plugin code for 'autocomplete'
+            // http://api.jquery.com/on/#on-events-selector-data
             // Listen for mouse over event on suggestions list:
-            container.on('mouseover.autocomplete', suggestionSelector, function () {
+            container.on('mouseenter.autocomplete', suggestionSelector, function () {
+                console.log("enter");
                 that.activate($(this).data('index'));
             });
 
             // Deselect active element when mouse leaves suggestions container:
-            container.on('mouseout.autocomplete', function () {
+            container.on('mouseleave.autocomplete', suggestionSelector, function () {                
+                console.log("leave");
                 that.selectedIndex = -1;
                 container.children('.' + selected).removeClass(selected);
             });
@@ -247,7 +252,7 @@
                 offset,
                 styles;
 
-            // Don't adjsut position if custom container has been specified:
+            // Don't adjust position if custom container has been specified:
             if (that.options.appendTo !== 'body') {
                 return;
             }
@@ -668,13 +673,17 @@
                 container = $(that.suggestionsContainer),
                 children = container.children();
 
-            container.children('.' + selected).removeClass(selected);
-
+            if(that.selectedIndex === index)
+                return null;
+            
+            container.children('.' + selected).removeClass(selected);            
+            
             that.selectedIndex = index;
-
+            
             if (that.selectedIndex !== -1 && children.length > that.selectedIndex) {
                 activeItem = children.get(that.selectedIndex);
                 $(activeItem).addClass(selected);
+                that.options.onMouseEnter(that.suggestions[index], activeItem);
                 return activeItem;
             }
 
