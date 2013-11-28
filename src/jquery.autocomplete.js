@@ -64,7 +64,7 @@
                 deferRequestBy: 0,
                 params: {},
                 formatResult: Autocomplete.formatResult,
-                onMouseEnter: function(suggestion, divEl) {},
+                onPreSelect: function(suggestion, divEl) {},
                 delimiter: null,
                 zIndex: 9999,
                 type: 'GET',
@@ -159,13 +159,13 @@
             // http://api.jquery.com/on/#on-events-selector-data
             // Listen for mouse over event on suggestions list:
             container.on('mouseenter.autocomplete', suggestionSelector, function () {
-                console.log("enter");
+                // console.log("enter");
                 that.activate($(this).data('index'));
             });
 
             // Deselect active element when mouse leaves suggestions container:
             container.on('mouseleave.autocomplete', suggestionSelector, function () {                
-                console.log("leave");
+                // console.log("leave");
                 that.selectedIndex = -1;
                 container.children('.' + selected).removeClass(selected);
             });
@@ -683,7 +683,7 @@
             if (that.selectedIndex !== -1 && children.length > that.selectedIndex) {
                 activeItem = children.get(that.selectedIndex);
                 $(activeItem).addClass(selected);
-                that.options.onMouseEnter(that.suggestions[index], activeItem);
+                that.options.onPreSelect(that.suggestions[index], activeItem);
                 return activeItem;
             }
 
