@@ -58,6 +58,7 @@
                 serviceUrl: null,
                 lookup: null,
                 onSelect: null,
+                onMove: null,
                 width: 'auto',
                 minChars: 1,
                 maxHeight: 300,
@@ -695,7 +696,9 @@
         },
 
         moveUp: function () {
-            var that = this;
+            var that = this,
+                onMoveCallback = that.options.onMove,
+                nextIndex = that.selectedIndex - 1;
 
             if (that.selectedIndex === -1) {
                 return;
@@ -709,17 +712,27 @@
                 return;
             }
 
-            that.adjustScroll(that.selectedIndex - 1);
+            that.adjustScroll(nextIndex);
+
+            if($.isFunction(onMoveCallback)){
+                onMoveCallback.call(that.element,that.suggestions[nextIndex]);
+            }
         },
 
         moveDown: function () {
-            var that = this;
+            var that = this,
+                onMoveCallback = that.options.onMove,
+                nextIndex = that.selectedIndex + 1;
 
             if (that.selectedIndex === (that.suggestions.length - 1)) {
                 return;
             }
 
-            that.adjustScroll(that.selectedIndex + 1);
+            that.adjustScroll(nextIndex);
+
+            if($.isFunction(onMoveCallback)){
+                onMoveCallback.call(that.element,that.suggestions[nextIndex]);
+            }
         },
 
         adjustScroll: function (index) {

@@ -597,4 +597,90 @@ describe('Autocomplete', function () {
 
         expect(instance.suggestions.length).toBe(limit);
     });
+
+    it('Verify moveOn with moveDown', function () {
+        var input = document.createElement('input'),
+            context,
+            value,
+            data,
+            autocomplete = $(input).autocomplete({
+                lookup: [
+                    { value: 'AB', data: 'A1' } ,
+                    { value: 'AC', data: 'A2' }
+                ],
+                triggerSelectOnValidInput: false,
+                onMove: function (suggestion) {
+                    context = this;
+                    value = suggestion.value;
+                    data = suggestion.data;
+                }
+            }).autocomplete();
+
+        input.value = 'A';
+        autocomplete.onValueChange();
+
+        autocomplete.moveDown();//onMove in moveDown() is called
+        expect(context).toEqual(input);
+        expect(value).toEqual('AB');
+        expect(data).toEqual('A1');
+
+        value = undefined;
+        data = undefined;
+        autocomplete.moveDown();//onMove in moveDown() is called
+        expect(value).toEqual('AC');
+        expect(data).toEqual('A2');
+
+        value = undefined;
+        data = undefined;
+        autocomplete.moveDown();//onMove in moveDown() is not called when the selectedIndex points last item
+        expect(value).toEqual(undefined);
+        expect(data).toEqual(undefined);
+
+
+    });
+
+    it('Verify moveOn with moveUp', function () {
+        var input = document.createElement('input'),
+            context,
+            value,
+            data,
+            autocomplete = $(input).autocomplete({
+                lookup: [
+                    { value: 'AB', data: 'A1' } ,
+                    { value: 'AC', data: 'A2' }
+                ],
+                triggerSelectOnValidInput: false,
+                onMove: function (suggestion) {
+                    context = this;
+                    value = suggestion.value;
+                    data = suggestion.data;
+                }
+            }).autocomplete();
+
+        input.value = 'A';
+        autocomplete.onValueChange();
+        autocomplete.selectedIndex = -1;
+        autocomplete.moveUp();//onMove in moveUp() callback is not called when selectedIndex = -1
+        expect(context).toEqual(undefined);
+        expect(value).toEqual(undefined);
+        expect(data).toEqual(undefined);
+
+        autocomplete.selectedIndex = 0;
+        value = undefined;
+        data = undefined;
+        autocomplete.moveUp();//onMove in moveUp() callback is not called when selectedIndex = 0
+        expect(value).toEqual(undefined);
+        expect(data).toEqual(undefined);
+
+        autocomplete.onValueChange();
+        autocomplete.moveDown();
+        expect(value).toEqual('AB');
+        expect(data).toEqual('A1');
+        autocomplete.moveDown();
+        expect(value).toEqual('AC');
+        expect(data).toEqual('A2');
+        autocomplete.moveUp();//onMove in moveUp() is called
+        expect(value).toEqual('AB');
+        expect(data).toEqual('A1');
+    });
 });
