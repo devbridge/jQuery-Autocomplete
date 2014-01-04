@@ -13,6 +13,7 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
     * Sets up autocomplete for input field(s).
     * `options`: An object literal which defines the settings to use for the autocomplete plugin.
         * `serviceUrl`: Server side URL or callback function that returns serviceUrl string. Optional if local lookup data is provided.
+        * `keyPath`: (by default `suggestions`). The key of the response where the array of results is.
         * `lookup`: Lookup array for the suggestions. It may be array of strings or `suggestion` object literals.
             * `suggestion`: An object literal with the following format: `{ value: 'string', data: any }`.
         * `lookupFilter`: `function (suggestion, query, queryLowerCase) {}` filter function for local lookups. By default it does partial string match (case insensitive).
@@ -150,6 +151,14 @@ you can supply the "paramName" and "transformResult" options:
                 })
             };
         }
+    })
+
+If your ajax service responds with a key different than `suggestions`, you can use `keyPath`:
+
+For example, if your server responds with: `{items: [{value: 'Item 1'}, {value: 'Item 2'}]}`:
+    
+    $('#autocomplete').autocomplete({
+        keyPath: "items"
     })
 
 

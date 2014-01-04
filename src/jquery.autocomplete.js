@@ -57,6 +57,7 @@
                 appendTo: 'body',
                 serviceUrl: null,
                 lookup: null,
+                keyPath: "suggestions",
                 onSelect: null,
                 width: 'auto',
                 minChars: 1,
@@ -648,7 +649,7 @@
             var that = this,
                 options = that.options;
 
-            result.suggestions = that.verifySuggestionsFormat(result.suggestions);
+            result.suggestions = that.verifySuggestionsFormat(result[options.keyPath]);
 
             // Cache results if cache is not disabled:
             if (!options.noCache) {
