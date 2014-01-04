@@ -506,9 +506,11 @@
                     type: options.type,
                     dataType: options.dataType
                 }).done(function (data) {
+                    var result;
                     that.currentRequest = null;
-                    that.processResponse(data, q, cacheKey);
-                    options.onSearchComplete.call(that.element, q);
+                    result = options.transformResult(data);
+                    that.processResponse(result, q, cacheKey);
+                    options.onSearchComplete.call(that.element, q, result.suggestions);
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     options.onSearchError.call(that.element, q, jqXHR, textStatus, errorThrown);
                 });
@@ -642,10 +644,9 @@
             return suggestions;
         },
 
-        processResponse: function (response, originalQuery, cacheKey) {
+        processResponse: function (result, originalQuery, cacheKey) {
             var that = this,
-                options = that.options,
-                result = options.transformResult(response, originalQuery);
+                options = that.options;
 
             result.suggestions = that.verifySuggestionsFormat(result.suggestions);
 

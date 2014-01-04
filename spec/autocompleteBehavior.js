@@ -136,12 +136,15 @@ describe('Autocomplete', function () {
     it('Should execute onSearchComplete', function () {
         var input = document.createElement('input'),
             completeQuery,
+            mockupSuggestion = { value: 'A', data: 'A' },
+            resultSuggestions,
             ajaxExecuted = false,
             url = '/test-completed',
             autocomplete = new $.Autocomplete(input, {
                 serviceUrl: url,
-                onSearchComplete: function (query) {
+                onSearchComplete: function (query, suggestions) {
                     completeQuery = query;
+                    resultSuggestions = suggestions;
                 }
             });
 
@@ -153,7 +156,7 @@ describe('Autocomplete', function () {
                 var query = settings.data.query,
                     response = {
                         query: query,
-                        suggestions: []
+                        suggestions: [mockupSuggestion]
                     };
                 this.responseText = JSON.stringify(response);
             }
@@ -169,6 +172,8 @@ describe('Autocomplete', function () {
         runs(function () {
             expect(ajaxExecuted).toBe(true);
             expect(completeQuery).toBe('A');
+            expect(resultSuggestions[0].value).toBe('A');
+            expect(resultSuggestions[0].data).toBe('A');
         });
     });
 
