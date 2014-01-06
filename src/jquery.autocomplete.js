@@ -76,6 +76,7 @@
                 dataType: 'text',
                 currentRequest: null,
                 triggerSelectOnValidInput: true,
+                preventBadQueries: true,
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
@@ -473,11 +474,11 @@
                 that = this,
                 options = that.options,
                 serviceUrl = options.serviceUrl,
-                data,
+                params,
                 cacheKey;
 
             options.params[options.paramName] = q;
-            data = options.ignoreParams ? null : options.params;
+            params = options.ignoreParams ? null : options.params;
 
             if (that.isLocal) {
                 response = that.getSuggestionsLocal(q);
@@ -485,7 +486,7 @@
                 if ($.isFunction(serviceUrl)) {
                     serviceUrl = serviceUrl.call(that.element, q);
                 }
-                cacheKey = serviceUrl + '?' + $.param(data || {});
+                cacheKey = serviceUrl + '?' + $.param(params || {});
                 response = that.cachedResponse[cacheKey];
             }
 
@@ -501,13 +502,15 @@
                 }
                 that.currentRequest = $.ajax({
                     url: serviceUrl,
-                    data: data,
+                    data: params,
                     type: options.type,
                     dataType: options.dataType
                 }).done(function (data) {
+                    var result;
                     that.currentRequest = null;
-                    that.processResponse(data, q, cacheKey);
-                    options.onSearchComplete.call(that.element, q);
+                    result = options.transformResult(data);
+                    that.processResponse(result, q, cacheKey);
+                    options.onSearchComplete.call(that.element, q, result.suggestions);
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     options.onSearchError.call(that.element, q, jqXHR, textStatus, errorThrown);
                 });
@@ -515,6 +518,10 @@
         },
 
         isBadQuery: function (q) {
+            if (!this.options.preventBadQueries){
+                return false;
+            }
+
             var badQueries = this.badQueries,
                 i = badQueries.length;
 
@@ -637,18 +644,17 @@
             return suggestions;
         },
 
-        processResponse: function (response, originalQuery, cacheKey) {
+        processResponse: function (result, originalQuery, cacheKey) {
             var that = this,
-                options = that.options,
-                result = options.transformResult(response, originalQuery);
+                options = that.options;
 
             result.suggestions = that.verifySuggestionsFormat(result.suggestions);
 
             // Cache results if cache is not disabled:
             if (!options.noCache) {
                 that.cachedResponse[cacheKey] = result;
-                if (result.suggestions.length === 0) {
-                    that.badQueries.push(cacheKey);
+                if (options.preventBadQueries && result.suggestions.length === 0) {
+                    that.badQueries.push(originalQuery);
                 }
             }
 
