@@ -100,6 +100,9 @@
         that.isLocal = false;
         that.suggestionsContainer = null;
         that.options = $.extend({}, defaults, options);
+        if (!("autoPosition" in that.options)) {
+            that.options.autoPosition = (that.options.appendTo === 'body');
+        }
         that.classes = {
             selected: 'autocomplete-selected',
             suggestion: 'autocomplete-suggestion'
@@ -245,19 +248,21 @@
 
         fixPosition: function () {
             var that = this,
-                offset,
+                inputOffset,
+                container,
                 styles;
 
             // Don't adjsut position if custom container has been specified:
-            if (that.options.appendTo !== 'body') {
+            if (!that.options.autoPosition) {
                 return;
             }
-
-            offset = that.el.offset();
-
+            
+            inputOffset = that.el.offset();
+            container = $( that.options.appendTo ).offset();
+            
             styles = {
-                top: (offset.top + that.el.outerHeight()) + 'px',
-                left: offset.left + 'px'
+                top: (inputOffset.top + that.el.outerHeight() - container.top) + 'px',
+                left: (inputOffset.left - container.left) + 'px'
             };
 
             if (that.options.width === 'auto') {
