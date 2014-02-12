@@ -59,6 +59,7 @@
                 lookup: null,
                 onSelect: null,
                 width: 'auto',
+                pinTo: el,
                 minChars: 1,
                 maxHeight: 300,
                 deferRequestBy: 0,
@@ -253,7 +254,7 @@
                 return;
             }
 
-            offset = that.el.offset();
+            offset = $(that.options.pinTo).offset();
 
             styles = {
                 top: (offset.top + that.el.outerHeight()) + 'px',
