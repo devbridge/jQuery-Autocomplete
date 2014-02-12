@@ -70,6 +70,8 @@
                 noCache: false,
                 onSearchStart: noop,
                 onSearchComplete: noop,
+                onSearchHasZeroRows: noop,
+                onSearchHasRows: noop,
                 onSearchError: noop,
                 containerClass: 'autocomplete-suggestions',
                 tabDisabled: false,
@@ -543,6 +545,8 @@
         },
 
         suggest: function () {
+            this.beforeSuggest();
+
             if (this.suggestions.length === 0) {
                 this.hide();
                 return;
@@ -630,6 +634,14 @@
                 that.hintValue = hintValue;
                 that.hint = suggestion;
                 (this.options.onHint || $.noop)(hintValue);
+            }
+        },
+        
+        beforeSuggest: function() {
+            if (this.suggestions.length === 0) {
+                this.options.onSearchHasZeroRows.call();
+            } else {
+                this.options.onSearchHasRows.call();
             }
         },
 
