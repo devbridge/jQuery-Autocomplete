@@ -1,4 +1,3 @@
-
 interface JQueryAutocompleteOptions {
     serviceUrl?: string;
     lookup?: AutocompleteSuggestion[];
@@ -22,6 +21,7 @@ interface JQueryAutocompleteOptions {
     autoSelectFirst?: bool;
     appendTo: any;
     dataType: string;
+    openOnTop: bool; 
 }
 
 interface AutocompleteSuggestion {
