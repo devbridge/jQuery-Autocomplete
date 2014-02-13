@@ -263,7 +263,7 @@
             if(!that.options.openOnTop){
                 styles.top = (offset.top + that.el.outerHeight()) + 'px'
             }else{
-                styles.bottom =  ($(document).height() - offset.top) + 'px';
+                styles.bottom = ($(document.body).height() - offset.top) + 'px';
             }
 
             if (that.options.width === 'auto') {
