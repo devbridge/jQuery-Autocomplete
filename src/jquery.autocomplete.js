@@ -258,12 +258,12 @@
             offset = that.el.offset();
 
             styles = {
-                top: (offset.top + that.el.outerHeight()) + 'px',
                 left: offset.left + 'px'
             };
-
-            if(!!that.options.openOnTop){
-                styles.top =  $(document).height() - offset.top + 'px';
+            if(!that.options.openOnTop){
+                styles.top = (offset.top + that.el.outerHeight()) + 'px'
+            }else{
+                styles.bottom =  ($(document).height() - offset.top) + 'px';
             }
 
             if (that.options.width === 'auto') {
