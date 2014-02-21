@@ -543,6 +543,46 @@ describe('Autocomplete', function () {
         expect(suggestionData).toBeNull();
     });
 
+    describe('options.changeInputDisabled is true', function() {
+       var input = $('<input />'),
+           instance,
+           suggestionData = null;
+
+       beforeEach(function() {
+           input.autocomplete({
+               lookup: [{ value: 'Jamaica', data: 'J' }, { value: 'Jamaica2', data: 'J' }, { value: 'Jamaica3', data: 'J' }],
+               changeInputDisabled: true,
+               onSelect: function (suggestion) {
+                   suggestionData = suggestion.data;
+               }
+           });
+
+           input.val('J');
+           instance = input.autocomplete();
+       });
+
+       it('Should NOT change input value when item is selected', function() {
+           instance.onValueChange();
+           instance.select(0);
+
+           expect(input.val()).toEqual('J');
+       });
+
+       it('Should NOT change input value when move down', function() {
+           instance.onValueChange();
+           instance.moveDown();
+
+           expect(input.val()).toEqual('J');
+       });
+
+       it('Should NOT change input value when move up', function() {
+           instance.onValueChange();
+           instance.moveUp();
+
+           expect(input.val()).toEqual('J');
+       });
+    });
+
     it('Should use serviceUrl and params as cacheKey', function () {
         var input = $('<input />'),
             instance,
