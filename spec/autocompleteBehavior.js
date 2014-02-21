@@ -543,6 +543,27 @@ describe('Autocomplete', function () {
         expect(suggestionData).toBeNull();
     });
 
+    it('Should NOT hide suggestions when options.hideOnSelectDisabled is true and item is selected', function() {
+        $('.autocomplete-suggestions').remove();
+
+        var input = $('<input />'),
+            instance,
+            suggestionData = null;
+
+        input.autocomplete({
+            lookup: [{ value: 'Jamaica', data: 'J' }],
+            hideOnSelectDisabled: true
+        });
+
+        input.val('J');
+        instance = input.autocomplete();
+
+        instance.onValueChange();
+        instance.select(0);
+
+        expect($('.autocomplete-suggestions').is(':visible')).toBeTruthy();
+    });
+
     describe('options.changeInputDisabled is true', function() {
        var input = $('<input />'),
            instance,

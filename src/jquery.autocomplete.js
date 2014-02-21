@@ -78,6 +78,7 @@
                 triggerSelectOnValidInput: true,
                 preventBadQueries: true,
                 changeInputDisabled: false,
+                hideOnSelectDisabled: false,
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
@@ -697,7 +698,7 @@
 
         select: function (i) {
             var that = this;
-            that.hide();
+            if (!that.options.hideOnSelectDisabled) { that.hide(); }
             that.onSelect(i);
         },
 
