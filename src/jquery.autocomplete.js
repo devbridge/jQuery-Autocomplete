@@ -60,6 +60,7 @@
                 onSelect: null,
                 width: 'auto',
                 minChars: 1,
+                restrict:false,
                 maxHeight: 300,
                 deferRequestBy: 0,
                 params: {},
@@ -390,6 +391,21 @@
             }
         },
 
+        onLookupDone: function() {
+            var that = this; 
+            if (!this.options.restrict) return;
+            
+            if (that.suggestions.length) {
+                that.previousValue = that.el.val();
+            } else {
+                that.el.val(that.previousValue || '');
+                setTimeout(function() {
+                    that.currentValue = that.el.val();
+                    that.onValueChange();
+                },1);
+            }
+        },
+
         onValueChange: function () {
             var that = this,
                 options = that.options,
@@ -543,6 +559,9 @@
         },
 
         suggest: function () {
+            
+            this.onLookupDone();
+
             if (this.suggestions.length === 0) {
                 this.hide();
                 return;
