@@ -77,6 +77,8 @@
                 currentRequest: null,
                 triggerSelectOnValidInput: true,
                 preventBadQueries: true,
+                changeInputDisabled: false,
+                hideOnSelectDisabled: false,
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
@@ -696,7 +698,7 @@
 
         select: function (i) {
             var that = this;
-            that.hide();
+            if (!that.options.hideOnSelectDisabled) { that.hide(); }
             that.onSelect(i);
         },
 
@@ -750,7 +752,10 @@
                 $(that.suggestionsContainer).scrollTop(offsetTop - that.options.maxHeight + heightDelta);
             }
 
-            that.el.val(that.getValue(that.suggestions[index].value));
+            if (!that.options.changeInputDisabled) {
+              that.el.val(that.getValue(that.suggestions[index].value));
+            }
+
             that.signalHint(null);
         },
 
@@ -760,7 +765,7 @@
                 suggestion = that.suggestions[index];
 
             that.currentValue = that.getValue(suggestion.value);
-            that.el.val(that.currentValue);
+            if (!that.options.changeInputDisabled) { that.el.val(that.currentValue); }
             that.signalHint(null);
             that.suggestions = [];
             that.selection = suggestion;
