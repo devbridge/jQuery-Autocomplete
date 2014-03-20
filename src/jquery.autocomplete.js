@@ -504,7 +504,9 @@
                     url: serviceUrl,
                     data: params,
                     type: options.type,
-                    dataType: options.dataType
+                    dataType: options.dataType,
+                    jsonpCallback : 'autocompleteCallback',
+                    cache: true
                 }).done(function (data) {
                     var result;
                     that.currentRequest = null;
