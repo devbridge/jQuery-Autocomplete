@@ -654,4 +654,24 @@ describe('Autocomplete', function () {
             expect(ajaxCount).toBe(2);
         });
     });
+
+    it('Should display no suggestion notice when no matching results', function () {
+        var input = document.createElement('input'),
+            options = {  
+                lookup: [{ value: 'Colombia', data: 'Spain' }],
+                showNoSuggestionNotice: true,
+                noSuggestionNotice: 'Sorry, no matching results'
+            },
+            autocomplete = new $.Autocomplete(input, options),
+            suggestionsContainer = $(autocomplete.suggestionsContainer)
+
+        input.value = 'Jamaica';
+        autocomplete.onValueChange();       
+
+        expect(autocomplete.visible).toBe(true);
+        expect(autocomplete.selectedIndex).toBe(-1)
+        expect(suggestionsContainer.find('.autocomplete-no-suggestion').length).toBe(1)
+        expect(suggestionsContainer.find('.autocomplete-no-suggestion').text()).toBe('Sorry, no matching results')        
+    });
+
 });

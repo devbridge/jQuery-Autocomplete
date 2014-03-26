@@ -83,7 +83,9 @@
                 paramName: 'query',
                 transformResult: function (response) {
                     return typeof response === 'string' ? $.parseJSON(response) : response;
-                }
+                },
+                showNoSuggestionNotice: false,
+                noSuggestionNotice: 'No results'
             };
 
         // Shared variables:
@@ -544,7 +546,7 @@
 
         suggest: function () {
             if (this.suggestions.length === 0) {
-                this.hide();
+                this.options.showNoSuggestionNotice ? this.noSuggestions() : this.hide();               
                 return;
             }
 
@@ -573,14 +575,7 @@
                 html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
             });
 
-            // If width is auto, adjust width before displaying suggestions,
-            // because if instance was created before input had width, it will be zero.
-            // Also it adjusts if input width has changed.
-            // -2px to account for suggestions border.
-            if (options.width === 'auto') {
-                width = that.el.outerWidth() - 2;
-                container.width(width > 0 ? width : 300);
-            }
+            this.adjustContainerWidth();      
 
             container.html(html);
 
@@ -598,6 +593,36 @@
             that.visible = true;
 
             that.findBestHint();
+        },
+
+        noSuggestions: function() {
+             var that = this,
+                 container = $(that.suggestionsContainer),               
+                 html = '',
+                 width;   
+         
+            html += '<div class="autocomplete-no-suggestion">' + this.options.noSuggestionNotice + '</div>';        
+
+            this.adjustContainerWidth();
+            container.html(html);
+            container.show();
+            that.visible = true;
+        },
+
+        adjustContainerWidth: function() {
+            var that = this,
+                options = that.options,
+                width,
+                container = $(that.suggestionsContainer)
+
+            // If width is auto, adjust width before displaying suggestions,
+            // because if instance was created before input had width, it will be zero.
+            // Also it adjusts if input width has changed.
+            // -2px to account for suggestions border.
+            if (options.width === 'auto') {
+                width = that.el.outerWidth() - 2;
+                container.width(width > 0 ? width : 300);
+            }
         },
 
         findBestHint: function () {
