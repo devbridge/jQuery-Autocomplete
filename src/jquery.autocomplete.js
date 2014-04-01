@@ -80,6 +80,9 @@
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
+                transformQuery: function(query) {
+                    return query;
+                },
                 paramName: 'query',
                 transformResult: function (response) {
                     return typeof response === 'string' ? $.parseJSON(response) : response;
@@ -439,12 +442,13 @@
 
         getQuery: function (value) {
             var delimiter = this.options.delimiter,
+                tvalue = this.options.transformQuery(value),
                 parts;
 
             if (!delimiter) {
-                return value;
+                return tvalue;
             }
-            parts = value.split(delimiter);
+            parts = tvalue.split(delimiter);
             return $.trim(parts[parts.length - 1]);
         },
 
