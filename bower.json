@@ -6,7 +6,7 @@
     "Tomas Kirda"
   ],
   "description": "Autocomplete provides suggestions while you type into the text field.",
-  "main": "src/jquery.autocomplete.js",
+  "main": "dist/jquery.autocomplete.js",
   "keywords": [
     "ajax",
     "autocomplete"
