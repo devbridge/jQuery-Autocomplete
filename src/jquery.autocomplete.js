@@ -760,7 +760,11 @@
                 suggestion = that.suggestions[index];
 
             that.currentValue = that.getValue(suggestion.value);
-            that.el.val(that.currentValue);
+
+            if (that.currentValue !== that.el.val()) {
+                that.el.val(that.currentValue);
+            }
+
             that.signalHint(null);
             that.suggestions = [];
             that.selection = suggestion;
