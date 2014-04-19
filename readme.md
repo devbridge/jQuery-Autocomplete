@@ -119,11 +119,11 @@ Response from the server must be JSON formatted following JavaScript object:
 
     {
         // Query is not required as of version 1.2.5
-        query: "Unit",
-        suggestions: [
-            { value: "United Arab Emirates", data: "AE" },
-            { value: "United Kingdom",       data: "UK" },
-            { value: "United States",        data: "US" }
+        "query": "Unit",
+        "suggestions": [
+            { "value": "United Arab Emirates", "data": "AE" },
+            { "value": "United Kingdom",       "data": "UK" },
+            { "value": "United States",        "data": "US" }
         ]
     }
 
@@ -132,8 +132,8 @@ and onSelect callback. Alternatively, if there is no data you can
 supply just a string array for suggestions:
 
     {
-        query: "Unit",
-        suggestions: ["United Arab Emirates", "United Kingdom", "United States"]
+        "query": "Unit",
+        "suggestions": ["United Arab Emirates", "United Kingdom", "United States"]
     }
 
 ## Non standard query/results
