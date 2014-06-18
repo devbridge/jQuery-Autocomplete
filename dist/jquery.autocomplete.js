@@ -62,6 +62,7 @@
                 minChars: 1,
                 maxHeight: 300,
                 deferRequestBy: 0,
+                jsonpCallback: null,a
                 params: {},
                 formatResult: Autocomplete.formatResult,
                 delimiter: null,
@@ -485,6 +486,9 @@
                 if ($.isFunction(serviceUrl)) {
                     serviceUrl = serviceUrl.call(that.element, q);
                 }
+                if ($.isFunction(jsonpCallback)){
+                    jsonpCallback = jsonpCallback.call(that.element, q)
+                }
                 cacheKey = serviceUrl + '?' + $.param(data || {});
                 response = that.cachedResponse[cacheKey];
             }
@@ -502,6 +506,7 @@
                 that.currentRequest = $.ajax({
                     url: serviceUrl,
                     data: data,
+                    jsonpCallback: jsonpCallback,
                     type: options.type,
                     dataType: options.dataType
                 }).done(function (data) {
