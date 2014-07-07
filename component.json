@@ -1,7 +1,7 @@
 {
 	"name": "jquery-autocomplete",
-	"repo": "acroyear2/jQuery-Autocomplete",
-	"version": "0.1.0",
+	"repo": "acroyear2/jquery-autocomplete",
+	"version": "5.0.0",
 	"scripts": [
 		"dist/jquery.autocomplete.js"
 	]
