@@ -52,7 +52,9 @@ $(function () {
         minChars: 0,
         onSelect: function (suggestion) {
             $('#selection').html('You selected: ' + suggestion.value + ', ' + suggestion.data);
-        }
+        },
+        showNoSuggestionNotice: true,
+        noSuggestionNotice: 'Sorry, no matching results',
     });
     
     // Initialize autocomplete with custom appendTo:
