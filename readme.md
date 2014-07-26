@@ -46,6 +46,8 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
         * `dataType`: type of data returned from server. Either 'text' (default) or 'jsonp', which will cause the autocomplete to use jsonp. You may return a json object in your callback when using jsonp.
         * `showNoSuggestionNotice`: Default `false`. When no matching results, display a notification label.
         * `noSuggestionNotice`: Default `No results`. Text for no matching results label.
+        * `orientation`: Default `bottom`. Vertical orientation of the displayed suggestions, available values are `auto`, `top`, `bottom`.
+          If set to `auto`, the suggestions will be orientated it the way that place them closer to middle of the view port.
 
 Autocomplete instance has following methods:
 

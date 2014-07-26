@@ -85,7 +85,8 @@
                     return typeof response === 'string' ? $.parseJSON(response) : response;
                 },
                 showNoSuggestionNotice: false,
-                noSuggestionNotice: 'No results'
+                noSuggestionNotice: 'No results',
+                orientation: 'bottom'
             };
 
         // Shared variables:
@@ -173,8 +174,6 @@
                 that.select($(this).data('index'));
             });
 
-            that.fixPosition();
-
             that.fixPositionCapture = function () {
                 if (that.visible) {
                     that.fixPosition();
@@ -214,6 +213,8 @@
                 options.lookup = that.verifySuggestionsFormat(options.lookup);
             }
 
+            options.orientation = that.validateOrientation(options.orientation, 'bottom');
+
             // Adjust height, width and z-index:
             $(that.suggestionsContainer).css({
                 'max-height': options.maxHeight + 'px',
@@ -221,6 +222,7 @@
                 'z-index': options.zIndex
             });
         },
+
 
         clearCache: function () {
             this.cachedResponse = {};
@@ -246,27 +248,42 @@
         },
 
         fixPosition: function () {
-            var that = this,
-                offset,
-                styles;
-
-            // Don't adjsut position if custom container has been specified:
-            if (that.options.appendTo !== 'body') {
+            var that = this;
+            if (that.options.appendTo != 'body' )
                 return;
+
+            var orientation = that.options.orientation,
+                $container = $(that.suggestionsContainer),
+                containerHeight = $container.outerHeight(),
+                height = that.el.outerHeight(),
+                offset = that.el.offset(),
+                styles = {
+                    'top': offset.top,
+                    'left': offset.left
+                };
+
+            if (orientation == 'auto') {
+                var viewPortHeight = $(window).height(),
+                    scrollTop = $(window).scrollTop(),
+                    top_overflow = -scrollTop + offset.top - containerHeight,
+                    bottom_overflow = scrollTop + viewPortHeight - (offset.top + height + containerHeight);
+
+                if (Math.max(top_overflow, bottom_overflow) === top_overflow)
+                    orientation = 'top';
+                else
+                    orientation = 'bottom';
             }
 
-            offset = that.el.offset();
-
-            styles = {
-                top: (offset.top + that.el.outerHeight()) + 'px',
-                left: offset.left + 'px'
-            };
+			if (orientation === 'bottom')
+				styles.top += height;
+			else
+				styles.top += -containerHeight;
 
             if (that.options.width === 'auto') {
                 styles.width = (that.el.outerWidth() - 2) + 'px';
             }
 
-            $(that.suggestionsContainer).css(styles);
+            $container.css(styles);
         },
 
         enableKillerFn: function () {
@@ -589,6 +606,8 @@
                 beforeRender.call(that.element, container);
             }
 
+            that.fixPosition();
+
             container.show();
             that.visible = true;
 
@@ -600,11 +619,14 @@
                  container = $(that.suggestionsContainer),               
                  html = '',
                  width;   
-         
+
             html += '<div class="autocomplete-no-suggestion">' + this.options.noSuggestionNotice + '</div>';        
 
             this.adjustContainerWidth();
             container.html(html);
+            
+            that.fixPosition();
+
             container.show();
             that.visible = true;
         },
@@ -667,6 +689,13 @@
             }
 
             return suggestions;
+        },
+
+        validateOrientation: function(orientation, fallback) {
+            orientation = orientation.trim().toLowerCase();
+            if(['auto', 'bottom', 'top'].indexOf(orientation) == '-1')
+                orientation = fallback;
+            return orientation
         },
 
         processResponse: function (result, originalQuery, cacheKey) {
