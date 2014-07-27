@@ -86,7 +86,8 @@
                 },
                 showNoSuggestionNotice: false,
                 noSuggestionNotice: 'No results',
-                orientation: 'bottom'
+                orientation: 'bottom',
+                forceFixPosition: false
             };
 
         // Shared variables:
@@ -248,19 +249,21 @@
         },
 
         fixPosition: function () {
-            var that = this;
-            if (that.options.appendTo != 'body' )
+            var that = this,
+                $container = $(that.suggestionsContainer),
+                containerParent = $container.parent().get(0);
+
+            // Fix position automatically when appended to body.
+            // In other cases force parameter must be given.
+            if (containerParent !== document.body && !that.options.forceFixPosition)
                 return;
 
+            // Choose orientation
             var orientation = that.options.orientation,
-                $container = $(that.suggestionsContainer),
                 containerHeight = $container.outerHeight(),
                 height = that.el.outerHeight(),
                 offset = that.el.offset(),
-                styles = {
-                    'top': offset.top,
-                    'left': offset.left
-                };
+                styles = { 'top': offset.top, 'left': offset.left };
 
             if (orientation == 'auto') {
                 var viewPortHeight = $(window).height(),
@@ -274,11 +277,28 @@
                     orientation = 'bottom';
             }
 
-			if (orientation === 'bottom')
-				styles.top += height;
+			if (orientation === 'top')
+                styles.top += -containerHeight;
 			else
-				styles.top += -containerHeight;
+				styles.top += height;
 
+            // If container is not positioned to body,
+            // correct its position using offset parent offset
+            if(containerParent !== document.body) {
+                var opacity = $container.css('opacity'),
+                    parentOffsetDiff;
+                if (!that.visible)
+                    $container.css('opacity', 0).show();
+
+                parentOffsetDiff = $container.offsetParent().offset();
+                styles.top -= parentOffsetDiff.top;
+                styles.left -= parentOffsetDiff.left;
+
+                if (!that.visible)
+                    $container.css('opacity', opacity).hide();
+            }
+
+            // -2px to account for suggestions border.
             if (that.options.width === 'auto') {
                 styles.width = (that.el.outerWidth() - 2) + 'px';
             }
