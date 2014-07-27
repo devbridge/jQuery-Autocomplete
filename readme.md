@@ -42,10 +42,10 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
         * `paramName`: Default `query`. The name of the request parameter that contains the query.
         * `transformResult`: `function(response, originalQuery) {}` called after the result of the query is ready. Converts the result into response.suggestions format.
         * `autoSelectFirst`: if set to `true`, first item will be selected when showing suggestions. Default value `false`.
-        * `appendTo`: container where suggestions will be appended. Default value `body`. Can be jQuery object, selector or html element. Make sure to set `position: absolute` or `position: relative` for that element.
+        * `appendTo`: container where suggestions will be appended. Default value `document.body`. Can be jQuery object, selector or html element. Make sure to set `position: absolute` or `position: relative` for that element.
         * `dataType`: type of data returned from server. Either 'text' (default) or 'jsonp', which will cause the autocomplete to use jsonp. You may return a json object in your callback when using jsonp.
         * `showNoSuggestionNotice`: Default `false`. When no matching results, display a notification label.
-        * `noSuggestionNotice`: Default `No results`. Text for no matching results label.
+        * `noSuggestionNotice`: Default `No results`. Text or htmlString or Element or jQuery object for no matching results label.
         * `forceFixPosition`: Default: `false`. Suggestions are automatically positioned when their container is appended to body (look at `appendTo` option), in other cases suggestions are rendered but no positioning is applied.
            Set this option to force auto positioning in other cases.
         * `orientation`: Default `bottom`. Vertical orientation of the displayed suggestions, available values are `auto`, `top`, `bottom`.

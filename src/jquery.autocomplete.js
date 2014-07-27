@@ -54,7 +54,7 @@
             that = this,
             defaults = {
                 autoSelectFirst: false,
-                appendTo: 'body',
+                appendTo: document.body,
                 serviceUrl: null,
                 lookup: null,
                 onSelect: null,
@@ -103,6 +103,7 @@
         that.onChange = null;
         that.isLocal = false;
         that.suggestionsContainer = null;
+        that.noSuggestionsContainer = null;
         that.options = $.extend({}, defaults, options);
         that.classes = {
             selected: 'autocomplete-selected',
@@ -136,7 +137,8 @@
                 suggestionSelector = '.' + that.classes.suggestion,
                 selected = that.classes.selected,
                 options = that.options,
-                container;
+                container,
+                noSuggestionsContainer;
 
             // Remove autocomplete attribute to prevent native suggestions:
             that.element.setAttribute('autocomplete', 'off');
@@ -147,6 +149,10 @@
                     that.disableKillerFn();
                 }
             };
+
+            // html() deals with many types: htmlString or Element or Array or jQuery
+            that.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>')
+                                          .html(this.options.noSuggestionNotice).get(0);
 
             that.suggestionsContainer = Autocomplete.utils.createNode(options.containerClass);
 
@@ -249,10 +255,11 @@
         },
 
         fixPosition: function () {
+            // Use only when container has already its content
+
             var that = this,
                 $container = $(that.suggestionsContainer),
                 containerParent = $container.parent().get(0);
-
             // Fix position automatically when appended to body.
             // In other cases force parameter must be given.
             if (containerParent !== document.body && !that.options.forceFixPosition)
@@ -594,6 +601,7 @@
                 className = that.classes.suggestion,
                 classSelected = that.classes.selected,
                 container = $(that.suggestionsContainer),
+                noSuggestionsContainer = $(that.noSuggestionsContainer),
                 beforeRender = options.beforeRender,
                 html = '',
                 index,
@@ -614,6 +622,7 @@
 
             this.adjustContainerWidth();      
 
+            noSuggestionsContainer.detach();
             container.html(html);
 
             // Select first value by default:
@@ -636,15 +645,17 @@
 
         noSuggestions: function() {
              var that = this,
-                 container = $(that.suggestionsContainer),               
-                 html = '',
-                 width;   
-
-            html += '<div class="autocomplete-no-suggestion">' + this.options.noSuggestionNotice + '</div>';        
+                 container = $(that.suggestionsContainer),
+                 noSuggestionsContainer = $(that.noSuggestionsContainer);
 
             this.adjustContainerWidth();
-            container.html(html);
-            
+
+            // Some explicit steps. Be careful here as it easy to get
+            // noSuggestionsContainer removed from DOM if not detached properly.
+            noSuggestionsContainer.detach();
+            container.empty(); // clean suggestions if any
+            container.append(noSuggestionsContainer);
+
             that.fixPosition();
 
             container.show();
@@ -655,7 +666,7 @@
             var that = this,
                 options = that.options,
                 width,
-                container = $(that.suggestionsContainer)
+                container = $(that.suggestionsContainer);
 
             // If width is auto, adjust width before displaying suggestions,
             // because if instance was created before input had width, it will be zero.
@@ -878,7 +889,7 @@
     };
 
     // Create chainable jQuery plugin:
-    $.fn.autocomplete = function (options, args) {
+    $.fn.autocomplete = function (options, args) {  
         var dataKey = 'autocomplete';
         // If function invoked without argument return
         // instance of the first matched element:
