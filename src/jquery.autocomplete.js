@@ -1,5 +1,5 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.9
+*  Ajax Autocomplete for jQuery, version 1.2.10
 *  (c) 2013 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
@@ -79,6 +79,9 @@
                 preventBadQueries: true,
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
+                },
+                transformQuery: function(query) {
+                    return query;
                 },
                 paramName: 'query',
                 transformResult: function (response) {
@@ -485,12 +488,13 @@
 
         getQuery: function (value) {
             var delimiter = this.options.delimiter,
+                tvalue = this.options.transformQuery(value),
                 parts;
 
             if (!delimiter) {
-                return value;
+                return tvalue;
             }
-            parts = value.split(delimiter);
+            parts = tvalue.split(delimiter);
             return $.trim(parts[parts.length - 1]);
         },
 
