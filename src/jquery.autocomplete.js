@@ -132,6 +132,8 @@
 
         killerFn: null,
 
+        displayedOrientation: null,
+
         initialize: function () {
             var that = this,
                 suggestionSelector = '.' + that.classes.suggestion,
@@ -284,10 +286,12 @@
                     orientation = 'bottom';
             }
 
-			if (orientation === 'top')
+            if (orientation === 'top')
                 styles.top += -containerHeight;
-			else
-				styles.top += height;
+            else
+                styles.top += height;
+
+            that.displayedOrientation = orientation;
 
             // If container is not positioned to body,
             // correct its position using offset parent offset
@@ -788,16 +792,27 @@
         moveUp: function () {
             var that = this;
 
-            if (that.selectedIndex === -1) {
-                return;
-            }
+            if (that.displayedOrientation === 'bottom') {
+                if (that.selectedIndex === -1) {
+                    return;
+                }
 
-            if (that.selectedIndex === 0) {
-                $(that.suggestionsContainer).children().first().removeClass(that.classes.selected);
-                that.selectedIndex = -1;
-                that.el.val(that.currentValue);
-                that.findBestHint();
-                return;
+                if (that.selectedIndex === 0) {
+                    $(that.suggestionsContainer).children().first().removeClass(that.classes.selected);
+                    that.selectedIndex = -1;
+                    that.el.val(that.currentValue);
+                    that.findBestHint();
+                    return;
+                }
+            } else {
+                if (that.selectedIndex === -1) {
+                    that.adjustScroll(that.suggestions.length - 1);
+                    return;
+                }
+
+                if (that.selectedIndex === 0) {
+                    return;
+                }
             }
 
             that.adjustScroll(that.selectedIndex - 1);
@@ -806,8 +821,18 @@
         moveDown: function () {
             var that = this;
 
-            if (that.selectedIndex === (that.suggestions.length - 1)) {
-                return;
+            if (that.displayedOrientation === 'bottom') {
+                if (that.selectedIndex === (that.suggestions.length - 1)) {
+                    return;
+                }
+            } else {
+                if (that.selectedIndex == -1) {
+                    return;
+                }
+
+                if (that.selectedIndex > (that.suggestions.length - 1)) {
+                    return;
+                }
             }
 
             that.adjustScroll(that.selectedIndex + 1);
