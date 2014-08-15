@@ -60,6 +60,7 @@
                 onSelect: null,
                 width: 'auto',
                 minChars: 1,
+                maxChars: 150,
                 maxHeight: 300,
                 deferRequestBy: 0,
                 params: {},
@@ -199,7 +200,7 @@
         onFocus: function () {
             var that = this;
             that.fixPosition();
-            if (that.options.minChars <= that.el.val().length) {
+            if (that.options.minChars <= that.el.val().length && that.options.maxChars >= that.el.val().length) {
                 that.onValueChange();
             }
         },
@@ -461,7 +462,7 @@
                 }
             }
 
-            if (query.length < options.minChars) {
+            if (query.length < options.minChars || query.length > options.maxChars) {
                 that.hide();
             } else {
                 that.getSuggestions(query);
