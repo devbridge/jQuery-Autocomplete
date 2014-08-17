@@ -473,8 +473,11 @@ describe('Autocomplete', function () {
         });
 
         input.val('Jam');
+        input.width(100);
+
         instance = input.autocomplete();
         instance.onValueChange();
+
         width = $(instance.suggestionsContainer).width();
 
         expect(width).toBeGreaterThan(0);
