@@ -1,6 +1,46 @@
 ﻿/*jslint vars: true*/
 /*global describe, it, expect, waits, waitsFor, runs, afterEach, spyOn, $*/
 
+describe('Async Tests', function(){
+
+        var input = document.createElement('input'),
+            startQuery,
+            ajaxExecuted = false,
+            autocomplete = new $.Autocomplete(input, {
+                serviceUrl: '/test',
+                onSearchStart: function (params) {
+                    startQuery = params.query;
+                }
+            });
+
+        beforeEach(function (done){
+            $.mockjax({
+                url: '/test',
+                responseTime: 50,
+                response: function (settings) {
+                    ajaxExecuted = true;
+                    var query = settings.data.query,
+                        response = {
+                            query: query,
+                            suggestions: []
+                        };
+                    this.responseText = JSON.stringify(response);
+                    done();
+                }
+            });
+
+            input.value = 'A';
+            autocomplete.onValueChange();
+        });
+
+        console.debug('BEFOREEACH', beforeEach);
+
+    it('Should execute onSearchStart', function () {
+        expect(ajaxExecuted).toBe(true);
+        expect(startQuery).toBe('A');
+    });
+});
+
 describe('Autocomplete', function () {
     'use strict';
 
@@ -93,44 +133,6 @@ describe('Autocomplete', function () {
 
         expect(autocomplete.options.lookup[0].value).toBe('A');
         expect(autocomplete.options.lookup[1].value).toBe('B');
-    });
-
-    it('Should execute onSearchStart', function () {
-        var input = document.createElement('input'),
-            startQuery,
-            ajaxExecuted = false,
-            autocomplete = new $.Autocomplete(input, {
-                serviceUrl: '/test',
-                onSearchStart: function (params) {
-                    startQuery = params.query;
-                }
-            });
-
-        $.mockjax({
-            url: '/test',
-            responseTime: 50,
-            response: function (settings) {
-                ajaxExecuted = true;
-                var query = settings.data.query,
-                    response = {
-                        query: query,
-                        suggestions: []
-                    };
-                this.responseText = JSON.stringify(response);
-            }
-        });
-
-        input.value = 'A';
-        autocomplete.onValueChange();
-
-        waitsFor(function () {
-            return ajaxExecuted;
-        }, 'Ajax call never completed.', 100);
-
-        runs(function () {
-            expect(ajaxExecuted).toBe(true);
-            expect(startQuery).toBe('A');
-        });
     });
 
     it('Should execute onSearchComplete', function () {
