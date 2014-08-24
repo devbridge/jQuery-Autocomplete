@@ -723,9 +723,10 @@
         },
 
         validateOrientation: function(orientation, fallback) {
-            orientation = orientation.trim().toLowerCase();
-            if(['auto', 'bottom', 'top'].indexOf(orientation) == '-1')
+            orientation = $.trim(orientation || '').toLowerCase();
+            if($.inArray(orientation, ['auto', 'bottom', 'top']) === -1){
                 orientation = fallback;
+            }
             return orientation
         },
 
