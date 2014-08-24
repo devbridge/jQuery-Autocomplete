@@ -1,5 +1,5 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.10
+*  Ajax Autocomplete for jQuery, version 1.2.11
 *  (c) 2014 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
@@ -723,9 +723,10 @@
         },
 
         validateOrientation: function(orientation, fallback) {
-            orientation = orientation.trim().toLowerCase();
-            if(['auto', 'bottom', 'top'].indexOf(orientation) == '-1')
+            orientation = $.trim(orientation || '').toLowerCase();
+            if($.inArray(orientation, ['auto', 'bottom', 'top']) === -1){
                 orientation = fallback;
+            }
             return orientation
         },
 
