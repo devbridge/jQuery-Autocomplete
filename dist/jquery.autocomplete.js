@@ -53,6 +53,7 @@
         var noop = function () { },
             that = this,
             defaults = {
+                ajaxSettings: {},
                 autoSelectFirst: false,
                 appendTo: document.body,
                 serviceUrl: null,
@@ -521,7 +522,8 @@
                 options = that.options,
                 serviceUrl = options.serviceUrl,
                 params,
-                cacheKey;
+                cacheKey,
+                ajaxSettings;
 
             options.params[options.paramName] = q;
             params = options.ignoreParams ? null : options.params;
@@ -546,12 +548,17 @@
                 if (that.currentRequest) {
                     that.currentRequest.abort();
                 }
-                that.currentRequest = $.ajax({
+
+                ajaxSettings = {
                     url: serviceUrl,
                     data: params,
                     type: options.type,
                     dataType: options.dataType
-                }).done(function (data) {
+                };
+
+                $.extend(ajaxSettings, options.ajaxSettings);
+
+                that.currentRequest = $.ajax(ajaxSettings).done(function (data) {
                     var result;
                     that.currentRequest = null;
                     result = options.transformResult(data);
