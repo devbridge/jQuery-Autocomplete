@@ -159,6 +159,11 @@ you can supply the "paramName" and "transformResult" options:
         }
     })
 
+##Known Issues
+
+If you use it with jQuery UI library it also has plugin named `autocomplete`. In this case you can use plugin alias `devbridgeAutocomplete`:
+
+    $('.autocomplete').devbridgeAutocomplete({ ... });
 
 ##License
 
