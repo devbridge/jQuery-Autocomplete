@@ -1,0 +1,12 @@
+{
+  "name": "devbridge-autocomplete",
+  "version": "1.2.11",
+  "description": "Autocomplete provides suggestions while you type into the text field.",
+  "homepage": "https://github.com/devbridge/jQuery-Autocomplete",
+  "author": "Tomas Kirda (https://twitter.com/tkirda)",
+  "main": "dist/jquery.autocomplete.js",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": ">=1.7"
+  }
+}
