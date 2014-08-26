@@ -446,7 +446,7 @@
                 query = that.getQuery(value),
                 index;
 
-            if (that.selection) {
+            if (that.selection && that.currentValue != query) {
                 that.selection = null;
                 (options.onInvalidateSelection || $.noop).call(that.element);
             }
