@@ -89,7 +89,7 @@
                 showNoSuggestionNotice: false,
                 noSuggestionNotice: 'No results',
                 orientation: 'bottom',
-                forceFixPosition: false,
+                forceFixPosition: false
             };
 
         // Shared variables:
