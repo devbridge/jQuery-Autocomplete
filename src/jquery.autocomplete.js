@@ -1,11 +1,11 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.11
-*  (c) 2014 Tomas Kirda
-*
-*  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
-*  For details, see the web site: https://github.com/devbridge/jQuery-Autocomplete
-*
-*/
+ *  Ajax Autocomplete for jQuery, version 1.2.11
+ *  (c) 2014 Tomas Kirda
+ *
+ *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
+ *  For details, see the web site: https://github.com/devbridge/jQuery-Autocomplete
+ *
+ */
 
 /*jslint  browser: true, white: true, plusplus: true */
 /*global define, window, document, jQuery */
@@ -50,7 +50,8 @@
         };
 
     function Autocomplete(el, options) {
-        var noop = function () { },
+        var noop = function () {
+            },
             that = this,
             defaults = {
                 autoSelectFirst: false,
@@ -63,6 +64,7 @@
                 maxHeight: 300,
                 deferRequestBy: 0,
                 params: {},
+                global: true,
                 formatResult: Autocomplete.formatResult,
                 delimiter: null,
                 zIndex: 9999,
@@ -87,7 +89,7 @@
                 showNoSuggestionNotice: false,
                 noSuggestionNotice: 'No results',
                 orientation: 'bottom',
-                forceFixPosition: false
+                forceFixPosition: false,
             };
 
         // Shared variables:
@@ -152,7 +154,7 @@
 
             // html() deals with many types: htmlString or Element or Array or jQuery
             that.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>')
-                                          .html(this.options.noSuggestionNotice).get(0);
+                .html(this.options.noSuggestionNotice).get(0);
 
             that.suggestionsContainer = Autocomplete.utils.createNode(options.containerClass);
 
@@ -189,11 +191,21 @@
 
             $(window).on('resize.autocomplete', that.fixPositionCapture);
 
-            that.el.on('keydown.autocomplete', function (e) { that.onKeyPress(e); });
-            that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
-            that.el.on('blur.autocomplete', function () { that.onBlur(); });
-            that.el.on('focus.autocomplete', function () { that.onFocus(); });
-            that.el.on('change.autocomplete', function (e) { that.onKeyUp(e); });
+            that.el.on('keydown.autocomplete', function (e) {
+                that.onKeyPress(e);
+            });
+            that.el.on('keyup.autocomplete', function (e) {
+                that.onKeyUp(e);
+            });
+            that.el.on('blur.autocomplete', function () {
+                that.onBlur();
+            });
+            that.el.on('focus.autocomplete', function () {
+                that.onFocus();
+            });
+            that.el.on('change.autocomplete', function (e) {
+                that.onKeyUp(e);
+            });
         },
 
         onFocus: function () {
@@ -284,14 +296,14 @@
                     orientation = 'bottom';
             }
 
-			if (orientation === 'top')
+            if (orientation === 'top')
                 styles.top += -containerHeight;
-			else
-				styles.top += height;
+            else
+                styles.top += height;
 
             // If container is not positioned to body,
             // correct its position using offset parent offset
-            if(containerParent !== document.body) {
+            if (containerParent !== document.body) {
                 var opacity = $container.css('opacity'),
                     parentOffsetDiff;
                 if (!that.visible)
@@ -382,7 +394,7 @@
                         that.selectHint();
                         return;
                     }
-                    // Fall through to RETURN
+                // Fall through to RETURN
                 case keys.RETURN:
                     if (that.selectedIndex === -1) {
                         that.hide();
@@ -550,7 +562,8 @@
                     url: serviceUrl,
                     data: params,
                     type: options.type,
-                    dataType: options.dataType
+                    dataType: options.dataType,
+                    global: options.global
                 }).done(function (data) {
                     var result;
                     that.currentRequest = null;
@@ -564,7 +577,7 @@
         },
 
         isBadQuery: function (q) {
-            if (!this.options.preventBadQueries){
+            if (!this.options.preventBadQueries) {
                 return false;
             }
 
@@ -590,7 +603,7 @@
 
         suggest: function () {
             if (this.suggestions.length === 0) {
-                this.options.showNoSuggestionNotice ? this.noSuggestions() : this.hide();               
+                this.options.showNoSuggestionNotice ? this.noSuggestions() : this.hide();
                 return;
             }
 
@@ -620,7 +633,7 @@
                 html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
             });
 
-            this.adjustContainerWidth();      
+            this.adjustContainerWidth();
 
             noSuggestionsContainer.detach();
             container.html(html);
@@ -643,10 +656,10 @@
             that.findBestHint();
         },
 
-        noSuggestions: function() {
-             var that = this,
-                 container = $(that.suggestionsContainer),
-                 noSuggestionsContainer = $(that.noSuggestionsContainer);
+        noSuggestions: function () {
+            var that = this,
+                container = $(that.suggestionsContainer),
+                noSuggestionsContainer = $(that.noSuggestionsContainer);
 
             this.adjustContainerWidth();
 
@@ -662,7 +675,7 @@
             that.visible = true;
         },
 
-        adjustContainerWidth: function() {
+        adjustContainerWidth: function () {
             var that = this,
                 options = that.options,
                 width,
@@ -722,9 +735,9 @@
             return suggestions;
         },
 
-        validateOrientation: function(orientation, fallback) {
+        validateOrientation: function (orientation, fallback) {
             orientation = $.trim(orientation || '').toLowerCase();
-            if($.inArray(orientation, ['auto', 'bottom', 'top']) === -1){
+            if ($.inArray(orientation, ['auto', 'bottom', 'top']) === -1) {
                 orientation = fallback;
             }
             return orientation
@@ -889,7 +902,7 @@
         }
     };
 
-    // Create chainable jQuery plugin:
+// Create chainable jQuery plugin:
     $.fn.autocomplete = $.fn.devbridgeAutocomplete = function (options, args) {
         var dataKey = 'autocomplete';
         // If function invoked without argument return
