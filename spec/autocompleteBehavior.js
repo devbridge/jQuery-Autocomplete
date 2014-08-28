@@ -660,7 +660,7 @@ describe('Autocomplete', function () {
 
     it('Should display no suggestion notice when no matching results', function () {
         var input = document.createElement('input'),
-            options = {  
+            options = {
                 lookup: [{ value: 'Colombia', data: 'Spain' }],
                 showNoSuggestionNotice: true,
                 noSuggestionNotice: 'Sorry, no matching results'
@@ -669,12 +669,38 @@ describe('Autocomplete', function () {
             suggestionsContainer = $(autocomplete.suggestionsContainer)
 
         input.value = 'Jamaica';
-        autocomplete.onValueChange();       
+        autocomplete.onValueChange();
 
         expect(autocomplete.visible).toBe(true);
         expect(autocomplete.selectedIndex).toBe(-1)
         expect(suggestionsContainer.find('.autocomplete-no-suggestion').length).toBe(1)
-        expect(suggestionsContainer.find('.autocomplete-no-suggestion').text()).toBe('Sorry, no matching results')        
+        expect(suggestionsContainer.find('.autocomplete-no-suggestion').text()).toBe('Sorry, no matching results')
+    });
+
+    it('Should call onHide and pass container jQuery object', function () {
+        var element = document.createElement('input'),
+            input = $(element),
+            instance,
+            elementCount,
+            context;
+
+        input.autocomplete({
+            lookup: [{ value: 'Jamaica', data: 'B' }],
+            onHide: function (container) {
+                context = this;
+                elementCount = container.length;
+            }
+        });
+
+        input.val('Jam');
+        instance = input.autocomplete();
+        instance.onValueChange();
+
+        input.val('Colombia');
+        instance.onValueChange();
+
+        expect(context).toBe(element);
+        expect(elementCount).toBe(1);
     });
 
 });
