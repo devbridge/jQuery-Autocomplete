@@ -593,7 +593,14 @@
         },
 
         hide: function () {
-            var that = this;
+            var that = this,
+            container = $(that.suggestionsContainer);
+
+            if ($.isFunction(this.options.onHide) && that.visible) {
+
+              this.options.onHide.call(that.element, container);
+            }
+            
             that.visible = false;
             that.selectedIndex = -1;
             $(that.suggestionsContainer).hide();
@@ -602,7 +609,7 @@
 
         suggest: function () {
             if (this.suggestions.length === 0) {
-                this.options.showNoSuggestionNotice ? this.noSuggestions() : this.hide();               
+                this.options.showNoSuggestionNotice ? this.noSuggestions() : this.hide();
                 return;
             }
 
@@ -631,7 +638,7 @@
                 html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
             });
 
-            this.adjustContainerWidth();      
+            this.adjustContainerWidth();
 
             noSuggestionsContainer.detach();
             container.html(html);
