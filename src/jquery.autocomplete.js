@@ -771,9 +771,9 @@
                 activeItem,
                 selected = that.classes.selected,
                 container = $(that.suggestionsContainer),
-                children = container.children();
+                children = container.find('.' + that.classes.suggestion);
 
-            container.children('.' + selected).removeClass(selected);
+            container.find('.' + selected).removeClass(selected);
 
             that.selectedIndex = index;
 
