@@ -1,14 +1,13 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.9
-*  (c) 2013 Tomas Kirda
+*  Ajax Autocomplete for jQuery, version 1.2.12
+*  (c) 2014 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
 *  For details, see the web site: https://github.com/devbridge/jQuery-Autocomplete
-*
 */
 
 /*jslint  browser: true, white: true, plusplus: true */
-/*global define, window, document, jQuery */
+/*global define, window, document, jQuery, exports */
 
 // Expose plugin as an AMD module if AMD loader is present:
 (function (factory) {
@@ -16,6 +15,9 @@
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define(['jquery'], factory);
+    } else if (typeof exports === 'object' && typeof require === 'function') {
+        // Browserify
+        factory(require('jquery'));
     } else {
         // Browser globals
         factory(jQuery);
@@ -53,8 +55,9 @@
         var noop = function () { },
             that = this,
             defaults = {
+                ajaxSettings: {},
                 autoSelectFirst: false,
-                appendTo: 'body',
+                appendTo: document.body,
                 serviceUrl: null,
                 lookup: null,
                 onSelect: null,
@@ -76,13 +79,18 @@
                 dataType: 'text',
                 currentRequest: null,
                 triggerSelectOnValidInput: true,
+                preventBadQueries: true,
                 lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
                     return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
                 },
                 paramName: 'query',
                 transformResult: function (response) {
                     return typeof response === 'string' ? $.parseJSON(response) : response;
-                }
+                },
+                showNoSuggestionNotice: false,
+                noSuggestionNotice: 'No results',
+                orientation: 'bottom',
+                forceFixPosition: false
             };
 
         // Shared variables:
@@ -98,6 +106,7 @@
         that.onChange = null;
         that.isLocal = false;
         that.suggestionsContainer = null;
+        that.noSuggestionsContainer = null;
         that.options = $.extend({}, defaults, options);
         that.classes = {
             selected: 'autocomplete-selected',
@@ -143,6 +152,10 @@
                 }
             };
 
+            // html() deals with many types: htmlString or Element or Array or jQuery
+            that.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>')
+                                          .html(this.options.noSuggestionNotice).get(0);
+
             that.suggestionsContainer = Autocomplete.utils.createNode(options.containerClass);
 
             container = $(that.suggestionsContainer);
@@ -169,8 +182,6 @@
             container.on('click.autocomplete', suggestionSelector, function () {
                 that.select($(this).data('index'));
             });
-
-            that.fixPosition();
 
             that.fixPositionCapture = function () {
                 if (that.visible) {
@@ -211,6 +222,8 @@
                 options.lookup = that.verifySuggestionsFormat(options.lookup);
             }
 
+            options.orientation = that.validateOrientation(options.orientation, 'bottom');
+
             // Adjust height, width and z-index:
             $(that.suggestionsContainer).css({
                 'max-height': options.maxHeight + 'px',
@@ -218,6 +231,7 @@
                 'z-index': options.zIndex
             });
         },
+
 
         clearCache: function () {
             this.cachedResponse = {};
@@ -243,27 +257,65 @@
         },
 
         fixPosition: function () {
-            var that = this,
-                offset,
-                styles;
+            // Use only when container has already its content
 
-            // Don't adjsut position if custom container has been specified:
-            if (that.options.appendTo !== 'body') {
+            var that = this,
+                $container = $(that.suggestionsContainer),
+                containerParent = $container.parent().get(0);
+            // Fix position automatically when appended to body.
+            // In other cases force parameter must be given.
+            if (containerParent !== document.body && !that.options.forceFixPosition)
                 return;
+
+            // Choose orientation
+            var orientation = that.options.orientation,
+                containerHeight = $container.outerHeight(),
+                height = that.el.outerHeight(),
+                offset = that.el.offset(),
+                styles = { 'top': offset.top, 'left': offset.left };
+
+            if (orientation == 'auto') {
+                var viewPortHeight = $(window).height(),
+                    scrollTop = $(window).scrollTop(),
+                    topOverflow = -scrollTop + offset.top - containerHeight,
+                    bottomOverflow = scrollTop + viewPortHeight - (offset.top + height + containerHeight);
+
+                orientation = (Math.max(topOverflow, bottomOverflow) === topOverflow)
+                                ? 'top'
+                                : 'bottom';
             }
 
-            offset = that.el.offset();
+            if (orientation === 'top') {
+                styles.top += -containerHeight;
+            } else {
+                styles.top += height;
+            }
 
-            styles = {
-                top: (offset.top + that.el.outerHeight()) + 'px',
-                left: offset.left + 'px'
-            };
+            // If container is not positioned to body,
+            // correct its position using offset parent offset
+            if(containerParent !== document.body) {
+                var opacity = $container.css('opacity'),
+                    parentOffsetDiff;
 
+                    if (!that.visible){
+                        $container.css('opacity', 0).show();
+                    }
+
+                parentOffsetDiff = $container.offsetParent().offset();
+                styles.top -= parentOffsetDiff.top;
+                styles.left -= parentOffsetDiff.left;
+
+                if (!that.visible){
+                    $container.css('opacity', opacity).hide();
+                }
+            }
+
+            // -2px to account for suggestions border.
             if (that.options.width === 'auto') {
                 styles.width = (that.el.outerWidth() - 2) + 'px';
             }
 
-            $(that.suggestionsContainer).css(styles);
+            $container.css(styles);
         },
 
         enableKillerFn: function () {
@@ -396,7 +448,7 @@
                 query = that.getQuery(value),
                 index;
 
-            if (that.selection) {
+            if (that.selection && that.currentValue !== query) {
                 that.selection = null;
                 (options.onInvalidateSelection || $.noop).call(that.element);
             }
@@ -473,11 +525,12 @@
                 that = this,
                 options = that.options,
                 serviceUrl = options.serviceUrl,
-                data,
-                cacheKey;
+                params,
+                cacheKey,
+                ajaxSettings;
 
             options.params[options.paramName] = q;
-            data = options.ignoreParams ? null : options.params;
+            params = options.ignoreParams ? null : options.params;
 
             if (that.isLocal) {
                 response = that.getSuggestionsLocal(q);
@@ -485,7 +538,7 @@
                 if ($.isFunction(serviceUrl)) {
                     serviceUrl = serviceUrl.call(that.element, q);
                 }
-                cacheKey = serviceUrl + '?' + $.param(data || {});
+                cacheKey = serviceUrl + '?' + $.param(params || {});
                 response = that.cachedResponse[cacheKey];
             }
 
@@ -499,15 +552,22 @@
                 if (that.currentRequest) {
                     that.currentRequest.abort();
                 }
-                that.currentRequest = $.ajax({
+
+                ajaxSettings = {
                     url: serviceUrl,
-                    data: data,
+                    data: params,
                     type: options.type,
                     dataType: options.dataType
-                }).done(function (data) {
+                };
+
+                $.extend(ajaxSettings, options.ajaxSettings);
+
+                that.currentRequest = $.ajax(ajaxSettings).done(function (data) {
+                    var result;
                     that.currentRequest = null;
-                    that.processResponse(data, q, cacheKey);
-                    options.onSearchComplete.call(that.element, q);
+                    result = options.transformResult(data);
+                    that.processResponse(result, q, cacheKey);
+                    options.onSearchComplete.call(that.element, q, result.suggestions);
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     options.onSearchError.call(that.element, q, jqXHR, textStatus, errorThrown);
                 });
@@ -515,6 +575,10 @@
         },
 
         isBadQuery: function (q) {
+            if (!this.options.preventBadQueries){
+                return false;
+            }
+
             var badQueries = this.badQueries,
                 i = badQueries.length;
 
@@ -537,7 +601,7 @@
 
         suggest: function () {
             if (this.suggestions.length === 0) {
-                this.hide();
+                this.options.showNoSuggestionNotice ? this.noSuggestions() : this.hide();               
                 return;
             }
 
@@ -548,10 +612,10 @@
                 className = that.classes.suggestion,
                 classSelected = that.classes.selected,
                 container = $(that.suggestionsContainer),
+                noSuggestionsContainer = $(that.noSuggestionsContainer),
                 beforeRender = options.beforeRender,
                 html = '',
-                index,
-                width;
+                index;
 
             if (options.triggerSelectOnValidInput) {
                 index = that.findSuggestionIndex(value);
@@ -566,15 +630,9 @@
                 html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
             });
 
-            // If width is auto, adjust width before displaying suggestions,
-            // because if instance was created before input had width, it will be zero.
-            // Also it adjusts if input width has changed.
-            // -2px to account for suggestions border.
-            if (options.width === 'auto') {
-                width = that.el.outerWidth() - 2;
-                container.width(width > 0 ? width : 300);
-            }
+            this.adjustContainerWidth();      
 
+            noSuggestionsContainer.detach();
             container.html(html);
 
             // Select first value by default:
@@ -587,10 +645,47 @@
                 beforeRender.call(that.element, container);
             }
 
+            that.fixPosition();
+
             container.show();
             that.visible = true;
 
             that.findBestHint();
+        },
+
+        noSuggestions: function() {
+             var that = this,
+                 container = $(that.suggestionsContainer),
+                 noSuggestionsContainer = $(that.noSuggestionsContainer);
+
+            this.adjustContainerWidth();
+
+            // Some explicit steps. Be careful here as it easy to get
+            // noSuggestionsContainer removed from DOM if not detached properly.
+            noSuggestionsContainer.detach();
+            container.empty(); // clean suggestions if any
+            container.append(noSuggestionsContainer);
+
+            that.fixPosition();
+
+            container.show();
+            that.visible = true;
+        },
+
+        adjustContainerWidth: function() {
+            var that = this,
+                options = that.options,
+                width,
+                container = $(that.suggestionsContainer);
+
+            // If width is auto, adjust width before displaying suggestions,
+            // because if instance was created before input had width, it will be zero.
+            // Also it adjusts if input width has changed.
+            // -2px to account for suggestions border.
+            if (options.width === 'auto') {
+                width = that.el.outerWidth() - 2;
+                container.width(width > 0 ? width : 300);
+            }
         },
 
         findBestHint: function () {
@@ -637,18 +732,27 @@
             return suggestions;
         },
 
-        processResponse: function (response, originalQuery, cacheKey) {
+        validateOrientation: function(orientation, fallback) {
+            orientation = $.trim(orientation || '').toLowerCase();
+
+            if($.inArray(orientation, ['auto', 'bottom', 'top']) === -1){
+                orientation = fallback;
+            }
+
+            return orientation;
+        },
+
+        processResponse: function (result, originalQuery, cacheKey) {
             var that = this,
-                options = that.options,
-                result = options.transformResult(response, originalQuery);
+                options = that.options;
 
             result.suggestions = that.verifySuggestionsFormat(result.suggestions);
 
             // Cache results if cache is not disabled:
             if (!options.noCache) {
                 that.cachedResponse[cacheKey] = result;
-                if (result.suggestions.length === 0) {
-                    that.badQueries.push(cacheKey);
+                if (options.preventBadQueries && result.suggestions.length === 0) {
+                    that.badQueries.push(originalQuery);
                 }
             }
 
@@ -666,9 +770,9 @@
                 activeItem,
                 selected = that.classes.selected,
                 container = $(that.suggestionsContainer),
-                children = container.children();
+                children = container.find('.' + that.classes.suggestion);
 
-            container.children('.' + selected).removeClass(selected);
+            container.find('.' + selected).removeClass(selected);
 
             that.selectedIndex = index;
 
@@ -754,7 +858,11 @@
                 suggestion = that.suggestions[index];
 
             that.currentValue = that.getValue(suggestion.value);
-            that.el.val(that.currentValue);
+
+            if (that.currentValue !== that.el.val()) {
+                that.el.val(that.currentValue);
+            }
+
             that.signalHint(null);
             that.suggestions = [];
             that.selection = suggestion;
@@ -794,7 +902,7 @@
     };
 
     // Create chainable jQuery plugin:
-    $.fn.autocomplete = function (options, args) {
+    $.fn.autocomplete = $.fn.devbridgeAutocomplete = function (options, args) {
         var dataKey = 'autocomplete';
         // If function invoked without argument return
         // instance of the first matched element:

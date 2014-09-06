@@ -1,14 +1,13 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.9
-*  (c) 2013 Tomas Kirda
+*  Ajax Autocomplete for jQuery, version %version%
+*  (c) 2014 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
 *  For details, see the web site: https://github.com/devbridge/jQuery-Autocomplete
-*
 */
 
 /*jslint  browser: true, white: true, plusplus: true */
-/*global define, window, document, jQuery */
+/*global define, window, document, jQuery, exports */
 
 // Expose plugin as an AMD module if AMD loader is present:
 (function (factory) {
@@ -16,6 +15,9 @@
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define(['jquery'], factory);
+    } else if (typeof exports === 'object' && typeof require === 'function') {
+        // Browserify
+        factory(require('jquery'));
     } else {
         // Browser globals
         factory(jQuery);
@@ -53,6 +55,7 @@
         var noop = function () { },
             that = this,
             defaults = {
+                ajaxSettings: {},
                 autoSelectFirst: false,
                 appendTo: document.body,
                 serviceUrl: null,
@@ -137,8 +140,7 @@
                 suggestionSelector = '.' + that.classes.suggestion,
                 selected = that.classes.selected,
                 options = that.options,
-                container,
-                noSuggestionsContainer;
+                container;
 
             // Remove autocomplete attribute to prevent native suggestions:
             that.element.setAttribute('autocomplete', 'off');
@@ -275,34 +277,37 @@
             if (orientation == 'auto') {
                 var viewPortHeight = $(window).height(),
                     scrollTop = $(window).scrollTop(),
-                    top_overflow = -scrollTop + offset.top - containerHeight,
-                    bottom_overflow = scrollTop + viewPortHeight - (offset.top + height + containerHeight);
+                    topOverflow = -scrollTop + offset.top - containerHeight,
+                    bottomOverflow = scrollTop + viewPortHeight - (offset.top + height + containerHeight);
 
-                if (Math.max(top_overflow, bottom_overflow) === top_overflow)
-                    orientation = 'top';
-                else
-                    orientation = 'bottom';
+                orientation = (Math.max(topOverflow, bottomOverflow) === topOverflow)
+                                ? 'top'
+                                : 'bottom';
             }
 
-			if (orientation === 'top')
+            if (orientation === 'top') {
                 styles.top += -containerHeight;
-			else
-				styles.top += height;
+            } else {
+                styles.top += height;
+            }
 
             // If container is not positioned to body,
             // correct its position using offset parent offset
             if(containerParent !== document.body) {
                 var opacity = $container.css('opacity'),
                     parentOffsetDiff;
-                if (!that.visible)
-                    $container.css('opacity', 0).show();
+
+                    if (!that.visible){
+                        $container.css('opacity', 0).show();
+                    }
 
                 parentOffsetDiff = $container.offsetParent().offset();
                 styles.top -= parentOffsetDiff.top;
                 styles.left -= parentOffsetDiff.left;
 
-                if (!that.visible)
+                if (!that.visible){
                     $container.css('opacity', opacity).hide();
+                }
             }
 
             // -2px to account for suggestions border.
@@ -443,7 +448,7 @@
                 query = that.getQuery(value),
                 index;
 
-            if (that.selection) {
+            if (that.selection && that.currentValue !== query) {
                 that.selection = null;
                 (options.onInvalidateSelection || $.noop).call(that.element);
             }
@@ -521,7 +526,8 @@
                 options = that.options,
                 serviceUrl = options.serviceUrl,
                 params,
-                cacheKey;
+                cacheKey,
+                ajaxSettings;
 
             options.params[options.paramName] = q;
             params = options.ignoreParams ? null : options.params;
@@ -546,12 +552,17 @@
                 if (that.currentRequest) {
                     that.currentRequest.abort();
                 }
-                that.currentRequest = $.ajax({
+
+                ajaxSettings = {
                     url: serviceUrl,
                     data: params,
                     type: options.type,
                     dataType: options.dataType
-                }).done(function (data) {
+                };
+
+                $.extend(ajaxSettings, options.ajaxSettings);
+
+                that.currentRequest = $.ajax(ajaxSettings).done(function (data) {
                     var result;
                     that.currentRequest = null;
                     result = options.transformResult(data);
@@ -604,8 +615,7 @@
                 noSuggestionsContainer = $(that.noSuggestionsContainer),
                 beforeRender = options.beforeRender,
                 html = '',
-                index,
-                width;
+                index;
 
             if (options.triggerSelectOnValidInput) {
                 index = that.findSuggestionIndex(value);
@@ -723,10 +733,13 @@
         },
 
         validateOrientation: function(orientation, fallback) {
-            orientation = orientation.trim().toLowerCase();
-            if(['auto', 'bottom', 'top'].indexOf(orientation) == '-1')
+            orientation = $.trim(orientation || '').toLowerCase();
+
+            if($.inArray(orientation, ['auto', 'bottom', 'top']) === -1){
                 orientation = fallback;
-            return orientation
+            }
+
+            return orientation;
         },
 
         processResponse: function (result, originalQuery, cacheKey) {
@@ -757,9 +770,9 @@
                 activeItem,
                 selected = that.classes.selected,
                 container = $(that.suggestionsContainer),
-                children = container.children();
+                children = container.find('.' + that.classes.suggestion);
 
-            container.children('.' + selected).removeClass(selected);
+            container.find('.' + selected).removeClass(selected);
 
             that.selectedIndex = index;
 
@@ -889,7 +902,7 @@
     };
 
     // Create chainable jQuery plugin:
-    $.fn.autocomplete = function (options, args) {  
+    $.fn.autocomplete = $.fn.devbridgeAutocomplete = function (options, args) {
         var dataKey = 'autocomplete';
         // If function invoked without argument return
         // instance of the first matched element:

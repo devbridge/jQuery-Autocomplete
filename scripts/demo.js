@@ -47,7 +47,7 @@ $(function () {
     });
 
     // Initialize autocomplete with local lookup:
-    $('#autocomplete').autocomplete({
+    $('#autocomplete').devbridgeAutocomplete({
         lookup: countriesArray,
         minChars: 0,
         onSelect: function (suggestion) {
