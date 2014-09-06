@@ -1,10 +1,9 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.11
+*  Ajax Autocomplete for jQuery, version %version%
 *  (c) 2014 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
 *  For details, see the web site: https://github.com/devbridge/jQuery-Autocomplete
-*
 */
 
 /*jslint  browser: true, white: true, plusplus: true */
