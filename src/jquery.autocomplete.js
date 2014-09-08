@@ -247,6 +247,7 @@
         disable: function () {
             var that = this;
             that.disabled = true;
+            clearInterval(that.onChangeInterval);
             if (that.currentRequest) {
                 that.currentRequest.abort();
             }
@@ -595,6 +596,7 @@
             var that = this;
             that.visible = false;
             that.selectedIndex = -1;
+            clearInterval(that.onChangeInterval);
             $(that.suggestionsContainer).hide();
             that.signalHint(null);
         },
