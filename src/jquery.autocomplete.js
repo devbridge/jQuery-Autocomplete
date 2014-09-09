@@ -61,6 +61,7 @@
                 serviceUrl: null,
                 lookup: null,
                 onSelect: null,
+                onScroll: null,
                 width: 'auto',
                 minChars: 1,
                 maxHeight: 300,
@@ -832,7 +833,9 @@
                 offsetTop,
                 upperBound,
                 lowerBound,
-                heightDelta = 25;
+                heightDelta = 25,
+                onScrollCallback =  that.options.onScroll,
+                suggestion = that.suggestions[index];
 
             if (!activeItem) {
                 return;
@@ -848,8 +851,12 @@
                 $(that.suggestionsContainer).scrollTop(offsetTop - that.options.maxHeight + heightDelta);
             }
 
-            that.el.val(that.getValue(that.suggestions[index].value));
+            that.el.val(that.getValue(suggestion.value));
             that.signalHint(null);
+            
+            if ($.isFunction(onScrollCallback)) {
+                onScrollCallback.call(that.element, suggestion);
+            }
         },
 
         onSelect: function (index) {
