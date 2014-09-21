@@ -1,5 +1,5 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.12
+*  Ajax Autocomplete for jQuery, version 1.2.13
 *  (c) 2014 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
@@ -247,6 +247,7 @@
         disable: function () {
             var that = this;
             that.disabled = true;
+            clearInterval(that.onChangeInterval);
             if (that.currentRequest) {
                 that.currentRequest.abort();
             }
@@ -532,6 +533,10 @@
             options.params[options.paramName] = q;
             params = options.ignoreParams ? null : options.params;
 
+            if (options.onSearchStart.call(that.element, options.params) === false) {
+                return;
+            }
+
             if (that.isLocal) {
                 response = that.getSuggestionsLocal(q);
             } else {
@@ -545,10 +550,8 @@
             if (response && $.isArray(response.suggestions)) {
                 that.suggestions = response.suggestions;
                 that.suggest();
+                options.onSearchComplete.call(that.element, q, response.suggestions);
             } else if (!that.isBadQuery(q)) {
-                if (options.onSearchStart.call(that.element, options.params) === false) {
-                    return;
-                }
                 if (that.currentRequest) {
                     that.currentRequest.abort();
                 }
@@ -571,6 +574,8 @@
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     options.onSearchError.call(that.element, q, jqXHR, textStatus, errorThrown);
                 });
+            } else {
+                options.onSearchComplete.call(that.element, q, []);
             }
         },
 
@@ -595,6 +600,7 @@
             var that = this;
             that.visible = false;
             that.selectedIndex = -1;
+            clearInterval(that.onChangeInterval);
             $(that.suggestionsContainer).hide();
             that.signalHint(null);
         },
