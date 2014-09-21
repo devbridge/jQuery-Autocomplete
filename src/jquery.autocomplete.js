@@ -533,6 +533,10 @@
             options.params[options.paramName] = q;
             params = options.ignoreParams ? null : options.params;
 
+            if (options.onSearchStart.call(that.element, options.params) === false) {
+                return;
+            }
+
             if (that.isLocal) {
                 response = that.getSuggestionsLocal(q);
             } else {
@@ -546,10 +550,8 @@
             if (response && $.isArray(response.suggestions)) {
                 that.suggestions = response.suggestions;
                 that.suggest();
+                options.onSearchComplete.call(that.element, q, response.suggestions);
             } else if (!that.isBadQuery(q)) {
-                if (options.onSearchStart.call(that.element, options.params) === false) {
-                    return;
-                }
                 if (that.currentRequest) {
                     that.currentRequest.abort();
                 }
@@ -572,6 +574,8 @@
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                     options.onSearchError.call(that.element, q, jqXHR, textStatus, errorThrown);
                 });
+            } else {
+                options.onSearchComplete.call(that.element, q, result.suggestions);
             }
         },
 
