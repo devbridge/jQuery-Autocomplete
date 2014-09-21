@@ -575,7 +575,7 @@
                     options.onSearchError.call(that.element, q, jqXHR, textStatus, errorThrown);
                 });
             } else {
-                options.onSearchComplete.call(that.element, q, result.suggestions);
+                options.onSearchComplete.call(that.element, q, []);
             }
         },
 
