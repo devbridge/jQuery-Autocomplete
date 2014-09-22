@@ -613,6 +613,7 @@
 
             var that = this,
                 options = that.options,
+                groupBy = options.groupBy,
                 formatResult = options.formatResult,
                 value = that.getQuery(that.currentValue),
                 className = that.classes.suggestion,
@@ -621,6 +622,18 @@
                 noSuggestionsContainer = $(that.noSuggestionsContainer),
                 beforeRender = options.beforeRender,
                 html = '',
+                category,
+                formatGroup = function (suggestion, index) {
+                        var currentCategory = suggestion.data[groupBy];
+
+                        if (category === currentCategory){
+                            return '';
+                        }
+
+                        category = currentCategory;
+
+                        return '<div class="autocomplete-group"><strong>' + category + '</strong></div>';
+                    },
                 index;
 
             if (options.triggerSelectOnValidInput) {
@@ -633,6 +646,10 @@
 
             // Build suggestions inner HTML:
             $.each(that.suggestions, function (i, suggestion) {
+                if (groupBy){
+                    html += formatGroup(suggestion, value, i);
+                }
+
                 html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
             });
 

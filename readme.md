@@ -51,6 +51,7 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
            Set this option to force auto positioning in other cases.
         * `orientation`: Default `bottom`. Vertical orientation of the displayed suggestions, available values are `auto`, `top`, `bottom`.
           If set to `auto`, the suggestions will be orientated it the way that place them closer to middle of the view port.
+        * `groupBy`: property name of the suggestion `data` object, by which results should be grouped.
 
 Autocomplete instance has following methods:
 
@@ -108,6 +109,7 @@ Local lookup (no ajax):
 Generated HTML markup for suggestions is displayed bellow. You may style it any way you'd like.
 
     <div class="autocomplete-suggestions">
+        <div class="autocomplete-group"><strong>NHL</strong></div>
         <div class="autocomplete-suggestion autocomplete-selected">...</div>
         <div class="autocomplete-suggestion">...</div>
         <div class="autocomplete-suggestion">...</div>
@@ -119,6 +121,9 @@ Style sample:
     .autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
     .autocomplete-selected { background: #F0F0F0; }
     .autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
+    .autocomplete-group { padding: 2px 5px; }
+    .autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
+
 
 ##Response Format
 
@@ -158,6 +163,17 @@ you can supply the "paramName" and "transformResult" options:
             };
         }
     })
+
+## Grouping Results
+
+Specify `groupBy` option of you data property if you wish results to be displayed in groups. For example, set `groupBy: 'category'` if your suggestion data format is:
+
+    [
+        { value: 'Chicago Blackhawks', data: { category: 'NHL' } },
+        { value: 'Chicago Bulls', data: { category: 'NBA' } }
+    ]
+
+Results will be formatted into two groups **NHL** and **NBA**.
 
 ##Known Issues
 
