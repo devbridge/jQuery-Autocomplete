@@ -851,15 +851,16 @@
 
         adjustScroll: function (index) {
             var that = this,
-                activeItem = that.activate(index),
-                offsetTop,
-                upperBound,
-                lowerBound,
-                heightDelta = 25;
+                activeItem = that.activate(index)
 
             if (!activeItem) {
                 return;
             }
+
+            var offsetTop,
+                upperBound,
+                lowerBound,
+                heightDelta = $(activeItem).outerHeight();
 
             offsetTop = activeItem.offsetTop;
             upperBound = $(that.suggestionsContainer).scrollTop();
