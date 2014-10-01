@@ -87,6 +87,9 @@
                 transformResult: function (response) {
                     return typeof response === 'string' ? $.parseJSON(response) : response;
                 },
+                suggestionHtml: function(i, suggestion, value, classes, options) {
+                    return '<div class="' + classes.suggestion + '" data-index="' + i + '">' + options.formatResult(suggestion, value) + '</div>';
+                },
                 showNoSuggestionNotice: false,
                 noSuggestionNotice: 'No results',
                 orientation: 'bottom',
@@ -613,11 +616,10 @@
 
             var that = this,
                 options = that.options,
+                classes = that.classes,
                 groupBy = options.groupBy,
                 formatResult = options.formatResult,
                 value = that.getQuery(that.currentValue),
-                className = that.classes.suggestion,
-                classSelected = that.classes.selected,
                 container = $(that.suggestionsContainer),
                 noSuggestionsContainer = $(that.noSuggestionsContainer),
                 beforeRender = options.beforeRender,
@@ -650,10 +652,10 @@
                     html += formatGroup(suggestion, value, i);
                 }
 
-                html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
+                html += options.suggestionHtml(i, suggestion, value, classes, options);
             });
 
-            this.adjustContainerWidth();      
+            this.adjustContainerWidth();
 
             noSuggestionsContainer.detach();
             container.html(html);
