@@ -658,6 +658,13 @@
             noSuggestionsContainer.detach();
             container.html(html);
 
+            if ($.isFunction(beforeRender)) {
+                beforeRender.call(that.element, container);
+            }
+
+            that.fixPosition();
+            container.show();
+
             // Select first value by default:
             if (options.autoSelectFirst) {
                 that.selectedIndex = 0;
@@ -665,15 +672,7 @@
                 container.children().first().addClass(classSelected);
             }
 
-            if ($.isFunction(beforeRender)) {
-                beforeRender.call(that.element, container);
-            }
-
-            that.fixPosition();
-
-            container.show();
             that.visible = true;
-
             that.findBestHint();
         },
 
