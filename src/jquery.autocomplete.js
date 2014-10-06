@@ -537,6 +537,15 @@
                 return;
             }
 
+            if ($.isFunction(that.lookup)){
+                that.lookup(q, function (data) {
+                    that.suggestions = data.suggestions;
+                    that.suggest();
+                    options.onSearchComplete.call(that.element, q, data.suggestions);
+                });
+                return;
+            }
+
             if (that.isLocal) {
                 response = that.getSuggestionsLocal(q);
             } else {
