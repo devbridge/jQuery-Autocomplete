@@ -281,9 +281,7 @@
                     topOverflow = -scrollTop + offset.top - containerHeight,
                     bottomOverflow = scrollTop + viewPortHeight - (offset.top + height + containerHeight);
 
-                orientation = (Math.max(topOverflow, bottomOverflow) === topOverflow)
-                                ? 'top'
-                                : 'bottom';
+                orientation = (Math.max(topOverflow, bottomOverflow) === topOverflow) ? 'top' : 'bottom';
             }
 
             if (orientation === 'top') {
@@ -388,7 +386,7 @@
                         that.selectHint();
                         return;
                     }
-                    // Fall through to RETURN
+                    /* falls through */
                 case keys.RETURN:
                     if (that.selectedIndex === -1) {
                         that.hide();
@@ -616,7 +614,11 @@
 
         suggest: function () {
             if (this.suggestions.length === 0) {
-                this.options.showNoSuggestionNotice ? this.noSuggestions() : this.hide();               
+				if (this.options.showNoSuggestionNotice) {
+					this.noSuggestions();
+				} else {
+					this.hide();
+				}
                 return;
             }
 
@@ -860,15 +862,16 @@
 
         adjustScroll: function (index) {
             var that = this,
-                activeItem = that.activate(index),
-                offsetTop,
-                upperBound,
-                lowerBound,
-                heightDelta = 25;
+                activeItem = that.activate(index);
 
             if (!activeItem) {
                 return;
             }
+
+            var offsetTop,
+                upperBound,
+                lowerBound,
+                heightDelta = $(activeItem).outerHeight();
 
             offsetTop = activeItem.offsetTop;
             upperBound = $(that.suggestionsContainer).scrollTop();
