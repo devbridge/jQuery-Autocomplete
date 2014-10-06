@@ -669,21 +669,21 @@
             noSuggestionsContainer.detach();
             container.html(html);
 
-            // Select first value by default:
-            if (options.autoSelectFirst) {
-                that.selectedIndex = 0;
-                container.children().first().addClass(classSelected);
-            }
-
             if ($.isFunction(beforeRender)) {
                 beforeRender.call(that.element, container);
             }
 
             that.fixPosition();
-
             container.show();
-            that.visible = true;
 
+            // Select first value by default:
+            if (options.autoSelectFirst) {
+                that.selectedIndex = 0;
+                container.scrollTop(0);
+                container.children().first().addClass(classSelected);
+            }
+
+            that.visible = true;
             that.findBestHint();
         },
 
