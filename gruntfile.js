@@ -40,6 +40,9 @@ module.exports = function(grunt) {
     console.log('Updating: ' + filePath);
     grunt.file.write(filePath, src);
 
+    // Minify latest version:
+    grunt.task.run('uglify');
+
     // Update plugin version:
     filePath = 'devbridge-autocomplete.jquery.json';
     src = grunt.file.readJSON(filePath);
@@ -63,7 +66,5 @@ module.exports = function(grunt) {
     } else {
       console.log('No updates for: ' + filePath);
     }
-
-
   });
 };

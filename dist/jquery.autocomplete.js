@@ -281,9 +281,7 @@
                     topOverflow = -scrollTop + offset.top - containerHeight,
                     bottomOverflow = scrollTop + viewPortHeight - (offset.top + height + containerHeight);
 
-                orientation = (Math.max(topOverflow, bottomOverflow) === topOverflow)
-                                ? 'top'
-                                : 'bottom';
+                orientation = (Math.max(topOverflow, bottomOverflow) === topOverflow) ? 'top' : 'bottom';
             }
 
             if (orientation === 'top') {
@@ -388,7 +386,7 @@
                         that.selectHint();
                         return;
                     }
-                    // Fall through to RETURN
+                    /* falls through */
                 case keys.RETURN:
                     if (that.selectedIndex === -1) {
                         that.hide();
@@ -537,6 +535,15 @@
                 return;
             }
 
+            if ($.isFunction(that.lookup)){
+                that.lookup(q, function (data) {
+                    that.suggestions = data.suggestions;
+                    that.suggest();
+                    options.onSearchComplete.call(that.element, q, data.suggestions);
+                });
+                return;
+            }
+
             if (that.isLocal) {
                 response = that.getSuggestionsLocal(q);
             } else {
@@ -607,7 +614,11 @@
 
         suggest: function () {
             if (this.suggestions.length === 0) {
-                this.options.showNoSuggestionNotice ? this.noSuggestions() : this.hide();               
+				if (this.options.showNoSuggestionNotice) {
+					this.noSuggestions();
+				} else {
+					this.hide();
+				}
                 return;
             }
 
@@ -658,21 +669,21 @@
             noSuggestionsContainer.detach();
             container.html(html);
 
-            // Select first value by default:
-            if (options.autoSelectFirst) {
-                that.selectedIndex = 0;
-                container.children().first().addClass(classSelected);
-            }
-
             if ($.isFunction(beforeRender)) {
                 beforeRender.call(that.element, container);
             }
 
             that.fixPosition();
-
             container.show();
-            that.visible = true;
 
+            // Select first value by default:
+            if (options.autoSelectFirst) {
+                that.selectedIndex = 0;
+                container.scrollTop(0);
+                container.children().first().addClass(classSelected);
+            }
+
+            that.visible = true;
             that.findBestHint();
         },
 
@@ -851,15 +862,16 @@
 
         adjustScroll: function (index) {
             var that = this,
-                activeItem = that.activate(index),
-                offsetTop,
-                upperBound,
-                lowerBound,
-                heightDelta = 25;
+                activeItem = that.activate(index);
 
             if (!activeItem) {
                 return;
             }
+
+            var offsetTop,
+                upperBound,
+                lowerBound,
+                heightDelta = $(activeItem).outerHeight();
 
             offsetTop = activeItem.offsetTop;
             upperBound = $(that.suggestionsContainer).scrollTop();
