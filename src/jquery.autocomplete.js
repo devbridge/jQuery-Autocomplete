@@ -6,8 +6,8 @@
 *  For details, see the web site: https://github.com/devbridge/jQuery-Autocomplete
 */
 
-/*jslint  browser: true, white: true, plusplus: true */
-/*global define, window, document, jQuery, exports */
+/*jslint  browser: true, white: true, plusplus: true, vars: true */
+/*global define, window, document, jQuery, exports, require */
 
 // Expose plugin as an AMD module if AMD loader is present:
 (function (factory) {
@@ -265,8 +265,9 @@
                 containerParent = $container.parent().get(0);
             // Fix position automatically when appended to body.
             // In other cases force parameter must be given.
-            if (containerParent !== document.body && !that.options.forceFixPosition)
+            if (containerParent !== document.body && !that.options.forceFixPosition) {
                 return;
+            }
 
             // Choose orientation
             var orientation = that.options.orientation,
@@ -275,7 +276,7 @@
                 offset = that.el.offset(),
                 styles = { 'top': offset.top, 'left': offset.left };
 
-            if (orientation == 'auto') {
+            if (orientation === 'auto') {
                 var viewPortHeight = $(window).height(),
                     scrollTop = $(window).scrollTop(),
                     topOverflow = -scrollTop + offset.top - containerHeight,
@@ -386,16 +387,21 @@
                         that.selectHint();
                         return;
                     }
-                    /* falls through */
+                    if (that.selectedIndex === -1) {
+                        that.hide();
+                        return;
+                    }
+                    that.select(that.selectedIndex);
+                    if (that.options.tabDisabled === false) {
+                        return;
+                    }
+                    break;
                 case keys.RETURN:
                     if (that.selectedIndex === -1) {
                         that.hide();
                         return;
                     }
                     that.select(that.selectedIndex);
-                    if (e.which === keys.TAB && that.options.tabDisabled === false) {
-                        return;
-                    }
                     break;
                 case keys.UP:
                     that.moveUp();
