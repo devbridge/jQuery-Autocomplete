@@ -126,9 +126,7 @@
     $.Autocomplete = Autocomplete;
 
     Autocomplete.formatResult = function (suggestion, currentValue) {
-        var pattern = '(' + utils.escapeRegExChars(currentValue) + ')';
-
-        return suggestion.value.replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>');
+        return suggestion.value.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + currentValue.replace(/([\^\$\(\)\[\]\{\}\*\.\+\?\|\\])/gi, "\\$1") + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<strong>$1</strong>");
     };
 
     Autocomplete.prototype = {
