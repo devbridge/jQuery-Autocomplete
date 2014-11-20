@@ -780,23 +780,29 @@
             var that = this,
                 options = that.options;
 
-            result.suggestions = that.verifySuggestionsFormat(result.suggestions);
+            // Validate if suggestions is undefined
+            if (result.suggestions !== undefined) {
+                result.suggestions = that.verifySuggestionsFormat(result.suggestions);
 
-            // Cache results if cache is not disabled:
-            if (!options.noCache) {
-                that.cachedResponse[cacheKey] = result;
-                if (options.preventBadQueries && result.suggestions.length === 0) {
-                    that.badQueries.push(originalQuery);
+                // Cache results if cache is not disabled:
+                if (!options.noCache) {
+                    that.cachedResponse[cacheKey] = result;
+                    if (options.preventBadQueries && result.suggestions.length === 0) {
+                        that.badQueries.push(originalQuery);
+                    }
                 }
-            }
 
-            // Return if originalQuery is not matching current query:
-            if (originalQuery !== that.getQuery(that.currentValue)) {
+                // Return if originalQuery is not matching current query:
+                if (originalQuery !== that.getQuery(that.currentValue)) {
+                    return;
+                }
+
+
+                that.suggestions = result.suggestions;
+                that.suggest();
+            } else {
                 return;
             }
-
-            that.suggestions = result.suggestions;
-            that.suggest();
         },
 
         activate: function (index) {
