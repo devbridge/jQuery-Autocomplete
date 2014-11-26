@@ -495,8 +495,6 @@ describe('Autocomplete', function () {
 
         var event = $.Event('keydown');
         event.which = 9; // the tab keycode
-        spyOn(event, 'stopImmediatePropagation');
-        spyOn(event, 'preventDefault');
         spyOn(autocomplete, 'suggest');
 
         expect(autocomplete.visible).toBe(true);
@@ -505,8 +503,6 @@ describe('Autocomplete', function () {
 
         $(input).trigger(event);
 
-        expect(event.stopImmediatePropagation).toHaveBeenCalled();
-        expect(event.preventDefault).toHaveBeenCalled();
         expect(autocomplete.suggest).not.toHaveBeenCalled();
     });
 
