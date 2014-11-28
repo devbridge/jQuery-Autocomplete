@@ -685,9 +685,10 @@
 
             // Select first value by default:
             if (options.autoSelectFirst) {
+                var filter = '[data-index="' + that.selectedIndex + '"]';
                 that.selectedIndex = 0;
                 container.scrollTop(0);
-                container.children().first().addClass(classSelected);
+                container.children().filter(filter).addClass(classSelected);
             }
 
             that.visible = true;
