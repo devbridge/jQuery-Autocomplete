@@ -1,37 +1,38 @@
 /*jslint vars: true*/
-/*global describe, it, expect, waits, waitsFor, runs, afterEach, spyOn, $*/
+/*global describe, it, expect, waits, waitsFor, runs, afterEach, spyOn, $, beforeEach*/
 
-describe('Autocomplete Async', function(){
+describe('Autocomplete Async', function () {
+    'use strict';
 
-        var input = document.createElement('input'),
-            startQuery,
-            ajaxExecuted = false,
-            autocomplete = new $.Autocomplete(input, {
-                serviceUrl: '/test',
-                onSearchStart: function (params) {
-                    startQuery = params.query;
-                }
-            });
-
-        beforeEach(function (done){
-            $.mockjax({
-                url: '/test',
-                responseTime: 50,
-                response: function (settings) {
-                    ajaxExecuted = true;
-                    var query = settings.data.query,
-                        response = {
-                            query: query,
-                            suggestions: []
-                        };
-                    this.responseText = JSON.stringify(response);
-                    done();
-                }
-            });
-
-            input.value = 'A';
-            autocomplete.onValueChange();
+    var input = document.createElement('input'),
+        startQuery,
+        ajaxExecuted = false,
+        autocomplete = new $.Autocomplete(input, {
+            serviceUrl: '/test',
+            onSearchStart: function (params) {
+                startQuery = params.query;
+            }
         });
+
+    beforeEach(function (done) {
+        $.mockjax({
+            url: '/test',
+            responseTime: 50,
+            response: function (settings) {
+                ajaxExecuted = true;
+                var query = settings.data.query,
+                    response = {
+                        query: query,
+                        suggestions: []
+                    };
+                this.responseText = JSON.stringify(response);
+                done();
+            }
+        });
+
+        input.value = 'A';
+        autocomplete.onValueChange();
+    });
 
     it('Should execute onSearchStart', function () {
         expect(ajaxExecuted).toBe(true);
@@ -40,6 +41,8 @@ describe('Autocomplete Async', function(){
 });
 
 describe('Autocomplete Async', function () {
+    'use strict';
+
     var input = document.createElement('input'),
         completeQuery,
         mockupSuggestion = { value: 'A', data: 'A' },
@@ -48,16 +51,16 @@ describe('Autocomplete Async', function () {
         url = '/test-completed';
 
     beforeEach(function (done) {
-            var autocomplete = new $.Autocomplete(input, {
-                serviceUrl: url,
-                onSearchComplete: function (query, suggestions) {
-                    completeQuery = query;
-                    resultSuggestions = suggestions;
-                    done();
-                }
-            });
+        var autocomplete = new $.Autocomplete(input, {
+            serviceUrl: url,
+            onSearchComplete: function (query, suggestions) {
+                completeQuery = query;
+                resultSuggestions = suggestions;
+                done();
+            }
+        });
 
-            $.mockjax({
+        $.mockjax({
             url: url,
             responseTime: 50,
             response: function (settings) {
@@ -83,11 +86,11 @@ describe('Autocomplete Async', function () {
     });
 });
 
-describe('Autocomplete Async', function() {
-
+describe('Autocomplete Async', function () {
+    'use strict';
     var errorMessage = false;
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
         var input = document.createElement('input'),
             url = '/test-error',
             autocomplete = new $.Autocomplete(input, {
@@ -116,11 +119,12 @@ describe('Autocomplete Async', function() {
     });
 });
 
-describe('Asyn', function(){
+describe('Asyn', function () {
+    'use strict';
 
     var instance;
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
         var input = document.createElement('input'),
             ajaxExecuted = false,
             url = '/test-transform',
@@ -162,10 +166,12 @@ describe('Asyn', function(){
     });
 });
 
-describe('Autocomplete Async', function(){
+describe('Autocomplete Async', function () {
+    'use strict';
+    
     var instance;
 
-    beforeEach(function (done){
+    beforeEach(function (done) {
         var input = document.createElement('input'),
             ajaxExecuted = false,
             url = '/test-original-query',
@@ -200,6 +206,8 @@ describe('Autocomplete Async', function(){
 });
 
 describe('Autocomplete Async', function () {
+    'use strict';
+    
     var paramValue;
 
     beforeEach(function (done) {
@@ -235,7 +243,9 @@ describe('Autocomplete Async', function () {
 });
 
 describe('Autocomplete Async', function () {
-    var dynamicUrl, 
+    'use strict';
+    
+    var dynamicUrl,
         data;
 
     beforeEach(function (done) {
@@ -273,6 +283,8 @@ describe('Autocomplete Async', function () {
 });
 
 describe('Autocomplete Async', function () {
+    'use strict';
+
     var instance,
         cacheKey;
 
@@ -315,6 +327,8 @@ describe('Autocomplete Async', function () {
 });
 
 describe('Autocomplete Async', function () {
+    'use strict';
+
     var ajaxCount = 0;
 
     beforeEach(function (done) {
@@ -330,10 +344,12 @@ describe('Autocomplete Async', function () {
             url: serviceUrl,
             responseTime: 1,
             response: function (settings) {
-                ajaxCount++;
+                ajaxCount += 1;
                 var response = { suggestions: [] };
                 this.responseText = JSON.stringify(response);
-                if (ajaxCount === 2) done();
+                if (ajaxCount === 2) {
+                    done();
+                }
             }
         });
 
@@ -670,65 +686,67 @@ describe('Autocomplete', function () {
 
     it('Should display no suggestion notice when no matching results', function () {
         var input = document.createElement('input'),
-            options = {  
+            options = {
                 lookup: [{ value: 'Colombia', data: 'Spain' }],
                 showNoSuggestionNotice: true,
                 noSuggestionNotice: 'Sorry, no matching results'
             },
             autocomplete = new $.Autocomplete(input, options),
-            suggestionsContainer = $(autocomplete.suggestionsContainer)
+            suggestionsContainer = $(autocomplete.suggestionsContainer);
 
         input.value = 'Jamaica';
-        autocomplete.onValueChange();       
+        autocomplete.onValueChange();
 
         expect(autocomplete.visible).toBe(true);
-        expect(autocomplete.selectedIndex).toBe(-1)
-        expect(suggestionsContainer.find('.autocomplete-no-suggestion').length).toBe(1)
-        expect(suggestionsContainer.find('.autocomplete-no-suggestion').text()).toBe('Sorry, no matching results')        
+        expect(autocomplete.selectedIndex).toBe(-1);
+        expect(suggestionsContainer.find('.autocomplete-no-suggestion').length).toBe(1);
+        expect(suggestionsContainer.find('.autocomplete-no-suggestion').text()).toBe('Sorry, no matching results');
     });
 
 });
 
-describe('When options.preserveInput is true', function() {
-   var input = $('<input />'),
-       instance,
-       suggestionData = null;
+describe('When options.preserveInput is true', function () {
+    'use strict';
 
-   beforeEach(function() {
-       input.autocomplete({
-           lookup: [{ value: 'Jamaica', data: 'J' }, { value: 'Jamaica2', data: 'J' }, { value: 'Jamaica3', data: 'J' }],
-           preserveInput: true,
-           onSelect: function (suggestion) {
-               suggestionData = suggestion.data;
-           }
-       });
+    var input = $('<input />'),
+        instance,
+        suggestionData = null;
 
-       input.val('J');
-       instance = input.autocomplete();
-   });
+    beforeEach(function () {
+        input.autocomplete({
+            lookup: [{ value: 'Jamaica', data: 'J' }, { value: 'Jamaica2', data: 'J' }, { value: 'Jamaica3', data: 'J' }],
+            preserveInput: true,
+            onSelect: function (suggestion) {
+                suggestionData = suggestion.data;
+            }
+        });
+
+        input.val('J');
+        instance = input.autocomplete();
+    });
     
-    afterEach(function() {
+    afterEach(function () {
         instance.dispose();
     });
 
-   it('Should NOT change input value when item is selected', function() {
-       instance.onValueChange();
-       instance.select(0);
+    it('Should NOT change input value when item is selected', function () {
+        instance.onValueChange();
+        instance.select(0);
+        
+        expect(input.val()).toEqual('J');
+    });
 
-       expect(input.val()).toEqual('J');
-   });
+    it('Should NOT change input value when move down', function () {
+        instance.onValueChange();
+        instance.moveDown();
+        
+        expect(input.val()).toEqual('J');
+    });
 
-   it('Should NOT change input value when move down', function() {
-       instance.onValueChange();
-       instance.moveDown();
-
-       expect(input.val()).toEqual('J');
-   });
-
-   it('Should NOT change input value when move up', function() {
-       instance.onValueChange();
-       instance.moveUp();
-
-       expect(input.val()).toEqual('J');
-   });
+    it('Should NOT change input value when move up', function () {
+        instance.onValueChange();
+        instance.moveUp();
+        
+        expect(input.val()).toEqual('J');
+    });
 });
