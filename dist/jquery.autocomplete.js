@@ -1,5 +1,5 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.15
+*  Ajax Autocomplete for jQuery, version 1.2.16
 *  (c) 2014 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
@@ -74,6 +74,7 @@
                 onSearchStart: noop,
                 onSearchComplete: noop,
                 onSearchError: noop,
+                preserveInput: false,
                 containerClass: 'autocomplete-suggestions',
                 tabDisabled: false,
                 dataType: 'text',
@@ -196,6 +197,7 @@
             that.el.on('blur.autocomplete', function () { that.onBlur(); });
             that.el.on('focus.autocomplete', function () { that.onFocus(); });
             that.el.on('change.autocomplete', function (e) { that.onKeyUp(e); });
+            that.el.on('input.autocomplete', function (e) { that.onKeyUp(e); });
         },
 
         onFocus: function () {
@@ -670,7 +672,7 @@
                 html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
             });
 
-            this.adjustContainerWidth();      
+            this.adjustContainerWidth();
 
             noSuggestionsContainer.detach();
             container.html(html);
@@ -889,7 +891,9 @@
                 $(that.suggestionsContainer).scrollTop(offsetTop - that.options.maxHeight + heightDelta);
             }
 
-            that.el.val(that.getValue(that.suggestions[index].value));
+            if (!that.options.preserveInput) {
+                that.el.val(that.getValue(that.suggestions[index].value));
+            }
             that.signalHint(null);
         },
 
@@ -900,7 +904,7 @@
 
             that.currentValue = that.getValue(suggestion.value);
 
-            if (that.currentValue !== that.el.val()) {
+            if (that.currentValue !== that.el.val() && !that.options.preserveInput) {
                 that.el.val(that.currentValue);
             }
 
