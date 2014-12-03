@@ -1,4 +1,4 @@
-﻿/*jslint vars: true*/
+/*jslint vars: true*/
 /*global describe, it, expect, waits, waitsFor, runs, afterEach, spyOn, $*/
 
 describe('Autocomplete Async', function(){
@@ -39,7 +39,7 @@ describe('Autocomplete Async', function(){
     });
 });
 
-describe('Autocomplete Async', function() {
+describe('Autocomplete Async', function () {
     var input = document.createElement('input'),
         completeQuery,
         mockupSuggestion = { value: 'A', data: 'A' },
@@ -687,4 +687,48 @@ describe('Autocomplete', function () {
         expect(suggestionsContainer.find('.autocomplete-no-suggestion').text()).toBe('Sorry, no matching results')        
     });
 
+});
+
+describe('When options.preserveInput is true', function() {
+   var input = $('<input />'),
+       instance,
+       suggestionData = null;
+
+   beforeEach(function() {
+       input.autocomplete({
+           lookup: [{ value: 'Jamaica', data: 'J' }, { value: 'Jamaica2', data: 'J' }, { value: 'Jamaica3', data: 'J' }],
+           preserveInput: true,
+           onSelect: function (suggestion) {
+               suggestionData = suggestion.data;
+           }
+       });
+
+       input.val('J');
+       instance = input.autocomplete();
+   });
+    
+    afterEach(function() {
+        instance.dispose();
+    });
+
+   it('Should NOT change input value when item is selected', function() {
+       instance.onValueChange();
+       instance.select(0);
+
+       expect(input.val()).toEqual('J');
+   });
+
+   it('Should NOT change input value when move down', function() {
+       instance.onValueChange();
+       instance.moveDown();
+
+       expect(input.val()).toEqual('J');
+   });
+
+   it('Should NOT change input value when move up', function() {
+       instance.onValueChange();
+       instance.moveUp();
+
+       expect(input.val()).toEqual('J');
+   });
 });

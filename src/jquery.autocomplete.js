@@ -74,6 +74,7 @@
                 onSearchStart: noop,
                 onSearchComplete: noop,
                 onSearchError: noop,
+                preserveInput: false,
                 containerClass: 'autocomplete-suggestions',
                 tabDisabled: false,
                 dataType: 'text',
@@ -890,7 +891,9 @@
                 $(that.suggestionsContainer).scrollTop(offsetTop - that.options.maxHeight + heightDelta);
             }
 
-            that.el.val(that.getValue(that.suggestions[index].value));
+            if (!that.options.preserveInput) {
+                that.el.val(that.getValue(that.suggestions[index].value));
+            }
             that.signalHint(null);
         },
 
@@ -901,7 +904,7 @@
 
             that.currentValue = that.getValue(suggestion.value);
 
-            if (that.currentValue !== that.el.val()) {
+            if (that.currentValue !== that.el.val() && !that.options.preserveInput) {
                 that.el.val(that.currentValue);
             }
 

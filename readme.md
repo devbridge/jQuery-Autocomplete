@@ -52,6 +52,7 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
         * `orientation`: Default `bottom`. Vertical orientation of the displayed suggestions, available values are `auto`, `top`, `bottom`.
           If set to `auto`, the suggestions will be orientated it the way that place them closer to middle of the view port.
         * `groupBy`: property name of the suggestion `data` object, by which results should be grouped.
+        * `preserveInput`: if `true`, input value stays the same when navigating over suggestions. Default: `false`.
 
 Autocomplete instance has following methods:
 
