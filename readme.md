@@ -67,112 +67,134 @@ Autocomplete instance has following methods:
 There are two ways that you can invoke Autocomplete method. One is calling autocomplete on jQuery object and passing method name as string literal. 
 If method has arguments, arguments are passed as consecutive parameters:
 
-    $('#autocomplete').autocomplete('disable');
-    $('#autocomplete').autocomplete('setOptions', options);
+```javascript
+$('#autocomplete').autocomplete('disable');
+$('#autocomplete').autocomplete('setOptions', options);
+```
 
 Or you can get Autocomplete instance by calling autcomplete on jQuery object without any parameters and then invoke desired method.
 
-    $('#autocomplete').autocomplete().disable();
-    $('#autocomplete').autocomplete().setOptions(options);
+```javascript
+$('#autocomplete').autocomplete().disable();
+$('#autocomplete').autocomplete().setOptions(options);
+```
 
 ##Usage
 
 Html:
 
-    <input type="text" name="country" id="autocomplete"/>
+```html
+<input type="text" name="country" id="autocomplete"/>
+```
 
 Ajax lookup:
 
-    $('#autocomplete').autocomplete({
-        serviceUrl: '/autocomplete/countries',
-        onSelect: function (suggestion) {
-            alert('You selected: ' + suggestion.value + ', ' + suggestion.data);
-        }
-    });
+```javascript
+$('#autocomplete').autocomplete({
+    serviceUrl: '/autocomplete/countries',
+    onSelect: function (suggestion) {
+        alert('You selected: ' + suggestion.value + ', ' + suggestion.data);
+    }
+});
+```
 
 Local lookup (no ajax):
 
-    var countries = [
-       { value: 'Andorra', data: 'AD' },
-       // ...
-       { value: 'Zimbabwe', data: 'ZZ' }
-    ];
+```javascript
+var countries = [
+    { value: 'Andorra', data: 'AD' },
+    // ...
+    { value: 'Zimbabwe', data: 'ZZ' }
+];
 
-    $('#autocomplete').autocomplete({
-        lookup: countries,
-        onSelect: function (suggestion) {
-            alert('You selected: ' + suggestion.value + ', ' + suggestion.data);
-        }
-    });
+$('#autocomplete').autocomplete({
+    lookup: countries,
+    onSelect: function (suggestion) {
+        alert('You selected: ' + suggestion.value + ', ' + suggestion.data);
+    }
+});
+```
 
 ##Styling
 
 Generated HTML markup for suggestions is displayed bellow. You may style it any way you'd like.
 
-    <div class="autocomplete-suggestions">
-        <div class="autocomplete-group"><strong>NHL</strong></div>
-        <div class="autocomplete-suggestion autocomplete-selected">...</div>
-        <div class="autocomplete-suggestion">...</div>
-        <div class="autocomplete-suggestion">...</div>
-    </div>
+```html
+<div class="autocomplete-suggestions">
+    <div class="autocomplete-group"><strong>NHL</strong></div>
+    <div class="autocomplete-suggestion autocomplete-selected">...</div>
+    <div class="autocomplete-suggestion">...</div>
+    <div class="autocomplete-suggestion">...</div>
+</div>
+```
 
 Style sample:
 
-    .autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
-    .autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
-    .autocomplete-selected { background: #F0F0F0; }
-    .autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
-    .autocomplete-group { padding: 2px 5px; }
-    .autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
+```css
+.autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
+.autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
+.autocomplete-selected { background: #F0F0F0; }
+.autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
+.autocomplete-group { padding: 2px 5px; }
+.autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
+```
 
 
 ##Response Format
 
 Response from the server must be JSON formatted following JavaScript object:
 
-    {
-        // Query is not required as of version 1.2.5
-        "query": "Unit",
-        "suggestions": [
-            { "value": "United Arab Emirates", "data": "AE" },
-            { "value": "United Kingdom",       "data": "UK" },
-            { "value": "United States",        "data": "US" }
-        ]
-    }
+```javascript
+{
+    // Query is not required as of version 1.2.5
+    "query": "Unit",
+    "suggestions": [
+        { "value": "United Arab Emirates", "data": "AE" },
+        { "value": "United Kingdom",       "data": "UK" },
+        { "value": "United States",        "data": "US" }
+    ]
+}
+```
 
 Data can be any value or object. Data object is passed to formatResults function 
 and onSelect callback. Alternatively, if there is no data you can 
 supply just a string array for suggestions:
 
-    {
-        "query": "Unit",
-        "suggestions": ["United Arab Emirates", "United Kingdom", "United States"]
-    }
+```json
+{
+    "query": "Unit",
+    "suggestions": ["United Arab Emirates", "United Kingdom", "United States"]
+}
+```
 
 ## Non standard query/results
 
 If your ajax service expects the query in a different format, and returns data in a different format than the standard response,
 you can supply the "paramName" and "transformResult" options:
 
-    $('#autocomplete').autocomplete({
-        paramName: 'searchString',
-        transformResult: function(response) {
-            return {
-                suggestions: $.map(response.myData, function(dataItem) {
-                    return { value: dataItem.valueField, data: dataItem.dataField };
-                })
-            };
-        }
-    })
+```javascript
+$('#autocomplete').autocomplete({
+    paramName: 'searchString',
+    transformResult: function(response) {
+        return {
+            suggestions: $.map(response.myData, function(dataItem) {
+                return { value: dataItem.valueField, data: dataItem.dataField };
+            })
+        };
+    }
+})
+```
 
 ## Grouping Results
 
 Specify `groupBy` option of you data property if you wish results to be displayed in groups. For example, set `groupBy: 'category'` if your suggestion data format is:
 
-    [
-        { value: 'Chicago Blackhawks', data: { category: 'NHL' } },
-        { value: 'Chicago Bulls', data: { category: 'NBA' } }
-    ]
+```javascript
+[
+    { value: 'Chicago Blackhawks', data: { category: 'NHL' } },
+    { value: 'Chicago Bulls', data: { category: 'NBA' } }
+]
+```
 
 Results will be formatted into two groups **NHL** and **NBA**.
 
@@ -180,7 +202,9 @@ Results will be formatted into two groups **NHL** and **NBA**.
 
 If you use it with jQuery UI library it also has plugin named `autocomplete`. In this case you can use plugin alias `devbridgeAutocomplete`:
 
-    $('.autocomplete').devbridgeAutocomplete({ ... });
+```javascript
+$('.autocomplete').devbridgeAutocomplete({ ... });
+```
 
 ##License
 
