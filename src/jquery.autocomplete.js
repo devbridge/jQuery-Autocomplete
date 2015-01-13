@@ -30,13 +30,6 @@
             return {
                 escapeRegExChars: function (value) {
                     return value.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-                },
-                createNode: function (containerClass) {
-                    var div = document.createElement('div');
-                    div.className = containerClass;
-                    div.style.position = 'absolute';
-                    div.style.display = 'none';
-                    return div;
                 }
             };
         }()),
@@ -157,11 +150,10 @@
             that.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>')
                                           .html(this.options.noSuggestionNotice).get(0);
 
-            that.suggestionsContainer = Autocomplete.utils.createNode(options.containerClass);
-
-            container = $(that.suggestionsContainer);
-
-            container.appendTo(options.appendTo);
+            container = that.suggestionsContainer = $('<div>')
+                                                        .addClass(options.containerClass)
+                                                        .css({position: 'absolute', display: 'none'})
+                                                        .appendTo(options.appendTo);
 
             // Only set width if it was provided:
             if (options.width !== 'auto') {
