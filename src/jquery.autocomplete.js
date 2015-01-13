@@ -160,21 +160,21 @@
                 container.width(options.width);
             }
 
-            // Listen for mouse over event on suggestions list:
-            container.on('mouseover.autocomplete', suggestionSelector, function () {
-                that.activate($(this).data('index'));
-            });
-
-            // Deselect active element when mouse leaves suggestions container:
-            container.on('mouseout.autocomplete', function () {
-                that.selectedIndex = -1;
-                container.children('.' + selected).removeClass(selected);
-            });
-
-            // Listen for click event on suggestions list:
-            container.on('click.autocomplete', suggestionSelector, function () {
-                that.select($(this).data('index'));
-            });
+            // Add listeners to suggestion list
+            container
+                // Listen for mouse over event on suggestions list:
+                .on('mouseover.autocomplete', suggestionSelector, function () {
+                    that.activate($(this).data('index'));
+                })
+                // Deselect active element when mouse leaves suggestions container:
+                .on('mouseout.autocomplete', function () {
+                    that.selectedIndex = -1;
+                    container.children('.' + selected).removeClass(selected);
+                })
+                // Listen for click event on suggestions list:
+                .on('click.autocomplete', suggestionSelector, function () {
+                    that.select($(this).data('index'));
+                });
 
             that.fixPositionCapture = function () {
                 if (that.visible) {
@@ -184,12 +184,14 @@
 
             $(window).on('resize.autocomplete', that.fixPositionCapture);
 
-            that.el.on('keydown.autocomplete', function (e) { that.onKeyPress(e); });
-            that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
-            that.el.on('blur.autocomplete', function () { that.onBlur(); });
-            that.el.on('focus.autocomplete', function () { that.onFocus(); });
-            that.el.on('change.autocomplete', function (e) { that.onKeyUp(e); });
-            that.el.on('input.autocomplete', function (e) { that.onKeyUp(e); });
+            // Add listeners to input field
+            that.el
+                .on('keydown.autocomplete', function (e) { that.onKeyPress(e); })
+                .on('keyup.autocomplete', function (e) { that.onKeyUp(e); })
+                .on('blur.autocomplete', function () { that.onBlur(); })
+                .on('focus.autocomplete', function () { that.onFocus(); })
+                .on('change.autocomplete', function (e) { that.onKeyUp(e); })
+                .on('input.autocomplete', function (e) { that.onKeyUp(e); });
         },
 
         onFocus: function () {
