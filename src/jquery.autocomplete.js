@@ -219,7 +219,7 @@
             options.orientation = that.validateOrientation(options.orientation, 'bottom');
 
             // Adjust height, width and z-index:
-            $(that.suggestionsContainer).css({
+            that.suggestionsContainer.css({
                 'max-height': options.maxHeight + 'px',
                 'width': options.width + 'px',
                 'z-index': options.zIndex
@@ -255,7 +255,7 @@
             // Use only when container has already its content
 
             var that = this,
-                $container = $(that.suggestionsContainer),
+                $container = that.suggestionsContainer,
                 containerParent = $container.parent().get(0);
             // Fix position automatically when appended to body.
             // In other cases force parameter must be given.
@@ -608,7 +608,7 @@
             that.visible = false;
             that.selectedIndex = -1;
             clearInterval(that.onChangeInterval);
-            $(that.suggestionsContainer).hide();
+            that.suggestionsContainer.hide();
             that.signalHint(null);
         },
 
@@ -629,7 +629,7 @@
                 value = that.getQuery(that.currentValue),
                 className = that.classes.suggestion,
                 classSelected = that.classes.selected,
-                container = $(that.suggestionsContainer),
+                container = that.suggestionsContainer,
                 noSuggestionsContainer = $(that.noSuggestionsContainer),
                 beforeRender = options.beforeRender,
                 html = '',
@@ -689,7 +689,7 @@
 
         noSuggestions: function() {
              var that = this,
-                 container = $(that.suggestionsContainer),
+                 container = that.suggestionsContainer,
                  noSuggestionsContainer = $(that.noSuggestionsContainer);
 
             this.adjustContainerWidth();
@@ -710,7 +710,7 @@
             var that = this,
                 options = that.options,
                 width,
-                container = $(that.suggestionsContainer);
+                container = that.suggestionsContainer;
 
             // If width is auto, adjust width before displaying suggestions,
             // because if instance was created before input had width, it will be zero.
@@ -803,7 +803,7 @@
             var that = this,
                 activeItem,
                 selected = that.classes.selected,
-                container = $(that.suggestionsContainer),
+                container = that.suggestionsContainer,
                 children = container.find('.' + that.classes.suggestion);
 
             container.find('.' + selected).removeClass(selected);
@@ -840,7 +840,7 @@
             }
 
             if (that.selectedIndex === 0) {
-                $(that.suggestionsContainer).children().first().removeClass(that.classes.selected);
+                that.suggestionsContainer.children().first().removeClass(that.classes.selected);
                 that.selectedIndex = -1;
                 that.el.val(that.currentValue);
                 that.findBestHint();
@@ -874,13 +874,13 @@
                 heightDelta = $(activeItem).outerHeight();
 
             offsetTop = activeItem.offsetTop;
-            upperBound = $(that.suggestionsContainer).scrollTop();
+            upperBound = that.suggestionsContainer.scrollTop();
             lowerBound = upperBound + that.options.maxHeight - heightDelta;
 
             if (offsetTop < upperBound) {
-                $(that.suggestionsContainer).scrollTop(offsetTop);
+                that.suggestionsContainer.scrollTop(offsetTop);
             } else if (offsetTop > lowerBound) {
-                $(that.suggestionsContainer).scrollTop(offsetTop - that.options.maxHeight + heightDelta);
+                that.suggestionsContainer.scrollTop(offsetTop - that.options.maxHeight + heightDelta);
             }
 
             if (!that.options.preserveInput) {
@@ -934,7 +934,7 @@
             that.el.off('.autocomplete').removeData('autocomplete');
             that.disableKillerFn();
             $(window).off('resize.autocomplete', that.fixPositionCapture);
-            $(that.suggestionsContainer).remove();
+            that.suggestionsContainer.remove();
         }
     };
 
