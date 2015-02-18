@@ -31,12 +31,12 @@
                 escapeRegExChars: function (value) {
                     return value.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
                 },
-                createNode: function (containerClass) {
-                    var div = document.createElement('div');
-                    div.className = containerClass;
-                    div.style.position = 'absolute';
-                    div.style.display = 'none';
-                    return div;
+                createNode: function (containerClass, tagName) {
+                    var node = document.createElement(tagName);
+                    node.className = containerClass;
+                    node.style.position = 'absolute';
+                    node.style.display = 'none';
+                    return node;
                 }
             };
         }()),
@@ -91,7 +91,9 @@
                 showNoSuggestionNotice: false,
                 noSuggestionNotice: 'No results',
                 orientation: 'bottom',
-                forceFixPosition: false
+                forceFixPosition: false,
+                containerTag: 'ul',
+                elementTag: 'li'
             };
 
         // Shared variables:
@@ -157,7 +159,7 @@
             that.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>')
                                           .html(this.options.noSuggestionNotice).get(0);
 
-            that.suggestionsContainer = Autocomplete.utils.createNode(options.containerClass);
+            that.suggestionsContainer = Autocomplete.utils.createNode(options.containerClass, options.tagName);
 
             container = $(that.suggestionsContainer);
 
@@ -669,7 +671,9 @@
                     html += formatGroup(suggestion, value, i);
                 }
 
-                html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
+                html += '<' + options.elementTag + ' class="' + className + '" data-index="' + i + '">' +
+                formatResult(suggestion, value) +
+                '</' + options.elementTag + '>';
             });
 
             this.adjustContainerWidth();
