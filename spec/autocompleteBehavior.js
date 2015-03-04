@@ -1,4 +1,4 @@
-/*jslint vars: true*/
+﻿/*jslint vars: true*/
 /*global describe, it, expect, waits, waitsFor, runs, afterEach, spyOn, $, beforeEach*/
 
 describe('Autocomplete Async', function () {
@@ -701,6 +701,32 @@ describe('Autocomplete', function () {
         expect(autocomplete.selectedIndex).toBe(-1);
         expect(suggestionsContainer.find('.autocomplete-no-suggestion').length).toBe(1);
         expect(suggestionsContainer.find('.autocomplete-no-suggestion').text()).toBe('Sorry, no matching results');
+    });
+
+    it('Should call onHide and pass container jQuery object', function () {
+        var element = document.createElement('input'),
+            input = $(element),
+            instance,
+            elementCount,
+            context;
+
+        input.autocomplete({
+            lookup: [{ value: 'Jamaica', data: 'B' }],
+            onHide: function (container) {
+                context = this;
+                elementCount = container.length;
+            }
+        });
+
+        input.val('Jam');
+        instance = input.autocomplete();
+        instance.onValueChange();
+
+        input.val('Colombia');
+        instance.onValueChange();
+
+        expect(context).toBe(element);
+        expect(elementCount).toBe(1);
     });
 
 });

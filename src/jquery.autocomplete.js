@@ -612,7 +612,14 @@
         },
 
         hide: function () {
-            var that = this;
+            var that = this,
+            container = $(that.suggestionsContainer);
+
+            if ($.isFunction(this.options.onHide) && that.visible) {
+
+              this.options.onHide.call(that.element, container);
+            }
+            
             that.visible = false;
             that.selectedIndex = -1;
             clearInterval(that.onChangeInterval);
@@ -622,6 +629,7 @@
 
         suggest: function () {
             if (this.suggestions.length === 0) {
+                this.options.showNoSuggestionNotice ? this.noSuggestions() : this.hide();
 				if (this.options.showNoSuggestionNotice) {
 					this.noSuggestions();
 				} else {

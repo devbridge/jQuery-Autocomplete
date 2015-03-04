@@ -1,6 +1,6 @@
 #Ajax AutoComplete for jQuery
 
-Ajax Autocomplete for jQuery allows you to easily create 
+Ajax Autocomplete for jQuery allows you to easily create
 autocomplete/autosuggest boxes for text input fields.
 
 Has no dependencies other than jQuery.
@@ -18,15 +18,15 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
             * `suggestion`: An object literal with the following format: `{ value: 'string', data: any }`.
         * `lookupFilter`: `function (suggestion, query, queryLowerCase) {}` filter function for local lookups. By default it does partial string match (case insensitive).
         * `lookupLimit`: Number of maximum results to display for local lookup. Default: no limit.
-        * `onSelect`: `function (suggestion) {}` Callback function invoked when user selects suggestion 
+        * `onSelect`: `function (suggestion) {}` Callback function invoked when user selects suggestion
           from the list. `this` inside callback refers to input HtmlElement.
         * `minChars`: Minimum number of characters required to trigger autosuggest. Default: `1`.
         * `maxHeight`: Maximum height of the suggestions container in pixels. Default: `300`.
         * `deferRequestBy`: Number of miliseconds to defer ajax request. Default: `0`.
         * `width`: Suggestions container width in pixels, e.g.: 300. Default: `auto`, takes input field width.
         * `params`: Additional parameters to pass with the request, optional.
-        * `formatResult`: `function (suggestion, currentValue) {}` custom function to 
-          format suggestion entry inside suggestions container, optional. 
+        * `formatResult`: `function (suggestion, currentValue) {}` custom function to
+          format suggestion entry inside suggestions container, optional.
         * `delimiter`: String or RegExp, that splits input value and takes last part to as query for suggestions.
           Useful when for example you need to fill list of  coma separated values.
         * `zIndex`: 'z-index' for suggestions container. Default: `9999`.
@@ -37,7 +37,7 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
         * `onSearchError`: `function (query, jqXHR, textStatus, errorThrown) {}` called if ajax request fails. `this` is bound to input element.
         * `onInvalidateSelection`: `function () {}` called when input is altered after selection has been made. `this` is bound to input element.
         * `triggerSelectOnValidInput`: Boolean value indicating if `select` should be triggered if it matches suggestion. Default `true`.
-        * `preventBadQueries`: Boolean value indicating if it shoud prevent future ajax requests for queries with the same root if no results were returned. E.g. if `Jam` returns no suggestions, it will not fire for any future query that starts with `Jam`. Default `true`. 
+        * `preventBadQueries`: Boolean value indicating if it shoud prevent future ajax requests for queries with the same root if no results were returned. E.g. if `Jam` returns no suggestions, it will not fire for any future query that starts with `Jam`. Default `true`.
         * `beforeRender`: `function (container) {}` called before displaying the suggestions. You may manipulate suggestions DOM before it is displayed.
         * `tabDisabled`: Default `false`. Set to true to leave the cursor in the input field after the user tabs to select a suggestion.
         * `paramName`: Default `query`. The name of the request parameter that contains the query.
@@ -53,6 +53,7 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
           If set to `auto`, the suggestions will be orientated it the way that place them closer to middle of the view port.
         * `groupBy`: property name of the suggestion `data` object, by which results should be grouped.
         * `preserveInput`: if `true`, input value stays the same when navigating over suggestions. Default: `false`.
+        * `onHide`: `function (container) {}` called before container will be hidden
 
 Autocomplete instance has following methods:
 
@@ -64,7 +65,7 @@ Autocomplete instance has following methods:
 * `hide`: hides suggestions.
 * `dispose`: destroys autocomplete instance. All events are detached and suggestion containers removed.
 
-There are two ways that you can invoke Autocomplete method. One is calling autocomplete on jQuery object and passing method name as string literal. 
+There are two ways that you can invoke Autocomplete method. One is calling autocomplete on jQuery object and passing method name as string literal.
 If method has arguments, arguments are passed as consecutive parameters:
 
 ```javascript
@@ -177,8 +178,8 @@ Response from the server must be JSON formatted following JavaScript object:
 }
 ```
 
-Data can be any value or object. Data object is passed to formatResults function 
-and onSelect callback. Alternatively, if there is no data you can 
+Data can be any value or object. Data object is passed to formatResults function
+and onSelect callback. Alternatively, if there is no data you can
 supply just a string array for suggestions:
 
 ```json
@@ -229,10 +230,10 @@ $('.autocomplete').devbridgeAutocomplete({ ... });
 
 ##License
 
-Ajax Autocomplete for jQuery is freely distributable under the 
+Ajax Autocomplete for jQuery is freely distributable under the
 terms of an MIT-style [license](https://github.com/devbridge/jQuery-Autocomplete/blob/master/dist/license.txt).
 
-Copyright notice and permission notice shall be included in all 
+Copyright notice and permission notice shall be included in all
 copies or substantial portions of the Software.
 
 ##Authors
