@@ -32,7 +32,7 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['uglify']);
 
   grunt.task.registerTask('build', 'Create release', function() {
-    var version = pkg.version
+    var version = pkg.version,
         src = grunt.file.read('src/jquery.autocomplete.js').replace('%version%', version),
         filePath = 'dist/jquery.autocomplete.js';
 

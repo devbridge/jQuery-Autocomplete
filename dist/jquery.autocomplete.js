@@ -1,6 +1,6 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.16
-*  (c) 2014 Tomas Kirda
+*  Ajax Autocomplete for jQuery, version 1.2.17
+*  (c) 2015 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
 *  For details, see the web site: https://github.com/devbridge/jQuery-Autocomplete
@@ -612,7 +612,13 @@
         },
 
         hide: function () {
-            var that = this;
+            var that = this,
+                container = $(that.suggestionsContainer);
+
+            if ($.isFunction(that.options.onHide) && that.visible) {
+                that.options.onHide.call(that.element, container);
+            }
+
             that.visible = false;
             that.selectedIndex = -1;
             clearInterval(that.onChangeInterval);
@@ -622,11 +628,11 @@
 
         suggest: function () {
             if (this.suggestions.length === 0) {
-				if (this.options.showNoSuggestionNotice) {
-					this.noSuggestions();
-				} else {
-					this.hide();
-				}
+                if (this.options.showNoSuggestionNotice) {
+                    this.noSuggestions();
+                } else {
+                    this.hide();
+                }
                 return;
             }
 
