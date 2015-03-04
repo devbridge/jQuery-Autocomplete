@@ -613,7 +613,7 @@
 
         hide: function () {
             var that = this,
-            container = $(that.suggestionsContainer);
+                container = $(that.suggestionsContainer);
 
             if ($.isFunction(that.options.onHide) && that.visible) {
                 that.options.onHide.call(that.element, container);
