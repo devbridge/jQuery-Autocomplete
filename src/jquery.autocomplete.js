@@ -694,7 +694,8 @@
             if (options.autoSelectFirst) {
                 that.selectedIndex = 0;
                 container.scrollTop(0);
-                container.children().first().addClass(classSelected);
+                var filter = '[data-index="' + that.selectedIndex + '"]';
+                container.children().filter(filter).addClass(classSelected);
             }
 
             that.visible = true;
