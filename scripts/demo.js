@@ -60,10 +60,11 @@ $(function () {
             $('#selection').html('You selected: ' + suggestion.value + ', ' + suggestion.data.category);
         },
         showNoSuggestionNotice: true,
+        autoSelectFirst: true,
         noSuggestionNotice: 'Sorry, no matching results',
         groupBy: 'category'
     });
-    
+
     // Initialize autocomplete with custom appendTo:
     $('#autocomplete-custom-append').autocomplete({
         lookup: countriesArray,
