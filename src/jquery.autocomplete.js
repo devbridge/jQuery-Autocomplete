@@ -694,7 +694,7 @@
             if (options.autoSelectFirst) {
                 that.selectedIndex = 0;
                 container.scrollTop(0);
-                container.children().first().addClass(classSelected);
+                container.children('.' + className).first().addClass(classSelected);
             }
 
             that.visible = true;
