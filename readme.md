@@ -123,13 +123,15 @@ $('#autocomplete').autocomplete({
     lookup: function (query, done) {
         // Do ajax call or lookup locally, when done,
         // call the callback and pass your results:
-        var results = [
-            { "value": "United Arab Emirates", "data": "AE" },
-            { "value": "United Kingdom",       "data": "UK" },
-            { "value": "United States",        "data": "US" }
-        ];
+        var result = {
+            suggestions: [
+                { "value": "United Arab Emirates", "data": "AE" },
+                { "value": "United Kingdom",       "data": "UK" },
+                { "value": "United States",        "data": "US" }
+            ]
+        };
 
-        done(results);
+        done(result);
     },
     onSelect: function (suggestion) {
         alert('You selected: ' + suggestion.value + ', ' + suggestion.data);
