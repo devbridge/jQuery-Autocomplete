@@ -917,7 +917,7 @@
             that.currentValue = that.getValue(suggestion.value);
 
             if (that.currentValue !== that.el.val() && !that.options.preserveInput) {
-                that.el.val(that.currentValue);
+                that.el.val(that.currentValue).trigger('change');
             }
 
             that.signalHint(null);
