@@ -52,8 +52,7 @@
         };
 
     function Autocomplete(el, options) {
-        var noop = function () { },
-            that = this;
+        var that = this;
 
         // Shared variables:
         that.element = el;
@@ -102,7 +101,7 @@
     Autocomplete.defaults = {
         ajaxSettings: {},
         autoSelectFirst: false,
-        appendTo: document.body,
+        appendTo: 'body',
         serviceUrl: null,
         lookup: null,
         onSelect: null,
@@ -116,9 +115,9 @@
         zIndex: 9999,
         type: 'GET',
         noCache: false,
-        onSearchStart: noop,
-        onSearchComplete: noop,
-        onSearchError: noop,
+        onSearchStart: $.noop,
+        onSearchComplete: $.noop,
+        onSearchError: $.noop,
         preserveInput: false,
         containerClass: 'autocomplete-suggestions',
         tabDisabled: false,
@@ -168,7 +167,7 @@
 
             container = $(that.suggestionsContainer);
 
-            container.appendTo(options.appendTo);
+            container.appendTo($(options.appendTo));
 
             // Only set width if it was provided:
             if (options.width !== 'auto') {
