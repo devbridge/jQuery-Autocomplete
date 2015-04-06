@@ -53,46 +53,7 @@
 
     function Autocomplete(el, options) {
         var noop = function () { },
-            that = this,
-            defaults = {
-                ajaxSettings: {},
-                autoSelectFirst: false,
-                appendTo: document.body,
-                serviceUrl: null,
-                lookup: null,
-                onSelect: null,
-                width: 'auto',
-                minChars: 1,
-                maxHeight: 300,
-                deferRequestBy: 0,
-                params: {},
-                formatResult: Autocomplete.formatResult,
-                delimiter: null,
-                zIndex: 9999,
-                type: 'GET',
-                noCache: false,
-                onSearchStart: noop,
-                onSearchComplete: noop,
-                onSearchError: noop,
-                preserveInput: false,
-                containerClass: 'autocomplete-suggestions',
-                tabDisabled: false,
-                dataType: 'text',
-                currentRequest: null,
-                triggerSelectOnValidInput: true,
-                preventBadQueries: true,
-                lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
-                    return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
-                },
-                paramName: 'query',
-                transformResult: function (response) {
-                    return typeof response === 'string' ? $.parseJSON(response) : response;
-                },
-                showNoSuggestionNotice: false,
-                noSuggestionNotice: 'No results',
-                orientation: 'bottom',
-                forceFixPosition: false
-            };
+            that = this;
 
         // Shared variables:
         that.element = el;
@@ -108,7 +69,7 @@
         that.isLocal = false;
         that.suggestionsContainer = null;
         that.noSuggestionsContainer = null;
-        that.options = $.extend({}, defaults, options);
+        that.options = $.extend({}, Autocomplete.defaults, options);
         that.classes = {
             selected: 'autocomplete-selected',
             suggestion: 'autocomplete-suggestion'
@@ -136,6 +97,46 @@
         var pattern = '(' + utils.escapeRegExChars(currentValue) + ')';
 
         return htmlSafeString.replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>');
+    };
+
+    Autocomplete.defaults = {
+        ajaxSettings: {},
+        autoSelectFirst: false,
+        appendTo: document.body,
+        serviceUrl: null,
+        lookup: null,
+        onSelect: null,
+        width: 'auto',
+        minChars: 1,
+        maxHeight: 300,
+        deferRequestBy: 0,
+        params: {},
+        formatResult: Autocomplete.formatResult,
+        delimiter: null,
+        zIndex: 9999,
+        type: 'GET',
+        noCache: false,
+        onSearchStart: noop,
+        onSearchComplete: noop,
+        onSearchError: noop,
+        preserveInput: false,
+        containerClass: 'autocomplete-suggestions',
+        tabDisabled: false,
+        dataType: 'text',
+        currentRequest: null,
+        triggerSelectOnValidInput: true,
+        preventBadQueries: true,
+        lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
+            return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
+        },
+        paramName: 'query',
+        transformResult: function (response) {
+            return typeof response === 'string' ? $.parseJSON(response) : response;
+        },
+        showNoSuggestionNotice: false,
+        noSuggestionNotice: 'No results',
+        orientation: 'bottom',
+        forceFixPosition: false
     };
 
     Autocomplete.prototype = {
