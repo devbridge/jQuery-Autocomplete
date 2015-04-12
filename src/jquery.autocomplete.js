@@ -74,6 +74,7 @@
                 onSearchStart: noop,
                 onSearchComplete: noop,
                 onSearchError: noop,
+                onExact: noop,
                 preserveInput: false,
                 containerClass: 'autocomplete-suggestions',
                 tabDisabled: false,
@@ -490,14 +491,15 @@
             var that = this,
                 index = -1,
                 queryLowerCase = query.toLowerCase();
-
+            var result = false;
             $.each(that.suggestions, function (i, suggestion) {
                 if (suggestion.value.toLowerCase() === queryLowerCase) {
                     index = i;
+                    result = true;
                     return false;
                 }
             });
-
+            that.options.onExact.call(that.element, result);
             return index;
         },
 
