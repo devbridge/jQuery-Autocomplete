@@ -1,5 +1,5 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.18
+*  Ajax Autocomplete for jQuery, version 1.2.19
 *  (c) 2015 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
@@ -217,6 +217,14 @@
         onBlur: function () {
             this.enableKillerFn();
         },
+        
+        abortAjax: function () {
+            var that = this;
+            if (that.currentRequest) {
+                that.currentRequest.abort();
+                that.currentRequest = null;
+            }
+        },
 
         setOptions: function (suppliedOptions) {
             var that = this,
@@ -256,9 +264,7 @@
             var that = this;
             that.disabled = true;
             clearInterval(that.onChangeInterval);
-            if (that.currentRequest) {
-                that.currentRequest.abort();
-            }
+            that.abortAjax();
         },
 
         enable: function () {
@@ -573,9 +579,7 @@
                 that.suggest();
                 options.onSearchComplete.call(that.element, q, response.suggestions);
             } else if (!that.isBadQuery(q)) {
-                if (that.currentRequest) {
-                    that.currentRequest.abort();
-                }
+                that.abortAjax();
 
                 ajaxSettings = {
                     url: serviceUrl,
