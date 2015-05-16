@@ -464,8 +464,7 @@
             var that = this,
                 options = that.options,
                 value = that.el.val(),
-                query = that.getQuery(value),
-                index;
+                query = that.getQuery(value);
 
             if (that.selection && that.currentValue !== query) {
                 that.selection = null;
@@ -477,12 +476,9 @@
             that.selectedIndex = -1;
 
             // Check existing suggestion for the match before proceeding:
-            if (options.triggerSelectOnValidInput) {
-                index = that.findSuggestionIndex(query);
-                if (index !== -1) {
-                    that.select(index);
-                    return;
-                }
+            if (options.triggerSelectOnValidInput && that.isExactMatch(query)) {
+                that.select(0);
+                return;
             }
 
             if (query.length < options.minChars) {
@@ -492,19 +488,10 @@
             }
         },
 
-        findSuggestionIndex: function (query) {
-            var that = this,
-                index = -1,
-                queryLowerCase = query.toLowerCase();
+        isExactMatch: function (query) {
+            var suggestions = this.suggestions;
 
-            $.each(that.suggestions, function (i, suggestion) {
-                if (suggestion.value.toLowerCase() === queryLowerCase) {
-                    index = i;
-                    return false;
-                }
-            });
-
-            return index;
+            return (suggestions.length === 1 && suggestions[0].value.toLowerCase() === query.toLowerCase());
         },
 
         getQuery: function (value) {
@@ -668,15 +655,11 @@
                         category = currentCategory;
 
                         return '<div class="autocomplete-group"><strong>' + category + '</strong></div>';
-                    },
-                index;
+                    };
 
-            if (options.triggerSelectOnValidInput) {
-                index = that.findSuggestionIndex(value);
-                if (index !== -1) {
-                    that.select(index);
-                    return;
-                }
+            if (options.triggerSelectOnValidInput && that.isExactMatch(value)) {
+                that.select(0);
+                return;
             }
 
             // Build suggestions inner HTML:
