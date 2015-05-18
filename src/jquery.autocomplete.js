@@ -147,6 +147,7 @@
                 suggestionSelector = '.' + that.classes.suggestion,
                 selected = that.classes.selected,
                 options = that.options,
+                noSuggestionNotice = this.options.noSuggestionNotice,
                 container;
 
             // Remove autocomplete attribute to prevent native suggestions:
@@ -159,9 +160,12 @@
                 }
             };
 
+            // if notice is not string, it should be deep-copied, so every autocomplete instance has its own copy
+            if(typeof noSuggestionNotice !== 'string')
+                noSuggestionNotice = $(noSuggestionNotice).clone(true);
             // html() deals with many types: htmlString or Element or Array or jQuery
             that.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>')
-                                          .html(this.options.noSuggestionNotice).get(0);
+                                          .html(noSuggestionNotice).get(0);
 
             that.suggestionsContainer = Autocomplete.utils.createNode(options.containerClass);
 
@@ -208,7 +212,6 @@
 
         onFocus: function () {
             var that = this;
-            that.fixPosition();
             if (that.options.minChars <= that.el.val().length) {
                 that.onValueChange();
             }
@@ -625,11 +628,15 @@
 
         suggest: function () {
             if (this.suggestions.length === 0) {
-                if (this.options.showNoSuggestionNotice) {
+
+                var showNoSuggestionNotice = this.options.showNoSuggestionNotice;
+                if(typeof this.options.showNoSuggestionNotice === 'function')
+                    showNoSuggestionNotice = this.options.showNoSuggestionNotice(this.suggestions);
+
+                if(showNoSuggestionNotice)
                     this.noSuggestions();
-                } else {
+                else
                     this.hide();
-                }
                 return;
             }
 
@@ -673,8 +680,16 @@
 
             this.adjustContainerWidth();
 
+            // Detach noSuggestions not to have it removed when filling container with new suggestions
             noSuggestionsContainer.detach();
             container.html(html);
+
+            // If showNoSuggestionNotice is a function, call it to see
+            // if noSuggestionNotice should be added to theses suggestions
+            if(typeof this.options.showNoSuggestionNotice === 'function'
+                && this.options.showNoSuggestionNotice(that.suggestions)) {
+                container.append(noSuggestionsContainer);
+            }
 
             if ($.isFunction(beforeRender)) {
                 beforeRender.call(that.element, container);

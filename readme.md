@@ -45,7 +45,7 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
         * `autoSelectFirst`: if set to `true`, first item will be selected when showing suggestions. Default value `false`.
         * `appendTo`: container where suggestions will be appended. Default value `document.body`. Can be jQuery object, selector or html element. Make sure to set `position: absolute` or `position: relative` for that element.
         * `dataType`: type of data returned from server. Either 'text' (default) or 'jsonp', which will cause the autocomplete to use jsonp. You may return a json object in your callback when using jsonp.
-        * `showNoSuggestionNotice`: Default `false`. When no matching results, display a notification label.
+        * `showNoSuggestionNotice`: Default `false`. Boolean or `function (suggestions) {}`. When set `true` and no matching results, display a notification label. When function given, it is called on every suggestion display and if `true` returned, notification is displayed.
         * `noSuggestionNotice`: Default `No results`. Text or htmlString or Element or jQuery object for no matching results label.
         * `forceFixPosition`: Default: `false`. Suggestions are automatically positioned when their container is appended to body (look at `appendTo` option), in other cases suggestions are rendered but no positioning is applied.
            Set this option to force auto positioning in other cases.
