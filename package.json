@@ -6,6 +6,10 @@
   "author": "Tomas Kirda (https://twitter.com/tkirda)",
   "main": "dist/jquery.autocomplete.js",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/username/jQuery-Autocomplete.git"
+  },
   "dependencies": {
     "jquery": ">=1.7"
   },
