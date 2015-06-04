@@ -581,6 +581,7 @@
                     var result;
                     that.currentRequest = null;
                     result = options.transformResult(data);
+                    if(result.suggestions.length === 0) return;
                     that.processResponse(result, q, cacheKey);
                     options.onSearchComplete.call(that.element, q, result.suggestions);
                 }).fail(function (jqXHR, textStatus, errorThrown) {
