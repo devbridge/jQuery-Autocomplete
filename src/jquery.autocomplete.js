@@ -580,7 +580,7 @@
                 that.currentRequest = $.ajax(ajaxSettings).done(function (data) {
                     var result;
                     that.currentRequest = null;
-                    result = options.transformResult(data);
+                    result = options.transformResult(data, q);
                     that.processResponse(result, q, cacheKey);
                     options.onSearchComplete.call(that.element, q, result.suggestions);
                 }).fail(function (jqXHR, textStatus, errorThrown) {
