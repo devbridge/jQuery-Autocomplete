@@ -1,4 +1,4 @@
-#Ajax AutoComplete for jQuery
+#Ajax Autocomplete for jQuery
 
 Ajax Autocomplete for jQuery allows you to easily create
 autocomplete/autosuggest boxes for text input fields.
@@ -60,6 +60,8 @@ The standard jquery.autocomplete.js file is around 2.7KB when minified via Closu
 * `noSuggestionNotice`: Default `No results`. Text or htmlString or Element or jQuery object for no matching results label.
 * `onInvalidateSelection`: `function () {}` called when input is altered after selection has been made. `this` is bound to input element.
 * `tabDisabled`: Default `false`. Set to true to leave the cursor in the input field after the user tabs to select a suggestion.
+
+## Instance Methods
 
 Autocomplete instance has following methods:
 
