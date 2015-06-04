@@ -1,5 +1,5 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.20
+*  Ajax Autocomplete for jQuery, version 1.2.21
 *  (c) 2015 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
@@ -209,7 +209,7 @@
         onFocus: function () {
             var that = this;
             that.fixPosition();
-            if (that.options.minChars <= that.el.val().length) {
+            if (that.options.minChars === 0 && that.el.val().length === 0) {
                 that.onValueChange();
             }
         },
@@ -580,7 +580,7 @@
                 that.currentRequest = $.ajax(ajaxSettings).done(function (data) {
                     var result;
                     that.currentRequest = null;
-                    result = options.transformResult(data);
+                    result = options.transformResult(data, q);
                     that.processResponse(result, q, cacheKey);
                     options.onSearchComplete.call(that.element, q, result.suggestions);
                 }).fail(function (jqXHR, textStatus, errorThrown) {
