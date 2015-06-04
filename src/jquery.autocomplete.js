@@ -209,7 +209,7 @@
         onFocus: function () {
             var that = this;
             that.fixPosition();
-            if (that.options.minChars <= that.el.val().length) {
+            if (that.options.minChars === 0 && that.el.val().length === 0) {
                 that.onValueChange();
             }
         },
