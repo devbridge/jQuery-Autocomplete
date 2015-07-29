@@ -127,15 +127,15 @@
     $.Autocomplete = Autocomplete;
 
     Autocomplete.formatResult = function (suggestion, currentValue) {
-        var htmlSafeString = suggestion.value
+        var pattern = '(' + utils.escapeRegExChars(currentValue) + ')';
+        
+        return suggestion.value
+            .replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>')
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-
-        var pattern = '(' + utils.escapeRegExChars(currentValue) + ')';
-
-        return htmlSafeString.replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>');
+            .replace(/"/g, '&quot;')
+            .replace(/&lt;(\/?strong)&gt;/g, '<$1>');
     };
 
     Autocomplete.prototype = {
