@@ -624,7 +624,7 @@
         },
 
         suggest: function () {
-            if (this.suggestions.length === 0) {
+            if (!this.suggestions || this.suggestions.length === 0) {
                 if (this.options.showNoSuggestionNotice) {
                     this.noSuggestions();
                 } else {
