@@ -149,7 +149,7 @@ $('#autocomplete').autocomplete({
 
 ##Styling
 
-Generated HTML markup for suggestions is displayed bellow. You may style it any way you'd like.
+Generated HTML markup for suggestions is displayed below. You may style it any way you'd like.
 
 ```html
 <div class="autocomplete-suggestions">
