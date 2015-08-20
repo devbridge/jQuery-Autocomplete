@@ -1,5 +1,5 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.21
+*  Ajax Autocomplete for jQuery, version 1.2.22
 *  (c) 2015 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
@@ -127,15 +127,15 @@
     $.Autocomplete = Autocomplete;
 
     Autocomplete.formatResult = function (suggestion, currentValue) {
-        var htmlSafeString = suggestion.value
+        var pattern = '(' + utils.escapeRegExChars(currentValue) + ')';
+        
+        return suggestion.value
+            .replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>')
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-
-        var pattern = '(' + utils.escapeRegExChars(currentValue) + ')';
-
-        return htmlSafeString.replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>');
+            .replace(/"/g, '&quot;')
+            .replace(/&lt;(\/?strong)&gt;/g, '<$1>');
     };
 
     Autocomplete.prototype = {
