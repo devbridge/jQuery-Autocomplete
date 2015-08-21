@@ -16,7 +16,7 @@ The standard jquery.autocomplete.js file is around 13KB when minified.
 ###Ajax Settings
 * `serviceUrl`: Server side URL or callback function that returns serviceUrl string. Optional if local lookup data is provided.
 * `type`: Ajax request type to get suggestions. Default: `GET`.
-* `dataType`: type of data returned from server. Either 'text' (default) or 'jsonp', which will cause the autocomplete to use jsonp. You may return a json object in your callback when using jsonp.
+* `dataType`: type of data returned from server. Either `text` (default), `json`  or `jsonp`, which will cause the autocomplete to use jsonp. You may return a json object in your callback when using jsonp.
 * `paramName`: Default `query`. The name of the request parameter that contains the query.
 * `params`: Additional parameters to pass with the request, optional.
 * `deferRequestBy`: Number of miliseconds to defer ajax request. Default: `0`.
