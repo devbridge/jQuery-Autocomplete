@@ -346,6 +346,7 @@
             var that = this;
             that.stopKillSuggestions();
             that.intervalId = window.setInterval(function () {
+                that.el.val(that.currentValue);
                 that.hide();
                 that.stopKillSuggestions();
             }, 50);
