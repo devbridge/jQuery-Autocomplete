@@ -207,8 +207,16 @@
         },
 
         onFocus: function () {
-            var that = this;
+            var that = this,
+                container = $(that.suggestionsContainer);
+
             that.fixPosition();
+
+            if (that.suggestions.length > 0 && (that.el.val().length >= that.options.minChars)) {
+                container.show();
+                that.visible = true;
+            }
+
             if (that.options.minChars === 0 && that.el.val().length === 0) {
                 that.onValueChange();
             }
@@ -217,7 +225,7 @@
         onBlur: function () {
             this.enableKillerFn();
         },
-        
+
         abortAjax: function () {
             var that = this;
             if (that.currentRequest) {
@@ -348,6 +356,7 @@
             that.intervalId = window.setInterval(function () {
                 that.el.val(that.currentValue);
                 that.hide();
+                that.visible = false;
                 that.stopKillSuggestions();
             }, 50);
         },
