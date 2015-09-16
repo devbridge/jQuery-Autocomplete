@@ -346,8 +346,11 @@
             var that = this;
             that.stopKillSuggestions();
             that.intervalId = window.setInterval(function () {
-                that.el.val(that.currentValue);
-                that.hide();
+                if (that.visible) {
+                    that.el.val(that.currentValue);
+                    that.hide();
+                }
+                
                 that.stopKillSuggestions();
             }, 50);
         },
