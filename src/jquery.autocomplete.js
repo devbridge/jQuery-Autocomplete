@@ -208,8 +208,10 @@
 
         onFocus: function () {
             var that = this;
+
             that.fixPosition();
-            if (that.options.minChars === 0 && that.el.val().length === 0) {
+
+            if (that.el.val().length >= that.options.minChars) {
                 that.onValueChange();
             }
         },
