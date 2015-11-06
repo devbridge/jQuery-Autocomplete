@@ -30,13 +30,6 @@
             return {
                 escapeRegExChars: function (value) {
                     return value.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-                },
-                createNode: function (containerClass) {
-                    var div = document.createElement('div');
-                    div.className = containerClass;
-                    div.style.position = 'absolute';
-                    div.style.display = 'none';
-                    return div;
                 }
             };
         }()),
@@ -168,32 +161,31 @@
             that.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>')
                                           .html(this.options.noSuggestionNotice).get(0);
 
-            that.suggestionsContainer = Autocomplete.utils.createNode(options.containerClass);
-
-            container = $(that.suggestionsContainer);
-
-            container.appendTo(options.appendTo);
+            container = that.suggestionsContainer = $('<div>')
+                                                        .addClass(options.containerClass)
+                                                        .css({position: 'absolute', display: 'none'})
+                                                        .appendTo(options.appendTo);
 
             // Only set width if it was provided:
             if (options.width !== 'auto') {
                 container.width(options.width);
             }
 
-            // Listen for mouse over event on suggestions list:
-            container.on('mouseover.autocomplete', suggestionSelector, function () {
-                that.activate($(this).data('index'));
-            });
-
-            // Deselect active element when mouse leaves suggestions container:
-            container.on('mouseout.autocomplete', function () {
-                that.selectedIndex = -1;
-                container.children('.' + selected).removeClass(selected);
-            });
-
-            // Listen for click event on suggestions list:
-            container.on('click.autocomplete', suggestionSelector, function () {
-                that.select($(this).data('index'));
-            });
+            // Add listeners to suggestion list
+            container
+                // Listen for mouse over event on suggestions list:
+                .on('mouseover.autocomplete', suggestionSelector, function () {
+                    that.activate($(this).data('index'));
+                })
+                // Deselect active element when mouse leaves suggestions container:
+                .on('mouseout.autocomplete', function () {
+                    that.selectedIndex = -1;
+                    container.children('.' + selected).removeClass(selected);
+                })
+                // Listen for click event on suggestions list:
+                .on('click.autocomplete', suggestionSelector, function () {
+                    that.select($(this).data('index'));
+                });
 
             that.fixPositionCapture = function () {
                 if (that.visible) {
@@ -203,12 +195,14 @@
 
             $(window).on('resize.autocomplete', that.fixPositionCapture);
 
-            that.el.on('keydown.autocomplete', function (e) { that.onKeyPress(e); });
-            that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
-            that.el.on('blur.autocomplete', function () { that.onBlur(); });
-            that.el.on('focus.autocomplete', function () { that.onFocus(); });
-            that.el.on('change.autocomplete', function (e) { that.onKeyUp(e); });
-            that.el.on('input.autocomplete', function (e) { that.onKeyUp(e); });
+            // Add listeners to input field
+            that.el
+                .on('keydown.autocomplete', function (e) { that.onKeyPress(e); })
+                .on('keyup.autocomplete', function (e) { that.onKeyUp(e); })
+                .on('blur.autocomplete', function () { that.onBlur(); })
+                .on('focus.autocomplete', function () { that.onFocus(); })
+                .on('change.autocomplete', function (e) { that.onKeyUp(e); })
+                .on('input.autocomplete', function (e) { that.onKeyUp(e); });
         },
 
         onFocus: function () {
@@ -248,7 +242,7 @@
             options.orientation = that.validateOrientation(options.orientation, 'bottom');
 
             // Adjust height, width and z-index:
-            $(that.suggestionsContainer).css({
+            that.suggestionsContainer.css({
                 'max-height': options.maxHeight + 'px',
                 'width': options.width + 'px',
                 'z-index': options.zIndex
@@ -282,7 +276,7 @@
             // Use only when container has already its content
 
             var that = this,
-                $container = $(that.suggestionsContainer),
+                $container = that.suggestionsContainer,
                 containerParent = $container.parent().get(0);
             // Fix position automatically when appended to body.
             // In other cases force parameter must be given.
@@ -630,7 +624,7 @@
             that.visible = false;
             that.selectedIndex = -1;
             clearInterval(that.onChangeInterval);
-            $(that.suggestionsContainer).hide();
+            that.suggestionsContainer.hide();
             that.signalHint(null);
         },
 
@@ -651,7 +645,7 @@
                 value = that.getQuery(that.currentValue),
                 className = that.classes.suggestion,
                 classSelected = that.classes.selected,
-                container = $(that.suggestionsContainer),
+                container = that.suggestionsContainer,
                 noSuggestionsContainer = $(that.noSuggestionsContainer),
                 beforeRender = options.beforeRender,
                 html = '',
@@ -707,7 +701,7 @@
 
         noSuggestions: function() {
              var that = this,
-                 container = $(that.suggestionsContainer),
+                 container = that.suggestionsContainer,
                  noSuggestionsContainer = $(that.noSuggestionsContainer);
 
             this.adjustContainerWidth();
@@ -728,7 +722,7 @@
             var that = this,
                 options = that.options,
                 width,
-                container = $(that.suggestionsContainer);
+                container = that.suggestionsContainer;
 
             // If width is auto, adjust width before displaying suggestions,
             // because if instance was created before input had width, it will be zero.
@@ -821,7 +815,7 @@
             var that = this,
                 activeItem,
                 selected = that.classes.selected,
-                container = $(that.suggestionsContainer),
+                container = that.suggestionsContainer,
                 children = container.find('.' + that.classes.suggestion);
 
             container.find('.' + selected).removeClass(selected);
@@ -858,7 +852,7 @@
             }
 
             if (that.selectedIndex === 0) {
-                $(that.suggestionsContainer).children().first().removeClass(that.classes.selected);
+                that.suggestionsContainer.children().first().removeClass(that.classes.selected);
                 that.selectedIndex = -1;
                 that.el.val(that.currentValue);
                 that.findBestHint();
@@ -892,13 +886,13 @@
                 heightDelta = $(activeItem).outerHeight();
 
             offsetTop = activeItem.offsetTop;
-            upperBound = $(that.suggestionsContainer).scrollTop();
+            upperBound = that.suggestionsContainer.scrollTop();
             lowerBound = upperBound + that.options.maxHeight - heightDelta;
 
             if (offsetTop < upperBound) {
-                $(that.suggestionsContainer).scrollTop(offsetTop);
+                that.suggestionsContainer.scrollTop(offsetTop);
             } else if (offsetTop > lowerBound) {
-                $(that.suggestionsContainer).scrollTop(offsetTop - that.options.maxHeight + heightDelta);
+                that.suggestionsContainer.scrollTop(offsetTop - that.options.maxHeight + heightDelta);
             }
 
             if (!that.options.preserveInput) {
@@ -952,7 +946,7 @@
             that.el.off('.autocomplete').removeData('autocomplete');
             that.disableKillerFn();
             $(window).off('resize.autocomplete', that.fixPositionCapture);
-            $(that.suggestionsContainer).remove();
+            that.suggestionsContainer.remove();
         }
     };
 
