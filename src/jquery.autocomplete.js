@@ -66,6 +66,7 @@
                 maxHeight: 300,
                 deferRequestBy: 0,
                 params: {},
+                allowHtmlResult: false,
                 formatResult: Autocomplete.formatResult,
                 delimiter: null,
                 zIndex: 9999,
@@ -126,21 +127,24 @@
 
     $.Autocomplete = Autocomplete;
 
-    Autocomplete.formatResult = function (suggestion, currentValue) {
+    Autocomplete.formatResult = function (suggestion, currentValue, allowHtmlResult) {
         // Do not replace anything if there current value is empty
         if (!currentValue) {
             return suggestion.value;
         }
-        
+
         var pattern = '(' + utils.escapeRegExChars(currentValue) + ')';
 
+        suggestion.value = suggestion.value.replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>')
+
+        if (!allowHtmlResult) {
+          suggestion.value = suggestion.value.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/&lt;(\/?strong)&gt;/g, '<$1>');
+        }
         return suggestion.value
-            .replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/&lt;(\/?strong)&gt;/g, '<$1>');
     };
 
     Autocomplete.prototype = {
@@ -224,7 +228,7 @@
         onBlur: function () {
             this.enableKillerFn();
         },
-        
+
         abortAjax: function () {
             var that = this;
             if (that.currentRequest) {
@@ -357,7 +361,7 @@
                     that.el.val(that.currentValue);
                     that.hide();
                 }
-                
+
                 that.stopKillSuggestions();
             }, 50);
         },
@@ -679,7 +683,7 @@
                     html += formatGroup(suggestion, value, i);
                 }
 
-                html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value) + '</div>';
+                html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value, options.allowHtmlResult) + '</div>';
             });
 
             this.adjustContainerWidth();

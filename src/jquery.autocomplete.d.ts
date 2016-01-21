@@ -9,6 +9,7 @@ interface JQueryAutocompleteOptions {
     deferRequestBy?: number;
     width?: number;
     params?: Object;
+    allowHtmlResult?: bool;
     formatResult? (suggestion: AutocompleteSuggestion, currentValue: string): string;
     delimiter?: any;
     zIndex?: number;
