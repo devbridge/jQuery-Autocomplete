@@ -55,6 +55,7 @@ The standard jquery.autocomplete.js file is around 13KB when minified.
 * `groupBy`: property name of the suggestion `data` object, by which results should be grouped.
 * `maxHeight`: Maximum height of the suggestions container in pixels. Default: `300`.
 * `width`: Suggestions container width in pixels, e.g.: 300, `flex` for max suggestion size and `auto` takes input field width. Default: `auto`
+* `positionOffset`: Offset of suggestions container in pixels. Default: `[0, 0]`.
 * `zIndex`: 'z-index' for suggestions container. Default: `9999`.
 * `appendTo`: container where suggestions will be appended. Default value `document.body`. Can be jQuery object, selector or HTML element. Make sure to set `position: absolute` or `position: relative` for that element.
 * `forceFixPosition`: Default: `false`. Suggestions are automatically positioned when their container is appended to body (look at `appendTo` option), in other cases suggestions are rendered but no positioning is applied.
