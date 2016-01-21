@@ -122,7 +122,8 @@
             showNoSuggestionNotice: false,
             noSuggestionNotice: 'No results',
             orientation: 'bottom',
-            forceFixPosition: false
+            forceFixPosition: false,
+            positionOffset: [0, 0]
     };
 
     function _lookupFilter(suggestion, originalQuery, queryLowerCase) {
@@ -308,7 +309,8 @@
                 containerHeight = $container.outerHeight(),
                 height = that.el.outerHeight(),
                 offset = that.el.offset(),
-                styles = { 'top': offset.top, 'left': offset.left };
+                styles = { 'top': offset.top + that.options.positionOffset[1],
+                           'left': offset.left + that.options.positionOffset[0] };
 
             if (orientation === 'auto') {
                 var viewPortHeight = $(window).height(),
