@@ -134,13 +134,15 @@
         
         var pattern = '(' + utils.escapeRegExChars(currentValue) + ')';
 
-        return suggestion.value
-            .replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/&lt;(\/?strong)&gt;/g, '<$1>');
+        var arabic_regex = /[\u0600-\u06FF]/; // Arabic characters fall in the Unicode range 0600 - 06FF
+        return (arabic_regex.test(suggestion.value) ? suggestion.value : suggestion.value
+                                                                                    .replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>')
+                                                                                    .replace(/&/g, '&amp;')
+                                                                                    .replace(/</g, '&lt;')
+                                                                                    .replace(/>/g, '&gt;')
+                                                                                    .replace(/"/g, '&quot;')
+                                                                                    .replace(/&lt;(\/?strong)&gt;/g, '<$1>')
+                                                                                  );
     };
 
     Autocomplete.prototype = {
