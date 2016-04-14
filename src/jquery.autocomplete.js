@@ -193,6 +193,7 @@
             // Listen for click event on suggestions list:
             container.on('click.autocomplete', suggestionSelector, function () {
                 that.select($(this).data('index'));
+                return false;
             });
 
             that.fixPositionCapture = function () {
