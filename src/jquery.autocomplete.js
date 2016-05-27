@@ -204,11 +204,29 @@
 
             $(window).on('resize.autocomplete', that.fixPositionCapture);
 
+            if ($.isFunction(that.options.onKeyPress)) {
+                that.el.on('keydown.autocomplete', function (e) { that.options.onKeyPress.call(that, e); });
+            }
             that.el.on('keydown.autocomplete', function (e) { that.onKeyPress(e); });
+            if ($.isFunction(that.options.onKeyUp)) {
+                that.el.on('keyup.autocomplete', function (e) { that.options.onKeyUp.call(that, e); });
+            }
             that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
+            if ($.isFunction(that.options.onBlur)) {
+                that.el.on('blur.autocomplete', function (e) { that.options.onBlur.call(that, e); });
+            }
             that.el.on('blur.autocomplete', function () { that.onBlur(); });
+            if ($.isFunction(that.options.onFocus)) {
+                that.el.on('focus.autocomplete', function (e) { that.options.onFocus.call(that, e); });
+            }
             that.el.on('focus.autocomplete', function () { that.onFocus(); });
+            if ($.isFunction(that.options.onKeyUp)) {
+                that.el.on('change.autocomplete', function (e) { that.options.onKeyUp.call(that, e); });
+            }
             that.el.on('change.autocomplete', function (e) { that.onKeyUp(e); });
+            if ($.isFunction(that.options.onKeyUp)) {
+                that.el.on('input.autocomplete', function (e) { that.options.onKeyUp.call(that, e); });
+            }
             that.el.on('input.autocomplete', function (e) { that.onKeyUp(e); });
         },
 
