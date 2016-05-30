@@ -530,9 +530,32 @@
                     return filter(suggestion, query, queryLowerCase);
                 })
             };
+            
+            function wholeWordMatch(suggestion) {
+                return (suggestion.split(/\b/).indexOf(queryLowerCase) >= 0);
+            }
 
+            function preferExactMatches(a, b) {
+                var sa = a.value.toLowerCase();
+                var aWhole = wholeWordMatch(sa);
+                var sb = b.value.toLowerCase();
+                var bWhole = wholeWordMatch(sb);
+                if (aWhole && bWhole) {
+                    if (sa === queryLowerCase && sb === queryLowerCase) {
+                        return 0;
+                    }
+                    return (sa === queryLowerCase) ? -1 : 1;
+                }
+                if (aWhole) {
+                    return -1;
+                }
+                if (bWhole) {
+                    return 1;
+                }
+                return 0;
+            }
             if (limit && data.suggestions.length > limit) {
-                data.suggestions = data.suggestions.slice(0, limit);
+                data.suggestions = data.suggestions.sort(preferExactMatches).slice(0, limit);
             }
 
             return data;
