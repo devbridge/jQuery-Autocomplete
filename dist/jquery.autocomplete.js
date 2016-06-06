@@ -681,7 +681,7 @@
             container.html(html);
 
             if ($.isFunction(beforeRender)) {
-                beforeRender.call(that.element, container);
+                beforeRender.call(that.element, container, that.sugestions);
             }
 
             that.fixPosition();
