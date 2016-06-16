@@ -62,6 +62,8 @@ The standard jquery.autocomplete.js file is around 13KB when minified.
 * `preserveInput`: if `true`, input value stays the same when navigating over suggestions. Default: `false`.
 * `showNoSuggestionNotice`: Default `false`. When no matching results, display a notification label.
 * `noSuggestionNotice`: Default `No results`. Text or htmlString or Element or jQuery object for no matching results label.
+* `showCategoryOnHover`: Default `false`. Embeds category in title attribute for each autocomplete-group div.
+* `showSuggestionOnHover`: Default `false`. Embeds suggestion in title attribute for each autocomplete-suggestion div.
 * `onInvalidateSelection`: `function () {}` called when input is altered after selection has been made. `this` is bound to input element.
 * `tabDisabled`: Default `false`. Set to true to leave the cursor in the input field after the user tabs to select a suggestion.
 
