@@ -301,8 +301,7 @@ interface JQuery {
     /**
      * Create Autocomplete component
      */
-    autocomplete(): AutocompleteInstance;
-    autocomplete(options: JQueryAutocompleteOptions): AutocompleteInstance;
+    autocomplete(options?: JQueryAutocompleteOptions): AutocompleteInstance;
 
     /**
      * Trigger non-specialized signature method
@@ -353,5 +352,64 @@ interface JQuery {
      * @param methodName The name of the method
      */
     autocomplete(methodName: "dispose"): AutocompleteInstance;
+
+}
+
+interface JQuery {
+
+    /**
+     * Create Autocomplete component via plugin alias
+     */
+    devbridgeAutocomplete(options?: JQueryAutocompleteOptions): AutocompleteInstance;
+
+    /**
+     * Trigger non-specialized signature method
+     * @param methodName
+     * @param arg
+     */
+    devbridgeAutocomplete(methodName: string, ...arg: any[]): any;
+
+    /**
+     * You may update any option at any time. Options are listed above.
+     * @param methodName The name of the method
+     * @param options
+     */
+    devbridgeAutocomplete(methodName: "setOptions", options: JQueryAutocompleteOptions): AutocompleteInstance;
+
+    /**
+     * Clears suggestion cache and current suggestions suggestions.
+     * @param methodName The name of the method
+     */
+    devbridgeAutocomplete(methodName: "clear"): AutocompleteInstance;
+
+    /**
+     * Clears suggestion cache.
+     * @param methodName The name of the method
+     */
+    devbridgeAutocomplete(methodName: "clearCache"): AutocompleteInstance;
+
+    /**
+     * Deactivate autocomplete.
+     * @param methodName The name of the method
+     */
+    devbridgeAutocomplete(methodName: "disable"): AutocompleteInstance;
+
+    /**
+     * Activates autocomplete if it was deactivated before.
+     * @param methodName The name of the method
+     */
+    devbridgeAutocomplete(methodName: "enable"): AutocompleteInstance;
+
+    /**
+     * Hides suggestions.
+     * @param methodName The name of the method
+     */
+    devbridgeAutocomplete(methodName: "hide"): AutocompleteInstance;
+
+    /**
+     * Destroys autocomplete instance. All events are detached and suggestion containers removed.
+     * @param methodName The name of the method
+     */
+    devbridgeAutocomplete(methodName: "dispose"): AutocompleteInstance;
 
 }
