@@ -1,4 +1,4 @@
-// Type definitions for jQuery-Autocomplete 1.2.24
+// Type definitions for jQuery-Autocomplete 1.2.25
 // Project: https://www.devbridge.com/sourcery/components/jquery-autocomplete/
 // Definitions by: John Gouigouix <https://github.com/orchestra-ts/DefinitelyTyped/>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
