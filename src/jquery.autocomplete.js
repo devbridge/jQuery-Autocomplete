@@ -52,7 +52,7 @@
         };
 
     function Autocomplete(el, options) {
-        var noop = function () { },
+        var noop = $.noop,
             that = this,
             defaults = {
                 ajaxSettings: {},
