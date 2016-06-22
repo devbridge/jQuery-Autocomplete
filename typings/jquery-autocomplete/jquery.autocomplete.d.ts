@@ -130,7 +130,7 @@ interface JQueryAutocompleteOptions {
      * Callback function or lookup array for the suggestions. It may be array of strings or suggestion object literals.
      *   -> suggestion: An object literal with the following format: { value: 'string', data: any }.
      */
-    lookup?: AutocompleteSuggestion[];
+    lookup?: Function | AutocompleteSuggestion[];
 
     /**
      * Filter function for local lookups. By default it does partial string match (case insensitive).
@@ -184,7 +184,8 @@ interface JQueryAutocompleteOptions {
     /**
      * Property name of the suggestion data object, by which results should be grouped.
      */
-    groupBy?: AutocompleteSuggestion | AutocompleteSuggestion[];
+    groupBy?: string;
+
     /**
      * Maximum height of the suggestions container in pixels.
      * @default 300
@@ -352,10 +353,6 @@ interface JQuery {
      * @param methodName The name of the method
      */
     autocomplete(methodName: "dispose"): AutocompleteInstance;
-
-}
-
-interface JQuery {
 
     /**
      * Create Autocomplete component via plugin alias
