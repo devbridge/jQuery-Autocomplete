@@ -134,10 +134,7 @@ input.autocomplete({
     formatResult(suggestion: AutocompleteSuggestion, currentValue: string): string {
         return currentValue;
     },
-    groupBy: [
-        { value: 'Chicago Blackhawks', data: { category: 'NHL' } },
-        { value: 'Chicago Bulls', data: { category: 'NBA' } }
-    ],
+    groupBy: "category",
     maxHeight: 300,
     width: "auto",
     zIndex: 9999,
