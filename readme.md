@@ -23,16 +23,16 @@ The standard jquery.autocomplete.js file is around 13KB when minified.
 * `dataType`: type of data returned from server. Either `text` (default), `json`  or `jsonp`, which will cause the autocomplete to use jsonp. You may return a json object in your callback when using jsonp.
 * `paramName`: Default `query`. The name of the request parameter that contains the query.
 * `params`: Additional parameters to pass with the request, optional.
-* `deferRequestBy`: Number of miliseconds to defer ajax request. Default: `0`.
+* `deferRequestBy`: Number of miliseconds to defer Ajax request. Default: `0`.
 * `ajaxSettings`: Any additional [Ajax Settings](http://api.jquery.com/jquery.ajax/#jQuery-ajax-settings) that configure the jQuery Ajax request.
 
 ###Configuration Settings
 * `noCache`: Boolean value indicating whether to cache suggestion results. Default `false`.
 * `delimiter`: String or RegExp, that splits input value and takes last part to as query for suggestions.
   Useful when for example you need to fill list of  coma separated values.
-* `onSearchStart`: `function (query) {}` called before ajax request. `this` is bound to input element.
-* `onSearchComplete`: `function (query, suggestions) {}` called after ajax response is processed. `this` is bound to input element. `suggestions` is an array containing the results.
-* `onSearchError`: `function (query, jqXHR, textStatus, errorThrown) {}` called if ajax request fails. `this` is bound to input element.
+* `onSearchStart`: `function (query) {}` called before Ajax request. `this` is bound to input element.
+* `onSearchComplete`: `function (query, suggestions) {}` called after Ajax response is processed. `this` is bound to input element. `suggestions` is an array containing the results.
+* `onSearchError`: `function (query, jqXHR, textStatus, errorThrown) {}` called if Ajax request fails. `this` is bound to input element.
 * `transformResult`: `function(response, originalQuery) {}` called after the result of the query is ready. Converts the result into response.suggestions format.
 * `onSelect`: `function (suggestion) {}` Callback function invoked when user selects suggestion
   from the list. `this` inside callback refers to input HtmlElement.
@@ -42,7 +42,7 @@ The standard jquery.autocomplete.js file is around 13KB when minified.
     * `suggestion`: An object literal with the following format: `{ value: 'string', data: any }`.
 * `lookupFilter`: `function (suggestion, query, queryLowerCase) {}` filter function for local lookups. By default it does partial string match (case insensitive).
 * `triggerSelectOnValidInput`: Boolean value indicating if `select` should be triggered if it matches suggestion. Default `true`.
-* `preventBadQueries`: Boolean value indicating if it shoud prevent future ajax requests for queries with the same root if no results were returned. E.g. if `Jam` returns no suggestions, it will not fire for any future query that starts with `Jam`. Default `true`.
+* `preventBadQueries`: Boolean value indicating if it should prevent future Ajax requests for queries with the same root if no results were returned. E.g. if `Jam` returns no suggestions, it will not fire for any future query that starts with `Jam`. Default `true`.
 * `autoSelectFirst`: if set to `true`, first item will be selected when showing suggestions. Default value `false`.
 * `onHide`: `function (container) {}` called before container will be hidden
 
@@ -54,7 +54,7 @@ The standard jquery.autocomplete.js file is around 13KB when minified.
 * `maxHeight`: Maximum height of the suggestions container in pixels. Default: `300`.
 * `width`: Suggestions container width in pixels, e.g.: 300. Default: `auto`, takes input field width.
 * `zIndex`: 'z-index' for suggestions container. Default: `9999`.
-* `appendTo`: container where suggestions will be appended. Default value `document.body`. Can be jQuery object, selector or html element. Make sure to set `position: absolute` or `position: relative` for that element.
+* `appendTo`: container where suggestions will be appended. Default value `document.body`. Can be jQuery object, selector or HTML element. Make sure to set `position: absolute` or `position: relative` for that element.
 * `forceFixPosition`: Default: `false`. Suggestions are automatically positioned when their container is appended to body (look at `appendTo` option), in other cases suggestions are rendered but no positioning is applied.
    Set this option to force auto positioning in other cases.
 * `orientation`: Default `bottom`. Vertical orientation of the displayed suggestions, available values are `auto`, `top`, `bottom`.
@@ -70,7 +70,7 @@ The standard jquery.autocomplete.js file is around 13KB when minified.
 Autocomplete instance has following methods:
 
 * `setOptions(options)`: you may update any option at any time. Options are listed above.
-* `clear`: clears suggestion cache and current suggestions suggestions.
+* `clear`: clears suggestion cache and current suggestions.
 * `clearCache`: clears suggestion cache.
 * `disable`: deactivate autocomplete.
 * `enable`: activates autocomplete if it was deactivated before.
@@ -111,7 +111,7 @@ $('#autocomplete').autocomplete({
 });
 ```
 
-Local lookup (no ajax):
+Local lookup (no Ajax):
 
 ```javascript
 var countries = [
@@ -133,7 +133,7 @@ Custom lookup function:
 
 $('#autocomplete').autocomplete({
     lookup: function (query, done) {
-        // Do ajax call or lookup locally, when done,
+        // Do Ajax call or lookup locally, when done,
         // call the callback and pass your results:
         var result = {
             suggestions: [
@@ -205,7 +205,7 @@ supply just a string array for suggestions:
 
 ## Non standard query/results
 
-If your ajax service expects the query in a different format, and returns data in a different format than the standard response,
+If your Ajax service expects the query in a different format, and returns data in a different format than the standard response,
 you can supply the "paramName" and "transformResult" options:
 
 ```javascript
