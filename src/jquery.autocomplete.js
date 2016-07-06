@@ -6,12 +6,12 @@
 *  For details, see the web site: https://github.com/devbridge/jQuery-Autocomplete
 */
 
-/*jslint  browser: true, white: true, plusplus: true, vars: true */
+/*jslint  browser: true, white: true, single: true, this: true, multivar: true */
 /*global define, window, document, jQuery, exports, require */
 
 // Expose plugin as an AMD module if AMD loader is present:
 (function (factory) {
-    'use strict';
+    "use strict";
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define(['jquery'], factory);
