@@ -158,7 +158,7 @@
             that.element.setAttribute('autocomplete', 'off');
 
             that.killerFn = function (e) {
-                if ($(e.target).closest('.' + that.options.containerClass).length === 0) {
+                if (!$(e.target).closest('.' + that.options.containerClass).length) {
                     that.killSuggestions();
                     that.disableKillerFn();
                 }
@@ -636,7 +636,7 @@
         },
 
         suggest: function () {
-            if (this.suggestions.length === 0) {
+            if (!this.suggestions.length) {
                 if (this.options.showNoSuggestionNotice) {
                     this.noSuggestions();
                 } else {
@@ -804,7 +804,7 @@
             // Cache results if cache is not disabled:
             if (!options.noCache) {
                 that.cachedResponse[cacheKey] = result;
-                if (options.preventBadQueries && result.suggestions.length === 0) {
+                if (options.preventBadQueries && !result.suggestions.length) {
                     that.badQueries.push(originalQuery);
                 }
             }
@@ -962,7 +962,7 @@
         var dataKey = 'autocomplete';
         // If function invoked without argument return
         // instance of the first matched element:
-        if (arguments.length === 0) {
+        if (!arguments.length) {
             return this.first().data(dataKey);
         }
 
