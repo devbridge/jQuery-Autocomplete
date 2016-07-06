@@ -29,7 +29,7 @@
         utils = (function () {
             return {
                 escapeRegExChars: function (value) {
-                    return value.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+                    return value.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&");
                 },
                 createNode: function (containerClass) {
                     var div = document.createElement('div');
