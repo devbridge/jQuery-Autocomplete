@@ -1,4 +1,4 @@
-// Type definitions for jQuery-Autocomplete 1.2.25
+// TypeScript type definitions for jQuery-Autocomplete 1.2.25
 // Project: https://www.devbridge.com/sourcery/components/jquery-autocomplete/
 // Definitions by: John Gouigouix <https://github.com/orchestra-ts/DefinitelyTyped/>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
@@ -23,7 +23,7 @@ interface JQueryAutocompleteOptions {
     //----------------o AJAX SETTINGS
 
     /**
-     * Server side URL or callback function that returns serviceUrl string. Optional if local lookup data is provided.
+     * Server-side URL or callback function that returns serviceUrl string. Optional if local lookup data is provided.
      */
     serviceUrl?: string;
 
@@ -34,8 +34,8 @@ interface JQueryAutocompleteOptions {
     type?: string;
 
     /**
-     * type of data returned from server. Either text, json or jsonp, which will cause the autocomplete to use jsonp.
-     * You may return a json object in your callback when using jsonp.
+     * Type of data returned from server. Either "text", "json" or "jsonp", which will cause the autocomplete to use JSONP.
+     * You may return a JSON object in your callback when using "jsonp".
      * @default "text"
      */
     dataType?: "text" | "json" | "jsonp";
@@ -52,7 +52,7 @@ interface JQueryAutocompleteOptions {
     params?: Object;
 
     /**
-     * Number of miliseconds to defer ajax request.
+     * Number of milliseconds to defer Ajax request.
      * @default 0
      */
     deferRequestBy?: number;
@@ -78,21 +78,20 @@ interface JQueryAutocompleteOptions {
     delimiter?: string | RegExp;
 
     /**
-     * Called before ajax request. this is bound to input element.
+     * Called before Ajax request. This is bound to input element.
      * @param query
      */
     onSearchStart? (query: string): void;
 
     /**
-     * Called after ajax response is processed. this is bound to input element.
-     * Suggestions is an array containing the results.
+     * Called after Ajax response is processed. This is bound to input element.
      * @param query
-     * @param suggestions
+     * @param suggestions Array containing the results.
      */
     onSearchComplete? (query: string, suggestions: AutocompleteSuggestion[]): void;
 
     /**
-     * Called if ajax request fails. this is bound to input element.
+     * Called if Ajax request fails. This is bound to input element.
      * @param query
      * @param jqXHR
      * @param textStatus
@@ -109,7 +108,7 @@ interface JQueryAutocompleteOptions {
 
     /**
      * Callback function invoked when user selects suggestion from the list.
-     * This inside callback refers to input HtmlElement.
+     * This inside callback refers to input HTMLElement.
      * @param suggestion
      */
     onSelect? (suggestion: AutocompleteSuggestion): void;
@@ -147,7 +146,7 @@ interface JQueryAutocompleteOptions {
     triggerSelectOnValidInput?: boolean;
 
     /**
-     * Boolean value indicating if it shoud prevent future ajax requests for queries with the same root if no results were returned.
+     * Boolean value indicating if it should prevent future Ajax requests for queries with the same root if no results were returned.
      * E.g. if Jam returns no suggestions, it will not fire for any future query that starts with Jam.
      * @default true
      */
@@ -193,7 +192,7 @@ interface JQueryAutocompleteOptions {
     maxHeight?: number;
 
     /**
-     * Suggestions container width in pixels, e.g.: 300. takes input field width.
+     * Suggestions container width in pixels, e.g.: 300. Takes input field width.
      * @default "auto"
      */
     width?: string | number;
@@ -205,7 +204,7 @@ interface JQueryAutocompleteOptions {
     zIndex?: number;
 
     /**
-     * Container where suggestions will be appended. Can be jQuery object, selector or html element.
+     * Container where suggestions will be appended. Can be jQuery object, jQuery  selector or HTMLElement.
      * Make sure to set position: absolute or position: relative for that element.
      * @default document.body
      */
@@ -220,8 +219,8 @@ interface JQueryAutocompleteOptions {
     forceFixPosition?: boolean;
 
     /**
-     * Vertical orientation of the displayed suggestions, available values are auto, top, bottom.
-     * If set to auto, the suggestions will be orientated it the way that place them closer to middle of the view port.
+     * Vertical orientation of the displayed suggestions, available values are "auto", "top", "bottom".
+     * If set to "auto", the suggestions will be orientated it the way that place them closer to middle of the view port.
      * @default "bottom"
      */
     orientation?: "bottom" | "auto" | "top"
@@ -245,7 +244,7 @@ interface JQueryAutocompleteOptions {
     noSuggestionNotice?: string | Element | JQuery;
 
     /**
-     * Called when input is altered after selection has been made. this is bound to input element.
+     * Called when input is altered after selection has been made. This is bound to input element.
      */
     onInvalidateSelection? (): void;
 
@@ -260,38 +259,38 @@ interface JQueryAutocompleteOptions {
 interface AutocompleteInstance {
 
     /**
-     * you may update any option at any time. Options are listed above.
+     * You may update any option at any time. Options are listed above.
      * @param options
      */
     setOptions(options: JQueryAutocompleteOptions): void;
 
     /**
-     * clears suggestion cache and current suggestions suggestions.
+     * Clears suggestion cache and current suggestions suggestions.
      */
     clear(): void;
 
     /**
-     * clears suggestion cache.
+     * Clears suggestion cache.
      */
     clearCache(): void;
 
     /**
-     * deactivate autocomplete.
+     * Deactivate autocomplete.
      */
     disable(): void;
 
     /**
-     * activates autocomplete if it was deactivated before.
+     * Activates autocomplete if it was deactivated before.
      */
     enable(): void;
 
     /**
-     * hides suggestions.
+     * Hides suggestions.
      */
     hide(): void;
 
     /**
-     * destroys autocomplete instance. All events are detached and suggestion containers removed.
+     * Destroys autocomplete instance. All events are detached and suggestion containers removed.
      */
     dispose(): void;
 
