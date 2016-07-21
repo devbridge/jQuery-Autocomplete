@@ -567,7 +567,18 @@
                 response = that.getSuggestionsLocal(q);
             } else {
                 if ($.isFunction(serviceUrl)) {
-                    serviceUrl = serviceUrl.call(that.element, q);
+                    serviceUrl = serviceUrl.call(that.element, q, function(data){
+                        var result;
+                        that.currentRequest = null;
+                        console && console.log("result before transform :", data);
+                        result = options.transformResult(data, q);
+                        console && console.log("transformResult :", result);
+                        that.processResponse(result, q, cacheKey);
+                        options.onSearchComplete.call(that.element, q, result.suggestions);
+                    });
+                    if (serviceUrl === true) {
+                        return;
+                    }
                 }
                 cacheKey = serviceUrl + '?' + $.param(params || {});
                 response = that.cachedResponse[cacheKey];

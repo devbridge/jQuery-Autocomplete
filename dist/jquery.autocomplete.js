@@ -1,17 +1,17 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.2.25
+*  Ajax Autocomplete for jQuery, version %version%
 *  (c) 2015 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
 *  For details, see the web site: https://github.com/devbridge/jQuery-Autocomplete
 */
 
-/*jslint  browser: true, white: true, plusplus: true, vars: true */
+/*jslint  browser: true, white: true, single: true, this: true, multivar: true */
 /*global define, window, document, jQuery, exports, require */
 
 // Expose plugin as an AMD module if AMD loader is present:
 (function (factory) {
-    'use strict';
+    "use strict";
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define(['jquery'], factory);
@@ -29,7 +29,7 @@
         utils = (function () {
             return {
                 escapeRegExChars: function (value) {
-                    return value.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+                    return value.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&");
                 },
                 createNode: function (containerClass) {
                     var div = document.createElement('div');
@@ -52,7 +52,7 @@
         };
 
     function Autocomplete(el, options) {
-        var noop = function () { },
+        var noop = $.noop,
             that = this,
             defaults = {
                 ajaxSettings: {},
@@ -158,7 +158,7 @@
             that.element.setAttribute('autocomplete', 'off');
 
             that.killerFn = function (e) {
-                if ($(e.target).closest('.' + that.options.containerClass).length === 0) {
+                if (!$(e.target).closest('.' + that.options.containerClass).length) {
                     that.killSuggestions();
                     that.disableKillerFn();
                 }
@@ -567,7 +567,18 @@
                 response = that.getSuggestionsLocal(q);
             } else {
                 if ($.isFunction(serviceUrl)) {
-                    serviceUrl = serviceUrl.call(that.element, q);
+                    serviceUrl = serviceUrl.call(that.element, q, function(data){
+                        var result;
+                        that.currentRequest = null;
+                        console && console.log("result before transform :", data);
+                        result = options.transformResult(data, q);
+                        console && console.log("transformResult :", result);
+                        that.processResponse(result, q, cacheKey);
+                        options.onSearchComplete.call(that.element, q, result.suggestions);
+                    });
+                    if (serviceUrl === true) {
+                        return;
+                    }
                 }
                 cacheKey = serviceUrl + '?' + $.param(params || {});
                 response = that.cachedResponse[cacheKey];
@@ -636,7 +647,7 @@
         },
 
         suggest: function () {
-            if (this.suggestions.length === 0) {
+            if (!this.suggestions.length) {
                 if (this.options.showNoSuggestionNotice) {
                     this.noSuggestions();
                 } else {
@@ -804,7 +815,7 @@
             // Cache results if cache is not disabled:
             if (!options.noCache) {
                 that.cachedResponse[cacheKey] = result;
-                if (options.preventBadQueries && result.suggestions.length === 0) {
+                if (options.preventBadQueries && !result.suggestions.length) {
                     that.badQueries.push(originalQuery);
                 }
             }
@@ -962,7 +973,7 @@
         var dataKey = 'autocomplete';
         // If function invoked without argument return
         // instance of the first matched element:
-        if (arguments.length === 0) {
+        if (!arguments.length) {
             return this.first().data(dataKey);
         }
 
