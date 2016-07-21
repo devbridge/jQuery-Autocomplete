@@ -18,7 +18,10 @@ The standard jquery.autocomplete.js file is around 13KB when minified.
     * `options`: An object literal which defines the settings to use for the autocomplete plugin. Available option settings listed below.
 
 ###Ajax Settings
-* `serviceUrl`: Server side URL or callback function that returns serviceUrl string. Optional if local lookup data is provided.
+* `serviceUrl`: Server side URL (Optional if local lookup data is provided). It can be:
+** an url string
+** a `function(query)` that will returns the serviceUrl string.
+** a `function(query, callback)` which returns true. The callback function takes one argument that will be used by transformResult
 * `type`: Ajax request type to get suggestions. Default: `GET`.
 * `dataType`: type of data returned from server. Either `text` (default), `json`  or `jsonp`, which will cause the autocomplete to use jsonp. You may return a json object in your callback when using jsonp.
 * `paramName`: Default `query`. The name of the request parameter that contains the query.
