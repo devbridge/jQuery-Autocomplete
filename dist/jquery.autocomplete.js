@@ -735,7 +735,7 @@
             // Also it adjusts if input width has changed.
             // -2px to account for suggestions border.
             if (options.width === 'auto') {
-                width = that.el.outerWidth() - 2;
+                width = that.el.outerWidth();
                 container.width(width > 0 ? width : 300);
             }
         },
