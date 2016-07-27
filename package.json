@@ -1,14 +1,14 @@
 {
-  "name": "devbridge-autocomplete",
-  "version": "1.2.25",
+  "name": "swey-autocomplete",
+  "version": "1.2.26",
   "description": "Autocomplete provides suggestions while you type into the text field.",
-  "homepage": "https://github.com/devbridge/jQuery-Autocomplete",
+  "homepage": "https://github.com/swey/jQuery-Autocomplete",
   "author": "Tomas Kirda (https://twitter.com/tkirda)",
   "main": "dist/jquery.autocomplete.js",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/devbridge/jQuery-Autocomplete.git"
+    "url": "git://github.com/swey/jQuery-Autocomplete.git"
   },
   "dependencies": {
     "jquery": ">=1.7"

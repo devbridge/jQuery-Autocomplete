@@ -176,7 +176,7 @@
 
             // Only set width if it was provided:
             if (options.width !== 'auto') {
-                container.width(options.width);
+                container.css('width', options.width);
             }
 
             // Listen for mouse over event on suggestions list:
@@ -332,9 +332,8 @@
                 }
             }
 
-            // -2px to account for suggestions border.
             if (that.options.width === 'auto') {
-                styles.width = (that.el.outerWidth() - 2) + 'px';
+                styles.width = that.el.outerWidth() + 'px';
             }
 
             $container.css(styles);
@@ -736,8 +735,8 @@
             // Also it adjusts if input width has changed.
             // -2px to account for suggestions border.
             if (options.width === 'auto') {
-                width = that.el.outerWidth() - 2;
-                container.width(width > 0 ? width : 300);
+                width = that.el.outerWidth();
+                container.css('width', width > 0 ? width : 300);
             }
         },
 
