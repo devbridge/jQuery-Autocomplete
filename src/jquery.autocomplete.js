@@ -332,9 +332,8 @@
                 }
             }
 
-            // -2px to account for suggestions border.
             if (that.options.width === 'auto') {
-                styles.width = (that.el.outerWidth() - 2) + 'px';
+                styles.width = that.el.outerWidth() + 'px';
             }
 
             $container.css(styles);
