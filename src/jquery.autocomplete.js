@@ -354,7 +354,13 @@
             that.stopKillSuggestions();
             that.intervalId = window.setInterval(function () {
                 if (that.visible) {
-                    that.el.val(that.currentValue);
+                    // No need to restore value when 
+                    // preserveInput === true, 
+                    // because we did not change it
+                    if (!that.options.preserveInput) {
+                        that.el.val(that.currentValue);
+                    }
+
                     that.hide();
                 }
                 
