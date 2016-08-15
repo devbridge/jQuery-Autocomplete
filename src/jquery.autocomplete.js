@@ -208,7 +208,7 @@
             that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
             that.el.on('blur.autocomplete', function () { that.onBlur(); });
             that.el.on('focus.autocomplete', function () { that.onFocus(); });
-            that.el.on('change.autocomplete', function (e) { that.onKeyUp(e); });
+            that.el.on('change.autocomplete', function (e) { $(that).data("_change.autocomplete", setTimeout(function () { if ($.isFunction(that.options.onChange)) { that.options.onChange(that.el.val()); } }, 500)) });
             that.el.on('input.autocomplete', function (e) { that.onKeyUp(e); });
         },
 
@@ -913,6 +913,7 @@
         },
 
         onSelect: function (index) {
+            clearTimeout($(this).data("_change.autocomplete"));
             var that = this,
                 onSelectCallback = that.options.onSelect,
                 suggestion = that.suggestions[index];

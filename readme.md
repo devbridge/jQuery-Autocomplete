@@ -36,6 +36,7 @@ The standard jquery.autocomplete.js file is around 13KB when minified.
 * `transformResult`: `function(response, originalQuery) {}` called after the result of the query is ready. Converts the result into response.suggestions format.
 * `onSelect`: `function (suggestion) {}` Callback function invoked when user selects suggestion
   from the list. `this` inside callback refers to input HtmlElement.
+* `onChange`: `function (value) {}` Callback function invoked when on change event.
 * `minChars`: Minimum number of characters required to trigger autosuggest. Default: `1`.
 * `lookupLimit`: Number of maximum results to display for local lookup. Default: no limit.
 * `lookup`: Callback function or lookup array for the suggestions. It may be array of strings or `suggestion` object literals.
@@ -149,6 +150,21 @@ $('#autocomplete').autocomplete({
         alert('You selected: ' + suggestion.value + ', ' + suggestion.data);
     }
 });
+```
+
+Use onChange:
+
+```javascript
+$('#autocomplete').autocomplete({
+    serviceUrl: '/autocomplete/countries',
+    onSelect: function (suggestion) {
+        alert('You selected: ' + suggestion.value + ', ' + suggestion.data);
+    },
+    onChange: function (value) {
+        console.log(value);
+    }
+});
+
 ```
 
 ##Styling
