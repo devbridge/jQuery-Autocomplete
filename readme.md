@@ -47,7 +47,7 @@ The standard jquery.autocomplete.js file is around 13KB when minified.
 * `onHide`: `function (container) {}` called before container will be hidden
 
 ###Presentation Settings
-* `beforeRender`: `function (container, suggestions) {}` called before displaying the suggestions. You may manipulate suggestions DOM before it is displayed.
+* `beforeRender`: `function (container) {}` called before displaying the suggestions. You may manipulate suggestions DOM before it is displayed.
 * `formatResult`: `function (suggestion, currentValue) {}` custom function to
   format suggestion entry inside suggestions container, optional.
 * `groupBy`: property name of the suggestion `data` object, by which results should be grouped.
