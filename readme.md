@@ -29,7 +29,7 @@ The standard jquery.autocomplete.js file is around 13KB when minified.
 ###Configuration Settings
 * `noCache`: Boolean value indicating whether to cache suggestion results. Default `false`.
 * `delimiter`: String or RegExp, that splits input value and takes last part to as query for suggestions.
-  Useful when for example you need to fill list of  coma separated values.
+  Useful when for example you need to fill list of  comma separated values.
 * `onSearchStart`: `function (query) {}` called before Ajax request. `this` is bound to input element.
 * `onSearchComplete`: `function (query, suggestions) {}` called after Ajax response is processed. `this` is bound to input element. `suggestions` is an array containing the results.
 * `onSearchError`: `function (query, jqXHR, textStatus, errorThrown) {}` called if Ajax request fails. `this` is bound to input element.
