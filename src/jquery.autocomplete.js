@@ -56,6 +56,7 @@
             that = this,
             defaults = {
                 ajaxSettings: {},
+                ajaxSetter: null,
                 autoSelectFirst: false,
                 appendTo: document.body,
                 serviceUrl: null,
@@ -593,6 +594,9 @@
                 };
 
                 $.extend(ajaxSettings, options.ajaxSettings);
+
+                $.isFunction(options.ajaxSetter) &&
+                    options.ajaxSetter(q, ajaxSettings)
 
                 that.currentRequest = $.ajax(ajaxSettings).done(function (data) {
                     var result;
