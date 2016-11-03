@@ -853,6 +853,7 @@
             var that = this;
             that.hide();
             that.onSelect(i);
+            that.disableKillerFn();
         },
 
         moveUp: function () {
