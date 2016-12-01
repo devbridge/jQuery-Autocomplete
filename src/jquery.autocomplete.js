@@ -67,6 +67,7 @@
                 deferRequestBy: 0,
                 params: {},
                 formatResult: Autocomplete.formatResult,
+                formatGroup: Autocomplete.formatGroup,
                 delimiter: null,
                 zIndex: 9999,
                 type: 'GET',
@@ -141,6 +142,18 @@
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/&lt;(\/?strong)&gt;/g, '<$1>');
+    };
+
+    Autocomplete.formatGroup = function (suggestion, index) {
+        var currentCategory = suggestion.data[groupBy];
+
+        if (category === currentCategory){
+            return '';
+        }
+
+        category = currentCategory;
+
+        return '<div class="autocomplete-group"><strong>' + category + '</strong></div>';
     };
 
     Autocomplete.prototype = {
@@ -662,17 +675,7 @@
                 beforeRender = options.beforeRender,
                 html = '',
                 category,
-                formatGroup = function (suggestion, index) {
-                        var currentCategory = suggestion.data[groupBy];
-
-                        if (category === currentCategory){
-                            return '';
-                        }
-
-                        category = currentCategory;
-
-                        return '<div class="autocomplete-group"><strong>' + category + '</strong></div>';
-                    };
+                formatGroup = options.formatGroup;
 
             if (options.triggerSelectOnValidInput && that.isExactMatch(value)) {
                 that.select(0);
