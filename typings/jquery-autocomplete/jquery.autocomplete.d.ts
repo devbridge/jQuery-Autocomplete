@@ -1,4 +1,4 @@
-// Type definitions for jQuery-Autocomplete 1.2.24
+// Type definitions for jQuery-Autocomplete 1.2.25
 // Project: https://www.devbridge.com/sourcery/components/jquery-autocomplete/
 // Definitions by: John Gouigouix <https://github.com/orchestra-ts/DefinitelyTyped/>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
@@ -130,7 +130,7 @@ interface JQueryAutocompleteOptions {
      * Callback function or lookup array for the suggestions. It may be array of strings or suggestion object literals.
      *   -> suggestion: An object literal with the following format: { value: 'string', data: any }.
      */
-    lookup?: AutocompleteSuggestion[];
+    lookup?: Function | AutocompleteSuggestion[];
 
     /**
      * Filter function for local lookups. By default it does partial string match (case insensitive).
@@ -184,7 +184,8 @@ interface JQueryAutocompleteOptions {
     /**
      * Property name of the suggestion data object, by which results should be grouped.
      */
-    groupBy?: AutocompleteSuggestion | AutocompleteSuggestion[];
+    groupBy?: string;
+
     /**
      * Maximum height of the suggestions container in pixels.
      * @default 300
@@ -301,8 +302,7 @@ interface JQuery {
     /**
      * Create Autocomplete component
      */
-    autocomplete(): AutocompleteInstance;
-    autocomplete(options: JQueryAutocompleteOptions): AutocompleteInstance;
+    autocomplete(options?: JQueryAutocompleteOptions): AutocompleteInstance;
 
     /**
      * Trigger non-specialized signature method
@@ -353,5 +353,60 @@ interface JQuery {
      * @param methodName The name of the method
      */
     autocomplete(methodName: "dispose"): AutocompleteInstance;
+
+    /**
+     * Create Autocomplete component via plugin alias
+     */
+    devbridgeAutocomplete(options?: JQueryAutocompleteOptions): AutocompleteInstance;
+
+    /**
+     * Trigger non-specialized signature method
+     * @param methodName
+     * @param arg
+     */
+    devbridgeAutocomplete(methodName: string, ...arg: any[]): any;
+
+    /**
+     * You may update any option at any time. Options are listed above.
+     * @param methodName The name of the method
+     * @param options
+     */
+    devbridgeAutocomplete(methodName: "setOptions", options: JQueryAutocompleteOptions): AutocompleteInstance;
+
+    /**
+     * Clears suggestion cache and current suggestions suggestions.
+     * @param methodName The name of the method
+     */
+    devbridgeAutocomplete(methodName: "clear"): AutocompleteInstance;
+
+    /**
+     * Clears suggestion cache.
+     * @param methodName The name of the method
+     */
+    devbridgeAutocomplete(methodName: "clearCache"): AutocompleteInstance;
+
+    /**
+     * Deactivate autocomplete.
+     * @param methodName The name of the method
+     */
+    devbridgeAutocomplete(methodName: "disable"): AutocompleteInstance;
+
+    /**
+     * Activates autocomplete if it was deactivated before.
+     * @param methodName The name of the method
+     */
+    devbridgeAutocomplete(methodName: "enable"): AutocompleteInstance;
+
+    /**
+     * Hides suggestions.
+     * @param methodName The name of the method
+     */
+    devbridgeAutocomplete(methodName: "hide"): AutocompleteInstance;
+
+    /**
+     * Destroys autocomplete instance. All events are detached and suggestion containers removed.
+     * @param methodName The name of the method
+     */
+    devbridgeAutocomplete(methodName: "dispose"): AutocompleteInstance;
 
 }
