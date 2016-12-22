@@ -508,6 +508,11 @@
             if (!delimiter) {
                 return value;
             }
+
+            if( delimiter == value ){
+                return $.trim(value)
+            }
+
             parts = value.split(delimiter);
             return $.trim(parts[parts.length - 1]);
         },
