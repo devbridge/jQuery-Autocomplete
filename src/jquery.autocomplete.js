@@ -743,8 +743,8 @@
                 width = that.el.outerWidth();
                 container.css('width', width > 0 ? width : 300);
             } else if(options.width === 'flex') {
-		// Trust the source! Unset the width property so it will be the max length
-		// the containing elements.
+                // Trust the source! Unset the width property so it will be the max length
+                // the containing elements.
                 container.css('width', '');
             }
         },
