@@ -556,6 +556,10 @@
                 params,
                 cacheKey,
                 ajaxSettings;
+				
+			if ($.isFunction(options.params)) {
+				options.params = options.params.call(that.element);
+			}
 
             options.params[options.paramName] = q;
             params = options.ignoreParams ? null : options.params;
@@ -564,7 +568,7 @@
                 return;
             }
 
-            if ($.isFunction(options.lookup)){
+            if ($.isFunction(options.lookup)) {
                 options.lookup(q, function (data) {
                     that.suggestions = data.suggestions;
                     that.suggest();
