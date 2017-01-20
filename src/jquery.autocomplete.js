@@ -90,6 +90,8 @@
                 },
                 showNoSuggestionNotice: false,
                 noSuggestionNotice: 'No results',
+                showCategoryOnHover: false,
+                showSuggestionOnHover: false,
                 orientation: 'bottom',
                 forceFixPosition: false
             };
@@ -671,7 +673,11 @@
 
                         category = currentCategory;
 
-                        return '<div class="autocomplete-group"><strong>' + category + '</strong></div>';
+                        if (options.showCategoryOnHover) {
+                            return '<div class="autocomplete-group" title="' + category + '"><strong>' + category + '</strong></div>';
+                        } else {
+                            return '<div class="autocomplete-group"' + '><strong>' + category + '</strong></div>';
+                        }
                     };
 
             if (options.triggerSelectOnValidInput && that.isExactMatch(value)) {
@@ -685,7 +691,11 @@
                     html += formatGroup(suggestion, value, i);
                 }
 
-                html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value, i) + '</div>';
+                if (options.showSuggestionOnHover) {
+                    html += '<div class="' + className + '" data-index="' + i + '" title="' + suggestion.value + '">' + formatResult(suggestion, value, i) + '</div>';
+                } else {
+                    html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value, i) + '</div>';
+                }
             });
 
             this.adjustContainerWidth();
