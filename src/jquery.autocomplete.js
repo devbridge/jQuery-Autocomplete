@@ -276,7 +276,7 @@
         disable: function () {
             var that = this;
             that.disabled = true;
-            clearInterval(that.onChangeInterval);
+            window.clearInterval(that.onChangeInterval);
             that.abortAjax();
         },
 
@@ -467,13 +467,13 @@
                     return;
             }
 
-            clearInterval(that.onChangeInterval);
+            window.clearInterval(that.onChangeInterval);
 
             if (that.currentValue !== that.el.val()) {
                 that.findBestHint();
                 if (that.options.deferRequestBy > 0) {
                     // Defer lookup in case when value changes very quickly:
-                    that.onChangeInterval = setInterval(function () {
+                    that.onChangeInterval = window.setInterval(function () {
                         that.onValueChange();
                     }, that.options.deferRequestBy);
                 } else {
@@ -493,7 +493,7 @@
                 (options.onInvalidateSelection || $.noop).call(that.element);
             }
 
-            clearInterval(that.onChangeInterval);
+            window.clearInterval(that.onChangeInterval);
             that.currentValue = value;
             that.selectedIndex = -1;
 
@@ -640,7 +640,7 @@
 
             that.visible = false;
             that.selectedIndex = -1;
-            clearInterval(that.onChangeInterval);
+            window.clearInterval(that.onChangeInterval);
             $(that.suggestionsContainer).hide();
             that.signalHint(null);
         },
