@@ -558,7 +558,7 @@
                 ajaxSettings;
 
             options.params[options.paramName] = q;
-            params = options.ignoreParams ? null : options.params;
+            params = options.ignoreParams ? null : (typeof(options.params) == 'function' ? options.params.call(that.element) : options.params);
 
             if (options.onSearchStart.call(that.element, options.params) === false) {
                 return;
