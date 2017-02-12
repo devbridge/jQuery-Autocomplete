@@ -57,6 +57,7 @@
             defaults = {
                 ajaxSettings: {},
                 autoSelectFirst: false,
+                selectOnSingle: false,
                 appendTo: document.body,
                 serviceUrl: null,
                 lookup: null,
@@ -498,7 +499,7 @@
             that.selectedIndex = -1;
 
             // Check existing suggestion for the match before proceeding:
-            if (options.triggerSelectOnValidInput && that.isExactMatch(query)) {
+            if (options.triggerSelectOnValidInput && that.isExactMatch(query) && selectOnSingle) {
                 that.select(0);
                 return;
             }
@@ -679,7 +680,7 @@
                         return options.formatGroup(suggestion, category);
                     };
 
-            if (options.triggerSelectOnValidInput && that.isExactMatch(value)) {
+            if (options.triggerSelectOnValidInput && that.isExactMatch(value) && selectOnSingle) {
                 that.select(0);
                 return;
             }
