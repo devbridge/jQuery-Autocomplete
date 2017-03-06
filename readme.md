@@ -244,6 +244,14 @@ If you use it with jQuery UI library it also has plugin named `autocomplete`. In
 $('.autocomplete').devbridgeAutocomplete({ ... });
 ```
 
+It seems that for mobile Safari click events are only triggered if the CSS of the object being tapped has the cursor set to pointer:
+
+    .autocomplete-suggestion { 
+        cursor: pointer;
+    }
+
+See issue #542
+
 ##License
 
 Ajax Autocomplete for jQuery is freely distributable under the
