@@ -156,8 +156,6 @@
 
     Autocomplete.prototype = {
 
-        killerFn: null,
-
         initialize: function () {
             var that = this,
                 suggestionSelector = '.' + that.classes.suggestion,
@@ -167,13 +165,6 @@
 
             // Remove autocomplete attribute to prevent native suggestions:
             that.element.setAttribute('autocomplete', 'off');
-
-            that.killerFn = function (e) {
-                if (!$(e.target).closest('.' + that.options.containerClass).length) {
-                    that.killSuggestions();
-                    that.disableKillerFn();
-                }
-            };
 
             // html() deals with many types: htmlString or Element or Array or jQuery
             that.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>')
@@ -201,11 +192,15 @@
                 container.children('.' + selected).removeClass(selected);
             });
 
+
             // Listen for click event on suggestions list:
             container.on('click.autocomplete', suggestionSelector, function () {
                 that.select($(this).data('index'));
-                return false;
             });
+
+            container.on('click.autocomplete', function () {
+                clearTimeout(that.blurTimeoutId);
+            })
 
             that.fixPositionCapture = function () {
                 if (that.visible) {
@@ -234,7 +229,13 @@
         },
 
         onBlur: function () {
-            this.enableKillerFn();
+            var that = this;
+
+            // If user clicked on a suggestion, hide() will
+            // be canceled, otherwise close suggestions
+            that.blurTimeoutId = setTimeout(function () {
+                that.hide();
+            }, 200);
         },
         
         abortAjax: function () {
@@ -348,39 +349,6 @@
             }
 
             $container.css(styles);
-        },
-
-        enableKillerFn: function () {
-            var that = this;
-            $(document).on('click.autocomplete', that.killerFn);
-        },
-
-        disableKillerFn: function () {
-            var that = this;
-            $(document).off('click.autocomplete', that.killerFn);
-        },
-
-        killSuggestions: function () {
-            var that = this;
-            that.stopKillSuggestions();
-            that.timeoutId = setTimeout(function () {
-                if (that.visible) {
-                    // No need to restore value when 
-                    // preserveInput === true, 
-                    // because we did not change it
-                    if (!that.options.preserveInput) {
-                        that.el.val(that.currentValue);
-                    }
-
-                    that.hide();
-                }
-                
-                that.stopKillSuggestions();
-            }, 50);
-        },
-
-        stopKillSuggestions: function () {
-            clearTimeout(this.timeoutId);
         },
 
         isCursorAtEnd: function () {
@@ -876,7 +844,6 @@
             var that = this;
             that.hide();
             that.onSelect(i);
-            that.disableKillerFn();
         },
 
         moveUp: function () {
@@ -979,7 +946,6 @@
         dispose: function () {
             var that = this;
             that.el.off('.autocomplete').removeData('autocomplete');
-            that.disableKillerFn();
             $(window).off('resize.autocomplete', that.fixPositionCapture);
             $(that.suggestionsContainer).remove();
         }
