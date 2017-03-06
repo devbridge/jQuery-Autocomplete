@@ -558,11 +558,12 @@
                 ajaxSettings;
 
             options.params[options.paramName] = q;
-            params = options.ignoreParams ? null : options.params;
 
             if (options.onSearchStart.call(that.element, options.params) === false) {
                 return;
             }
+
+            params = options.ignoreParams ? null : options.params;
 
             if ($.isFunction(options.lookup)){
                 options.lookup(q, function (data) {
