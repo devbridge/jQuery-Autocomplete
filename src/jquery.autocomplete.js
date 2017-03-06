@@ -102,9 +102,9 @@
         that.badQueries = [];
         that.selectedIndex = -1;
         that.currentValue = that.element.value;
-        that.intervalId = 0;
+        that.timeoutId = null;
         that.cachedResponse = {};
-        that.onChangeInterval = null;
+        that.onChangeTimeout = null;
         that.onChange = null;
         that.isLocal = false;
         that.suggestionsContainer = null;
@@ -276,7 +276,7 @@
         disable: function () {
             var that = this;
             that.disabled = true;
-            clearInterval(that.onChangeInterval);
+            clearTimeout(that.onChangeTimeout);
             that.abortAjax();
         },
 
@@ -357,7 +357,7 @@
         killSuggestions: function () {
             var that = this;
             that.stopKillSuggestions();
-            that.intervalId = window.setInterval(function () {
+            that.timeoutId = setTimeout(function () {
                 if (that.visible) {
                     // No need to restore value when 
                     // preserveInput === true, 
@@ -374,7 +374,7 @@
         },
 
         stopKillSuggestions: function () {
-            window.clearInterval(this.intervalId);
+            clearTimeout(this.timeoutId);
         },
 
         isCursorAtEnd: function () {
@@ -467,13 +467,13 @@
                     return;
             }
 
-            clearInterval(that.onChangeInterval);
+            clearTimeout(that.onChangeTimeout);
 
             if (that.currentValue !== that.el.val()) {
                 that.findBestHint();
                 if (that.options.deferRequestBy > 0) {
                     // Defer lookup in case when value changes very quickly:
-                    that.onChangeInterval = setInterval(function () {
+                    that.onChangeTimeout = setTimeout(function () {
                         that.onValueChange();
                     }, that.options.deferRequestBy);
                 } else {
@@ -493,7 +493,7 @@
                 (options.onInvalidateSelection || $.noop).call(that.element);
             }
 
-            clearInterval(that.onChangeInterval);
+            clearTimeout(that.onChangeTimeout);
             that.currentValue = value;
             that.selectedIndex = -1;
 
@@ -640,7 +640,7 @@
 
             that.visible = false;
             that.selectedIndex = -1;
-            clearInterval(that.onChangeInterval);
+            clearTimeout(that.onChangeTimeout);
             $(that.suggestionsContainer).hide();
             that.signalHint(null);
         },
