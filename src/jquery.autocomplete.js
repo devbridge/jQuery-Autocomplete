@@ -151,7 +151,7 @@
     };
 
     function _formatGroup(suggestion, category) {
-        return '<div class="autocomplete-group"><strong>' + category + '</strong></div>';
+        return '<div class="autocomplete-group">' + category + '</div>';
     };
 
     Autocomplete.prototype = {
