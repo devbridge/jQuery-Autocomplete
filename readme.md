@@ -67,6 +67,10 @@ The standard jquery.autocomplete.js file is around 13KB when minified.
 * `onInvalidateSelection`: `function () {}` called when input is altered after selection has been made. `this` is bound to input element.
 * `tabDisabled`: Default `false`. Set to true to leave the cursor in the input field after the user tabs to select a suggestion.
 
+## Default Options
+
+Default options for all instances can be accessed via `$.Autocomplete.defaults`.
+
 ## Instance Methods
 
 Autocomplete instance has following methods:

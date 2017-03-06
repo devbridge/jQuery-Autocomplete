@@ -49,51 +49,12 @@
             UP: 38,
             RIGHT: 39,
             DOWN: 40
-        };
+        },
+
+        noop = $.noop;
 
     function Autocomplete(el, options) {
-        var noop = $.noop,
-            that = this,
-            defaults = {
-                ajaxSettings: {},
-                autoSelectFirst: false,
-                appendTo: document.body,
-                serviceUrl: null,
-                lookup: null,
-                onSelect: null,
-                width: 'auto',
-                minChars: 1,
-                maxHeight: 300,
-                deferRequestBy: 0,
-                params: {},
-                formatResult: Autocomplete.formatResult,
-                formatGroup: Autocomplete.formatGroup,
-                delimiter: null,
-                zIndex: 9999,
-                type: 'GET',
-                noCache: false,
-                onSearchStart: noop,
-                onSearchComplete: noop,
-                onSearchError: noop,
-                preserveInput: false,
-                containerClass: 'autocomplete-suggestions',
-                tabDisabled: false,
-                dataType: 'text',
-                currentRequest: null,
-                triggerSelectOnValidInput: true,
-                preventBadQueries: true,
-                lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
-                    return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
-                },
-                paramName: 'query',
-                transformResult: function (response) {
-                    return typeof response === 'string' ? $.parseJSON(response) : response;
-                },
-                showNoSuggestionNotice: false,
-                noSuggestionNotice: 'No results',
-                orientation: 'bottom',
-                forceFixPosition: false
-            };
+        var that = this;
 
         // Shared variables:
         that.element = el;
@@ -109,7 +70,7 @@
         that.isLocal = false;
         that.suggestionsContainer = null;
         that.noSuggestionsContainer = null;
-        that.options = $.extend({}, defaults, options);
+        that.options = $.extend({}, Autocomplete.defaults, options);
         that.classes = {
             selected: 'autocomplete-selected',
             suggestion: 'autocomplete-suggestion'
@@ -127,7 +88,52 @@
 
     $.Autocomplete = Autocomplete;
 
-    Autocomplete.formatResult = function (suggestion, currentValue) {
+    Autocomplete.defaults = {
+            ajaxSettings: {},
+            autoSelectFirst: false,
+            appendTo: document.body,
+            serviceUrl: null,
+            lookup: null,
+            onSelect: null,
+            width: 'auto',
+            minChars: 1,
+            maxHeight: 300,
+            deferRequestBy: 0,
+            params: {},
+            formatResult: _formatResult,
+            formatGroup: _formatGroup,
+            delimiter: null,
+            zIndex: 9999,
+            type: 'GET',
+            noCache: false,
+            onSearchStart: noop,
+            onSearchComplete: noop,
+            onSearchError: noop,
+            preserveInput: false,
+            containerClass: 'autocomplete-suggestions',
+            tabDisabled: false,
+            dataType: 'text',
+            currentRequest: null,
+            triggerSelectOnValidInput: true,
+            preventBadQueries: true,
+            lookupFilter: _lookupFilter,
+            paramName: 'query',
+            transformResult: _transformResult,
+            showNoSuggestionNotice: false,
+            noSuggestionNotice: 'No results',
+            orientation: 'bottom',
+            forceFixPosition: false
+    };
+
+    function _lookupFilter(suggestion, originalQuery, queryLowerCase) {
+        return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
+    };
+
+    function _transformResult(response) {
+        return typeof response === 'string' ? $.parseJSON(response) : response;
+    };
+
+    function _formatResult(suggestion, currentValue) {
         // Do not replace anything if there current value is empty
         if (!currentValue) {
             return suggestion.value;
@@ -144,7 +150,7 @@
             .replace(/&lt;(\/?strong)&gt;/g, '<$1>');
     };
 
-    Autocomplete.formatGroup = function (suggestion, category) {
+    function _formatGroup(suggestion, category) {
         return '<div class="autocomplete-group"><strong>' + category + '</strong></div>';
     };
 
