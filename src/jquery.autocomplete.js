@@ -719,6 +719,7 @@
 
         noSuggestions: function() {
              var that = this,
+                 beforeRender = that.options.beforeRender,
                  container = $(that.suggestionsContainer),
                  noSuggestionsContainer = $(that.noSuggestionsContainer);
 
@@ -727,8 +728,14 @@
             // Some explicit steps. Be careful here as it easy to get
             // noSuggestionsContainer removed from DOM if not detached properly.
             noSuggestionsContainer.detach();
-            container.empty(); // clean suggestions if any
+
+            // clean suggestions if any
+            container.empty(); 
             container.append(noSuggestionsContainer);
+
+            if ($.isFunction(beforeRender)) {
+                beforeRender.call(that.element, container, that.suggestions);
+            }
 
             that.fixPosition();
 
