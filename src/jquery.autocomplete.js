@@ -134,7 +134,7 @@
     };
 
     function _formatResult(suggestion, currentValue) {
-        // Do not replace anything if there current value is empty
+        // Do not replace anything if the current value is empty
         if (!currentValue) {
             return suggestion.value;
         }
