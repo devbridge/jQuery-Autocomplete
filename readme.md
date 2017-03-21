@@ -2,7 +2,7 @@ Devbridge Group accelerates software to market for enterprise clients through de
 
 [www.devbridge.com](http://www.devbridge.com/)
 
-#Ajax Autocomplete for jQuery
+# Ajax Autocomplete for jQuery
 
 Ajax Autocomplete for jQuery allows you to easily create
 autocomplete/autosuggest boxes for text input fields.
@@ -11,13 +11,13 @@ Has no dependencies other than jQuery.
 
 The standard jquery.autocomplete.js file is around 13KB when minified.
 
-##API
+## API
 
 * `$(selector).autocomplete(options);`
     * Sets up autocomplete for input field(s).
     * `options`: An object literal which defines the settings to use for the autocomplete plugin. Available option settings listed below.
 
-###Ajax Settings
+### Ajax Settings
 * `serviceUrl`: Server side URL or callback function that returns serviceUrl string. Optional if local lookup data is provided.
 * `type`: Ajax request type to get suggestions. Default: `GET`.
 * `dataType`: type of data returned from server. Either `text` (default), `json`  or `jsonp`, which will cause the autocomplete to use jsonp. You may return a json object in your callback when using jsonp.
@@ -26,7 +26,7 @@ The standard jquery.autocomplete.js file is around 13KB when minified.
 * `deferRequestBy`: Number of miliseconds to defer Ajax request. Default: `0`.
 * `ajaxSettings`: Any additional [Ajax Settings](http://api.jquery.com/jquery.ajax/#jQuery-ajax-settings) that configure the jQuery Ajax request.
 
-###Configuration Settings
+### Configuration Settings
 * `noCache`: Boolean value indicating whether to cache suggestion results. Default `false`.
 * `delimiter`: String or RegExp, that splits input value and takes last part to as query for suggestions.
   Useful when for example you need to fill list of  comma separated values.
@@ -46,7 +46,7 @@ The standard jquery.autocomplete.js file is around 13KB when minified.
 * `autoSelectFirst`: if set to `true`, first item will be selected when showing suggestions. Default value `false`.
 * `onHide`: `function (container) {}` called before container will be hidden
 
-###Presentation Settings
+### Presentation Settings
 * `beforeRender`: `function (container, suggestions) {}` called before displaying the suggestions. You may manipulate suggestions DOM before it is displayed.
 * `formatResult`: `function (suggestion, currentValue) {}` custom function to
   format suggestion entry inside suggestions container, optional.
@@ -98,7 +98,7 @@ $('#autocomplete').autocomplete().disable();
 $('#autocomplete').autocomplete().setOptions(options);
 ```
 
-##Usage
+## Usage
 
 Html:
 
@@ -157,7 +157,7 @@ $('#autocomplete').autocomplete({
 });
 ```
 
-##Styling
+## Styling
 
 Generated HTML markup for suggestions is displayed below. You may style it any way you'd like.
 
@@ -182,7 +182,7 @@ Style sample:
 ```
 
 
-##Response Format
+## Response Format
 
 Response from the server must be JSON formatted following JavaScript object:
 
@@ -240,7 +240,7 @@ Specify `groupBy` option of you data property if you wish results to be displaye
 
 Results will be formatted into two groups **NHL** and **NBA**.
 
-##Known Issues
+## Known Issues
 
 If you use it with jQuery UI library it also has plugin named `autocomplete`. In this case you can use plugin alias `devbridgeAutocomplete`:
 
@@ -256,7 +256,7 @@ It seems that for mobile Safari click events are only triggered if the CSS of th
 
 See issue #542
 
-##License
+## License
 
 Ajax Autocomplete for jQuery is freely distributable under the
 terms of an MIT-style [license](https://github.com/devbridge/jQuery-Autocomplete/blob/master/dist/license.txt).
@@ -264,6 +264,6 @@ terms of an MIT-style [license](https://github.com/devbridge/jQuery-Autocomplete
 Copyright notice and permission notice shall be included in all
 copies or substantial portions of the Software.
 
-##Authors
+## Authors
 
 Tomas Kirda / [@tkirda](https://twitter.com/tkirda)
