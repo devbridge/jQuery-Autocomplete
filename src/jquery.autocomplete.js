@@ -78,6 +78,7 @@
         that.hint = null;
         that.hintValue = '';
         that.selection = null;
+        that.realSuggestionsLength = 0;
 
         // Initialize and set options:
         that.initialize();
@@ -122,7 +123,8 @@
             showNoSuggestionNotice: false,
             noSuggestionNotice: 'No results',
             orientation: 'bottom',
-            forceFixPosition: false
+            forceFixPosition: false,
+            lookupLimitOverflowMessage: null
     };
 
     function _lookupFilter(suggestion, originalQuery, queryLowerCase) {
@@ -138,7 +140,7 @@
         if (!currentValue) {
             return suggestion.value;
         }
-        
+
         var pattern = '(' + utils.escapeRegExChars(currentValue) + ')';
 
         return suggestion.value
@@ -237,7 +239,7 @@
                 that.hide();
             }, 200);
         },
-        
+
         abortAjax: function () {
             var that = this;
             if (that.currentRequest) {
@@ -515,6 +517,8 @@
                 })
             };
 
+            that.realSuggestionsLength = data.suggestions.length;
+
             if (limit && data.suggestions.length > limit) {
                 data.suggestions = data.suggestions.slice(0, limit);
             }
@@ -668,6 +672,16 @@
                 html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value, i) + '</div>';
             });
 
+            if (that.options.lookupLimitOverflowMessage != null
+                && that.realSuggestionsLength > that.suggestions.length) {
+
+                var lookupLimitOverflowMessage = that.options.lookupLimitOverflowMessage;
+                lookupLimitOverflowMessage = lookupLimitOverflowMessage.replace("%d", that.realSuggestionsLength - that.suggestions.length);
+
+                html += '<div class="autocomplete-limit-overflow">' +
+                    lookupLimitOverflowMessage + '</div>';
+            }
+
             this.adjustContainerWidth();
 
             noSuggestionsContainer.detach();
@@ -704,7 +718,7 @@
             noSuggestionsContainer.detach();
 
             // clean suggestions if any
-            container.empty(); 
+            container.empty();
             container.append(noSuggestionsContainer);
 
             if ($.isFunction(beforeRender)) {

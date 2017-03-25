@@ -31,6 +31,8 @@ $(function () {
     $('#autocomplete-ajax').autocomplete({
         // serviceUrl: '/autosuggest/service/url',
         lookup: countriesArray,
+        lookupLimit: 2,
+        lookupLimitOverflowMessage: 'And %d another countries...',
         lookupFilter: function(suggestion, originalQuery, queryLowerCase) {
             var re = new RegExp('\\b' + $.Autocomplete.utils.escapeRegExChars(queryLowerCase), 'gi');
             return re.test(suggestion.value);
@@ -63,7 +65,7 @@ $(function () {
         noSuggestionNotice: 'Sorry, no matching results',
         groupBy: 'category'
     });
-    
+
     // Initialize autocomplete with custom appendTo:
     $('#autocomplete-custom-append').autocomplete({
         lookup: countriesArray,
