@@ -154,6 +154,46 @@
         return '<div class="autocomplete-group">' + category + '</div>';
     };
 
+    Autocomplete.defaults = {
+        ajaxSettings: {},
+        autoSelectFirst: false,
+        appendTo: 'body',
+        serviceUrl: null,
+        lookup: null,
+        onSelect: null,
+        width: 'auto',
+        minChars: 1,
+        maxHeight: 300,
+        deferRequestBy: 0,
+        params: {},
+        formatResult: Autocomplete.formatResult,
+        delimiter: null,
+        zIndex: 9999,
+        type: 'GET',
+        noCache: false,
+        onSearchStart: $.noop,
+        onSearchComplete: $.noop,
+        onSearchError: $.noop,
+        preserveInput: false,
+        containerClass: 'autocomplete-suggestions',
+        tabDisabled: false,
+        dataType: 'text',
+        currentRequest: null,
+        triggerSelectOnValidInput: true,
+        preventBadQueries: true,
+        lookupFilter: function (suggestion, originalQuery, queryLowerCase) {
+            return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
+        },
+        paramName: 'query',
+        transformResult: function (response) {
+            return typeof response === 'string' ? $.parseJSON(response) : response;
+        },
+        showNoSuggestionNotice: false,
+        noSuggestionNotice: 'No results',
+        orientation: 'bottom',
+        forceFixPosition: false
+    };
+
     Autocomplete.prototype = {
 
         initialize: function () {
@@ -174,7 +214,7 @@
 
             container = $(that.suggestionsContainer);
 
-            container.appendTo(options.appendTo);
+            container.appendTo($(options.appendTo));
 
             // Only set width if it was provided:
             if (options.width !== 'auto') {
