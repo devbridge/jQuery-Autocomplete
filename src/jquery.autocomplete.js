@@ -91,7 +91,7 @@
     Autocomplete.defaults = {
             ajaxSettings: {},
             autoSelectFirst: false,
-            appendTo: document.body,
+            appendTo: 'body',
             serviceUrl: null,
             lookup: null,
             onSelect: null,
@@ -174,7 +174,7 @@
 
             container = $(that.suggestionsContainer);
 
-            container.appendTo(options.appendTo);
+            container.appendTo(options.appendTo || 'body');
 
             // Only set width if it was provided:
             if (options.width !== 'auto') {
@@ -250,7 +250,7 @@
             var that = this,
                 options = that.options;
 
-            $.extend(options, suppliedOptions);
+            this.options = $.extend({}, options, suppliedOptions);
 
             that.isLocal = $.isArray(options.lookup);
 
