@@ -151,7 +151,7 @@
     };
 
     function _formatGroup(suggestion, category) {
-        return '<div class="autocomplete-group">' + category + '</div>';
+        return $('<div class="autocomplete-group" />').append(category).prop('outerHTML');
     };
 
     Autocomplete.prototype = {
@@ -665,7 +665,7 @@
                     html += formatGroup(suggestion, value, i);
                 }
 
-                html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value, i) + '</div>';
+                html += $('<div />').attr('data-index', i).addClass(className).append(formatResult(suggestion, value, i)).prop('outerHTML');
             });
 
             this.adjustContainerWidth();
