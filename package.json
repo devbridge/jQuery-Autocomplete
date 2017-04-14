@@ -5,12 +5,14 @@
   "homepage": "https://github.com/devbridge/jQuery-Autocomplete",
   "author": "Tomas Kirda (https://twitter.com/tkirda)",
   "main": "dist/jquery.autocomplete.js",
+  "types": "./typings/jquery-autocomplete/jquery.autocomplete.d.ts",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git://github.com/devbridge/jQuery-Autocomplete.git"
   },
   "dependencies": {
+    "@types/jquery": "^2.0.32",
     "jquery": ">=1.7"
   },
   "devDependencies": {
