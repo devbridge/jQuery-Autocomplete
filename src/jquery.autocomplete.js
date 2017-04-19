@@ -345,7 +345,7 @@
             }
 
             if (that.options.width === 'auto') {
-                styles.width = that.el.outerWidth() + 'px';
+                styles.width = 'auto';
             }
 
             $container.css(styles);
