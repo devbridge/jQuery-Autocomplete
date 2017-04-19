@@ -198,7 +198,7 @@
                 that.select($(this).data('index'));
             });
 
-            container.on('click.autocomplete', function () {
+            container.on('mousedown.autocomplete', function () {
                 clearTimeout(that.blurTimeoutId);
             })
 
