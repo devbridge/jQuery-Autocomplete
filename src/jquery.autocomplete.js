@@ -198,8 +198,8 @@
                 that.select($(this).data('index'));
             });
 
-            container.on('mousedown.autocomplete', function () {
-                clearTimeout(that.blurTimeoutId);
+            container.on('mousedown.autocomplete', function (e) {
+                e.preventDefault();
             })
 
             that.fixPositionCapture = function () {
@@ -229,13 +229,7 @@
         },
 
         onBlur: function () {
-            var that = this;
-
-            // If user clicked on a suggestion, hide() will
-            // be canceled, otherwise close suggestions
-            that.blurTimeoutId = setTimeout(function () {
-                that.hide();
-            }, 200);
+            this.hide();
         },
         
         abortAjax: function () {
