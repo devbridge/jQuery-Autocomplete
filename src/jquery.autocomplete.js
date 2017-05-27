@@ -14,7 +14,7 @@
     "use strict";
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define(['jquery'], factory);
+        define('jquery.autocomplete', ['jquery'], factory);
     } else if (typeof exports === 'object' && typeof require === 'function') {
         // Browserify
         factory(require('jquery'));
