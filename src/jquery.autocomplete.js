@@ -337,6 +337,7 @@
 
                 parentOffsetDiff = $container.offsetParent().offset();
                 styles.top -= parentOffsetDiff.top;
+                styles.top += containerParent.scrollTop;
                 styles.left -= parentOffsetDiff.left;
 
                 if (!that.visible){
