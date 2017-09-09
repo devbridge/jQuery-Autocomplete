@@ -7,17 +7,16 @@ Devbridge Group accelerates software to market for enterprise clients through de
 Ajax Autocomplete for jQuery allows you to easily create
 autocomplete/autosuggest boxes for text input fields.
 
-Has no dependencies other than jQuery.
+It has no dependencies other than jQuery.
 
 The standard jquery.autocomplete.js file is around 13KB when minified.
 
 ## API
-
-* `$(selector).autocomplete(options);`
-    * Sets up autocomplete for input field(s).
-    * `options`: An object literal which defines the settings to use for the autocomplete plugin. Available option settings listed below.
-
-### General settings (for local and Ajax searches) 
+The following sets up autocomplete for input fields where `options` is an object literal that defines the settings to use for the autocomplete plugin.  All available option settings are shown in the tables below.  
+```js
+$(selector).autocomplete(options);
+```
+### General settings (local and Ajax) 
 | Setting | Default | Description |
 | :--- | :--- | :--- |
 | `noCache` | `false` | Boolean value indicating whether to cache suggestion results |
@@ -43,7 +42,7 @@ The standard jquery.autocomplete.js file is around 13KB when minified.
 | `tabDisabled` | `false` | Set to true to leave the cursor in the input field after the user tabs to select a suggestion |
 
 
-### Event function settings (for local and Ajax searches) 
+### Event function settings (local and Ajax) 
 | Event setting | Function description |
 | :--- | :--- |
 | `onSearchStart` | `function (params) {}` called before Ajax request. `this` is bound to input element |
