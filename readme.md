@@ -40,6 +40,7 @@ $(selector).autocomplete(options);
 | `noSuggestionNotice` | `No results` | Text or htmlString or Element or jQuery object for no matching results label |
 | `onInvalidateSelection` | optional | `function () {}` called when input is altered after selection has been made. `this` is bound to input element |
 | `tabDisabled` | `false` | Set to true to leave the cursor in the input field after the user tabs to select a suggestion |
+| `hideInvalidSuggestions` | `false` | Set to true to hide suggestions which do not contain the query |
 
 
 ### Event function settings (local and Ajax) 
