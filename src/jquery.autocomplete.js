@@ -122,7 +122,8 @@
             showNoSuggestionNotice: false,
             noSuggestionNotice: 'No results',
             orientation: 'bottom',
-            forceFixPosition: false
+            forceFixPosition: false,
+            hideInvalidSuggestions: false
     };
 
     function _lookupFilter(suggestion, originalQuery, queryLowerCase) {
@@ -265,7 +266,7 @@
                 'z-index': options.zIndex
             });
 
-            this.options = options;            
+            this.options = options;
         },
 
 
@@ -622,11 +623,7 @@
 
         suggest: function () {
             if (!this.suggestions.length) {
-                if (this.options.showNoSuggestionNotice) {
-                    this.noSuggestions();
-                } else {
-                    this.hide();
-                }
+                this.noSuggestionsAvailable();
                 return;
             }
 
@@ -661,12 +658,21 @@
 
             // Build suggestions inner HTML:
             $.each(that.suggestions, function (i, suggestion) {
+                if (that.options.hideInvalidSuggestions && suggestion.value.toLowerCase().indexOf(value.toLowerCase()) === -1) {
+                    return true; // continue;
+                }
+
                 if (groupBy){
                     html += formatGroup(suggestion, value, i);
                 }
 
                 html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value, i) + '</div>';
             });
+
+            if (html === '') { // No matching suggestions, hide container
+                this.noSuggestionsAvailable();
+                return;
+            }
 
             this.adjustContainerWidth();
 
@@ -689,6 +695,14 @@
 
             that.visible = true;
             that.findBestHint();
+        },
+
+        noSuggestionsAvailable: function () {
+            if (this.options.showNoSuggestionNotice) {
+                this.noSuggestions();
+            } else {
+                this.hide();
+            }
         },
 
         noSuggestions: function() {
