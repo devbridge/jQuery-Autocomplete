@@ -192,7 +192,6 @@
                 container.children('.' + selected).removeClass(selected);
             });
 
-
             // Listen for click event on suggestions list:
             container.on('click.autocomplete', suggestionSelector, function () {
                 that.select($(this).data('index'));
@@ -457,6 +456,11 @@
         },
 
         onValueChange: function () {
+            if (this.ignoreValueChange) {
+                this.ignoreValueChange = false;
+                return;
+            }
+
             var that = this,
                 options = that.options,
                 value = that.el.val(),
@@ -856,6 +860,7 @@
             if (that.selectedIndex === 0) {
                 $(that.suggestionsContainer).children().first().removeClass(that.classes.selected);
                 that.selectedIndex = -1;
+                that.ignoreValueChange = false;
                 that.el.val(that.currentValue);
                 that.findBestHint();
                 return;
@@ -898,8 +903,14 @@
             }
 
             if (!that.options.preserveInput) {
+                // During onBlur event, browser will trigger "change" event,
+                // because value has changed, to avoid side effect ignore,
+                // that event, so that correct suggestion can be selected
+                // when clicking on suggestion with a mouse
+                that.ignoreValueChange = true;
                 that.el.val(that.getValue(that.suggestions[index].value));
             }
+
             that.signalHint(null);
         },
 
