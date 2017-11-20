@@ -21,6 +21,7 @@
   },
   "files": [
     "dist/",
+    "typings/jquery-autocomplete/*.d.ts"
     "readme.md"
   ]
 }
