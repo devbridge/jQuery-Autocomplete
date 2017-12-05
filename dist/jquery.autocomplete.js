@@ -1,5 +1,5 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.4.5
+*  Ajax Autocomplete for jQuery, version 1.4.6
 *  (c) 2017 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
@@ -336,6 +336,7 @@
 
                 parentOffsetDiff = $container.offsetParent().offset();
                 styles.top -= parentOffsetDiff.top;
+                styles.top += containerParent.scrollTop;
                 styles.left -= parentOffsetDiff.left;
 
                 if (!that.visible){
