@@ -164,7 +164,7 @@
                 container;
 
             // Remove autocomplete attribute to prevent native suggestions:
-            that.element.setAttribute('autocomplete', 'off');
+            that.element.setAttribute('autocomplete', 'new-password');
 
             // html() deals with many types: htmlString or Element or Array or jQuery
             that.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>')
