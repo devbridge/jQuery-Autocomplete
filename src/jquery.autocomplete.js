@@ -107,6 +107,7 @@
             type: 'GET',
             noCache: false,
             onSearchStart: noop,
+            onSearchStartTransformParams: _identity,
             onSearchComplete: noop,
             onSearchError: noop,
             preserveInput: false,
@@ -124,6 +125,10 @@
             orientation: 'bottom',
             forceFixPosition: false
     };
+
+    function _identity(params) {
+      return params;
+    }
 
     function _lookupFilter(suggestion, originalQuery, queryLowerCase) {
         return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
@@ -542,7 +547,7 @@
                 return;
             }
 
-            params = options.ignoreParams ? null : options.params;
+            params = options.ignoreParams ? null : (options.onSearchStartTransformParams.call(that.element, options.params));
 
             if ($.isFunction(options.lookup)){
                 options.lookup(q, function (data) {
