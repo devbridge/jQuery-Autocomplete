@@ -122,7 +122,8 @@
             showNoSuggestionNotice: false,
             noSuggestionNotice: 'No results',
             orientation: 'bottom',
-            forceFixPosition: false
+            forceFixPosition: false,
+            showOnFocus: false
     };
 
     function _lookupFilter(suggestion, originalQuery, queryLowerCase) {
@@ -224,6 +225,9 @@
 
             if (that.el.val().length >= that.options.minChars) {
                 that.onValueChange();
+                if (that.options.showOnFocus) {
+                    that.getSuggestions('');
+                }
             }
         },
 
