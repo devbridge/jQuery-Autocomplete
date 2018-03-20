@@ -347,7 +347,11 @@
             if (that.options.width === 'auto') {
                 styles.width = that.el.outerWidth() + 'px';
             }
-
+            // add css "right" option,working when "width" option value equal "auto"
+            if(that.options.right && that.options.width === 'auto'){
+                styles.width = "";
+                styles.right = that.options.right+"px";
+            }
             $container.css(styles);
         },
 
