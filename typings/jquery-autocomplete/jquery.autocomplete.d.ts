@@ -257,6 +257,15 @@ interface JQueryAutocompleteOptions {
 
 }
 
+interface AutocompleteStatic {
+
+    /**
+     * Default options for all instances.
+     */
+    defaults: JQueryAutocompleteOptions
+
+}
+
 interface AutocompleteInstance {
 
     /**
@@ -294,6 +303,12 @@ interface AutocompleteInstance {
      * destroys autocomplete instance. All events are detached and suggestion containers removed.
      */
     dispose(): void;
+
+}
+
+interface JQueryStatic {
+
+    Autocomplete: AutocompleteStatic
 
 }
 
