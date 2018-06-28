@@ -1,5 +1,5 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.4.7
+*  Ajax Autocomplete for jQuery, version 1.4.8
 *  (c) 2017 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
@@ -70,7 +70,7 @@
         that.isLocal = false;
         that.suggestionsContainer = null;
         that.noSuggestionsContainer = null;
-        that.options = $.extend({}, Autocomplete.defaults, options);
+        that.options = $.extend(true, {}, Autocomplete.defaults, options);
         that.classes = {
             selected: 'autocomplete-selected',
             suggestion: 'autocomplete-suggestion'
@@ -164,7 +164,11 @@
                 container;
 
             // Remove autocomplete attribute to prevent native suggestions:
-            that.element.setAttribute('autocomplete', 'off');
+            // as per
+            // https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion
+            // some browsers e.g. Google Chrome ignore autocomplete=off but autocomplete=nope
+            // will provide the correct behaviour
+            that.element.setAttribute('autocomplete', 'nope');
 
             // html() deals with many types: htmlString or Element or Array or jQuery
             that.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>')
