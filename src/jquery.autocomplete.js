@@ -163,12 +163,7 @@
                 options = that.options,
                 container;
 
-            // Remove autocomplete attribute to prevent native suggestions:
-            // as per
-            // https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion
-            // some browsers e.g. Google Chrome ignore autocomplete=off but autocomplete=nope
-            // will provide the correct behaviour
-            that.element.setAttribute('autocomplete', 'nope');
+            that.element.setAttribute('autocomplete', 'off');
 
             // html() deals with many types: htmlString or Element or Array or jQuery
             that.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>')
