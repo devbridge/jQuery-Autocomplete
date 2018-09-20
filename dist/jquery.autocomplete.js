@@ -36,6 +36,7 @@
                     div.className = containerClass;
                     div.style.position = 'absolute';
                     div.style.display = 'none';
+                    div.setAttribute('unselectable','on');
                     return div;
                 }
             };
