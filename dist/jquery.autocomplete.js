@@ -1,5 +1,5 @@
 /**
-*  Ajax Autocomplete for jQuery, version 1.4.9
+*  Ajax Autocomplete for jQuery, version 1.4.10
 *  (c) 2017 Tomas Kirda
 *
 *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
@@ -36,7 +36,6 @@
                     div.className = containerClass;
                     div.style.position = 'absolute';
                     div.style.display = 'none';
-                    div.setAttribute('unselectable','on');
                     return div;
                 }
             };
@@ -228,12 +227,19 @@
         },
 
         onBlur: function () {
-            var that = this;
+            var that = this,
+                options = that.options,
+                value = that.el.val(),
+                query = that.getQuery(value);
 
             // If user clicked on a suggestion, hide() will
             // be canceled, otherwise close suggestions
             that.blurTimeoutId = setTimeout(function () {
                 that.hide();
+
+                if (that.selection && that.currentValue !== query) {
+                    (options.onInvalidateSelection || $.noop).call(that.element);
+                }
             }, 200);
         },
 
