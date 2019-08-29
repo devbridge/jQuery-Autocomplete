@@ -219,6 +219,10 @@
         onFocus: function () {
             var that = this;
 
+            if (that.disabled) {
+                return;
+            }
+
             that.fixPosition();
 
             if (that.el.val().length >= that.options.minChars) {
@@ -270,7 +274,7 @@
                 'z-index': options.zIndex
             });
 
-            this.options = options;            
+            this.options = options;
         },
 
 
