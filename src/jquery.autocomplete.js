@@ -71,10 +71,6 @@
         that.suggestionsContainer = null;
         that.noSuggestionsContainer = null;
         that.options = $.extend(true, {}, Autocomplete.defaults, options);
-        that.classes = {
-            selected: 'autocomplete-selected',
-            suggestion: 'autocomplete-suggestion'
-        };
         that.hint = null;
         that.hintValue = '';
         that.selection = null;
@@ -90,6 +86,10 @@
 
     Autocomplete.defaults = {
             ajaxSettings: {},
+            classes: {
+                selected: 'autocomplete-selected',
+                suggestion: 'autocomplete-suggestion'
+            },
             autoSelectFirst: false,
             appendTo: 'body',
             serviceUrl: null,
@@ -158,8 +158,8 @@
 
         initialize: function () {
             var that = this,
-                suggestionSelector = '.' + that.classes.suggestion,
-                selected = that.classes.selected,
+                suggestionSelector = '.' + that.options.classes.suggestion,
+                selected = that.options.classes.selected,
                 options = that.options,
                 container;
 
@@ -650,8 +650,8 @@
                 groupBy = options.groupBy,
                 formatResult = options.formatResult,
                 value = that.getQuery(that.currentValue),
-                className = that.classes.suggestion,
-                classSelected = that.classes.selected,
+                className = options.classes.suggestion,
+                classSelected = options.classes.selected,
                 container = $(that.suggestionsContainer),
                 noSuggestionsContainer = $(that.noSuggestionsContainer),
                 beforeRender = options.beforeRender,
@@ -830,10 +830,11 @@
 
         activate: function (index) {
             var that = this,
+                options = that.options,
                 activeItem,
-                selected = that.classes.selected,
+                selected = options.classes.selected,
                 container = $(that.suggestionsContainer),
-                children = container.find('.' + that.classes.suggestion);
+                children = container.find('.' + options.classes.suggestion);
 
             container.find('.' + selected).removeClass(selected);
 
@@ -869,7 +870,7 @@
             }
 
             if (that.selectedIndex === 0) {
-                $(that.suggestionsContainer).children('.' + that.classes.suggestion).first().removeClass(that.classes.selected);
+                $(that.suggestionsContainer).children('.' + options.classes.suggestion).first().removeClass(options.classes.selected);
                 that.selectedIndex = -1;
                 that.ignoreValueChange = false;
                 that.el.val(that.currentValue);
