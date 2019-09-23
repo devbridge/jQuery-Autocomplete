@@ -48,6 +48,7 @@ $(selector).autocomplete(options);
 | `onSearchStart` | `function (params) {}` called before Ajax request. `this` is bound to input element |
 | `onHint` | `function (hint) {}` used to change input value to first suggestion automatically |
 | `onSearchComplete` | `function (query, suggestions) {}` called after Ajax response is processed. `this` is bound to input element. `suggestions` is an array containing the results |
+| `transformRequest` | `function (query, options) {}` called before Ajax request. Use it if your `serviceUrl` expects the request in a strange format where the search term cannot be resolved as a property of the request |
 | `transformResult` | `function(response, originalQuery) {}` called after the result of the query is ready. Converts the result into response.suggestions format |
 | `onSelect` | `function (suggestion) {}` Callback function invoked when user selects suggestion from the list. `this` inside callback refers to input HtmlElement.|
 | `onSearchError` | `function (query, jqXHR, textStatus, errorThrown) {}` called if Ajax request fails. `this` is bound to input element |
@@ -218,7 +219,7 @@ supply just a string array for suggestions:
 ## Non standard query/results
 
 If your Ajax service expects the query in a different format, and returns data in a different format than the standard response,
-you can supply the "paramName" and "transformResult" options:
+you can supply the `paramName` and `transformResult` options:
 
 ```javascript
 $('#autocomplete').autocomplete({
@@ -229,6 +230,17 @@ $('#autocomplete').autocomplete({
                 return { value: dataItem.valueField, data: dataItem.dataField };
             })
         };
+    }
+})
+```
+
+If only changing the `paramName` isn't enough for the request to comply with the endpoint specifications,
+you can also use the `transformRequest` option to completely change the request structure:
+
+```javascript
+$('#autocomplete').autocomplete({
+    transformRequest: function(query, options) {
+        return JSON.stringify({ autocomplete: {term: query} })
     }
 })
 ```

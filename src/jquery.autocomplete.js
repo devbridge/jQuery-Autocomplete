@@ -118,6 +118,7 @@
             preventBadQueries: true,
             lookupFilter: _lookupFilter,
             paramName: 'query',
+            transformRequest: _transformRequest,
             transformResult: _transformResult,
             showNoSuggestionNotice: false,
             noSuggestionNotice: 'No results',
@@ -127,6 +128,12 @@
 
     function _lookupFilter(suggestion, originalQuery, queryLowerCase) {
         return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
+    };
+
+    function _transformRequest(query, options) {
+        var params = {};
+        params[options.paramName] = query;
+        return params;
     };
 
     function _transformResult(response) {
@@ -546,7 +553,7 @@
                 cacheKey,
                 ajaxSettings;
 
-            options.params[options.paramName] = q;
+            options.params = options.transformRequest(q, options);
 
             if (options.onSearchStart.call(that.element, options.params) === false) {
                 return;
