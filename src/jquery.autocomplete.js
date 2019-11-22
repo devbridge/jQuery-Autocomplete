@@ -319,6 +319,10 @@
                 offset = that.el.offset(),
                 styles = { 'top': offset.top, 'left': offset.left };
 
+            if (that.options.forceFixPosition) {
+                styles.position = 'fixed';
+            }
+
             if (orientation === 'auto') {
                 var viewPortHeight = $(window).height(),
                     scrollTop = $(window).scrollTop(),
