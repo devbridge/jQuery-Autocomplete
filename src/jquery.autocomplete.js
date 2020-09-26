@@ -122,7 +122,9 @@
             showNoSuggestionNotice: false,
             noSuggestionNotice: 'No results',
             orientation: 'bottom',
-            forceFixPosition: false
+            forceFixPosition: false,
+            showCallback: false,
+            hideCallback: false
     };
 
     function _lookupFilter(suggestion, originalQuery, queryLowerCase) {
@@ -631,7 +633,13 @@
             that.visible = false;
             that.selectedIndex = -1;
             clearTimeout(that.onChangeTimeout);
-            $(that.suggestionsContainer).hide();
+
+            if ($.isFunction(that.options.hideCallback)) {
+                that.options.hideCallback.call(container);
+            } else {
+                container.hide();
+            }
+
             that.signalHint(null);
         },
 
@@ -693,7 +701,12 @@
             }
 
             that.fixPosition();
-            container.show();
+
+            if ($.isFunction(that.options.showCallback)) {
+                that.options.showCallback.call(container);
+            } else {
+                container.show();
+            }
 
             // Select first value by default:
             if (options.autoSelectFirst) {
