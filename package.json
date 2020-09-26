@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@types/jquery": "^2.0.32",
-    "jquery": ">=1.7"
+    "jquery": ">=1.9"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
