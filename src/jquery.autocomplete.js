@@ -13,6 +13,7 @@
 (function (factory) {
     "use strict";
     if (typeof define === 'function' && define.amd) {
+      console.log("RASTERIZING")
         // AMD. Register as an anonymous module.
         define(['jquery'], factory);
     } else if (typeof exports === 'object' && typeof require === 'function') {
