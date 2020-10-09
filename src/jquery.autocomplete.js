@@ -138,6 +138,9 @@
         if (!currentValue) {
             return suggestion.value;
         }
+      else{
+        console.log("ALERT HERE")
+      }
 
         var pattern = '(' + utils.escapeRegExChars(currentValue) + ')';
 
