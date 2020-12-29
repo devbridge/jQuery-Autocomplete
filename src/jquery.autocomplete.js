@@ -244,7 +244,7 @@
                 if (that.selection && that.currentValue !== query) {
                     (options.onInvalidateSelection || $.noop).call(that.element);
                 }
-            }, 200);
+            }, 350);
         },
 
         abortAjax: function () {
