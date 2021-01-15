@@ -761,9 +761,12 @@
             }
 
             $.each(that.suggestions, function (i, suggestion) {
-                var foundMatch = suggestion.value.toLowerCase().indexOf(value) === 0;
-                if (foundMatch) {
-                    bestMatch = suggestion;
+                var foundMatch = false;
+                if (suggestion.value !== undefined) {
+                    foundMatch = suggestion.value.toLowerCase().indexOf(value) === 0;
+                    if (foundMatch) {
+                        bestMatch = suggestion;
+                    }
                 }
                 return !foundMatch;
             });
