@@ -46,7 +46,7 @@ $(selector).autocomplete(options);
 | Event setting | Function description |
 | :--- | :--- |
 | `onSearchStart` | `function (params) {}` called before Ajax request. `this` is bound to input element |
-| `onHint` | `function (hint) {}` used to change input value to first suggestion automatically |
+| `onHint` | `function (hint) {}` used to change input value to first suggestion automatically. `this` is bound to input element |
 | `onSearchComplete` | `function (query, suggestions) {}` called after Ajax response is processed. `this` is bound to input element. `suggestions` is an array containing the results |
 | `transformResult` | `function(response, originalQuery) {}` called after the result of the query is ready. Converts the result into response.suggestions format |
 | `onSelect` | `function (suggestion) {}` Callback function invoked when user selects suggestion from the list. `this` inside callback refers to input HtmlElement.|
