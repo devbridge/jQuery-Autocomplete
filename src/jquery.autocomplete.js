@@ -656,6 +656,7 @@
                 container = $(that.suggestionsContainer),
                 noSuggestionsContainer = $(that.noSuggestionsContainer),
                 beforeRender = options.beforeRender,
+		afterRender = options.afterRender,
                 html = '',
                 category,
                 formatGroup = function (suggestion, index) {
@@ -695,6 +696,10 @@
 
             that.fixPosition();
             container.show();
+
+	    if ($.isFunction(afterRender)) {
+                afterRender.call(that.element, container);
+            }
 
             // Select first value by default:
             if (options.autoSelectFirst) {
