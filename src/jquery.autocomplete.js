@@ -62,6 +62,7 @@
         that.suggestions = [];
         that.badQueries = [];
         that.selectedIndex = -1;
+        that.selectedBy = 'other'; // what changed selectedIndex ? possible values: 'keyboard','mouse' or 'other'
         that.currentValue = that.element.value;
         that.timeoutId = null;
         that.cachedResponse = {};
@@ -183,6 +184,7 @@
 
             // Listen for mouse over event on suggestions list:
             container.on('mouseover.autocomplete', suggestionSelector, function () {
+                that.selectedBy = 'mouse';
                 that.activate($(this).data('index'));
             });
 
@@ -404,11 +406,13 @@
                     }
                     return;
                 case keys.TAB:
+                    // select suggestion only if it was selected by keyboard, not by mouse.
+                    // Hint is an exception from this rule:
                     if (that.hint && that.options.onHint) {
                         that.selectHint();
                         return;
                     }
-                    if (that.selectedIndex === -1) {
+                    if (that.selectedIndex === -1 || that.selectedBy !== 'keyboard') {
                         that.hide();
                         return;
                     }
@@ -418,7 +422,8 @@
                     }
                     break;
                 case keys.RETURN:
-                    if (that.selectedIndex === -1) {
+                    // select suggestion only if it was selected by keyboard, not by mouse.
+                    if (that.selectedIndex === -1 || that.selectedBy !== 'keyboard') {
                         that.hide();
                         return;
                     }
@@ -873,6 +878,8 @@
                 return;
             }
 
+            that.selectedBy = 'keyboard';
+
             if (that.selectedIndex === 0) {
                 $(that.suggestionsContainer).children('.' + that.classes.suggestion).first().removeClass(that.classes.selected);
                 that.selectedIndex = -1;
@@ -887,6 +894,8 @@
 
         moveDown: function () {
             var that = this;
+
+            that.selectedBy = 'keyboard';
 
             if (that.selectedIndex === (that.suggestions.length - 1)) {
                 return;
