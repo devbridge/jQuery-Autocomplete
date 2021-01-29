@@ -656,6 +656,7 @@
                 container = $(that.suggestionsContainer),
                 noSuggestionsContainer = $(that.noSuggestionsContainer),
                 beforeRender = options.beforeRender,
+                afterRender = options.afterRender,
                 html = '',
                 category,
                 formatGroup = function (suggestion, index) {
@@ -696,6 +697,10 @@
             that.fixPosition();
             container.show();
 
+            if ($.isFunction(afterRender)) {
+                afterRender.call(that.element, container, that.suggestions);
+            }
+
             // Select first value by default:
             if (options.autoSelectFirst) {
                 that.selectedIndex = 0;
@@ -710,6 +715,7 @@
         noSuggestions: function() {
              var that = this,
                  beforeRender = that.options.beforeRender,
+                 afterRender = that.options.afterRender,
                  container = $(that.suggestionsContainer),
                  noSuggestionsContainer = $(that.noSuggestionsContainer);
 
@@ -730,6 +736,11 @@
             that.fixPosition();
 
             container.show();
+
+            if ($.isFunction(afterRender)) {
+                afterRender.call(that.element, container, that.suggestions);
+            }
+
             that.visible = true;
         },
 
