@@ -26,6 +26,7 @@ $(selector).autocomplete(options);
 | `preventBadQueries` | `true` | Boolean value indicating if it should prevent future Ajax requests for queries with the same root if no results were returned. E.g. if `Jam` returns no suggestions, it will not fire for any future query that starts with `Jam` |
 | `autoSelectFirst` | `false` | If set to `true`, first item will be selected when showing suggestions |
 | `beforeRender` | optional | `function (container, suggestions) {}` called before displaying the suggestions. You may manipulate suggestions DOM before it is displayed |
+| `afterRender` | optional | `function (container, suggestions) {}` called after displaying the suggestions. You may manipulate suggestions DOM after it is displayed. Useful when for example you need add class for CSS transition animation. |
 | `formatResult` | optional | `function (suggestion, currentValue) {}` custom function to format suggestion entry inside suggestions container |
 | `formatGroup` | optional | `function (suggestion, category) {}` custom function to format group header |
 | `groupBy` | optional | property name of the suggestion `data` object, by which results should be grouped |
@@ -187,6 +188,36 @@ Style sample:
 .autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
 ```
 
+CSS Animation:
+
+```css
+.autocomplete-suggestions {
+    -webkit-transform-origin: 50% 0;
+    -ms-transform-origin: 50% 0;
+    transform-origin: 50% 0;
+    -webkit-transform: scale(0.75) translateY(-21px);
+    -ms-transform: scale(0.75) translateY(-21px);
+    transform: scale(0.75) translateY(-21px);
+    -webkit-transition: all 0.15s ease-out;
+    transition: all 0.15s ease-out;
+}
+.autocomplete-suggestions.open {
+    -webkit-transform: scale(1) translateY(0);
+    -ms-transform: scale(1) translateY(0);
+    transform: scale(1) translateY(0);
+}
+```
+
+```javascript
+$('#autocomplete').autocomplete({
+    beforeRender: function(container) {
+        container.removeClass('open');
+    },
+    afterRender: function(container) {
+        container.addClass('open');
+    }
+})
+```
 
 ## Response Format
 
