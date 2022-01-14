@@ -35,6 +35,7 @@
                     var div = document.createElement('div');
                     div.className = containerClass;
                     div.style.display = 'none';
+                    div.style.position = 'absolute';
                     return div;
                 }
             };
