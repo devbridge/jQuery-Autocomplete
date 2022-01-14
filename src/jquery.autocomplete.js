@@ -34,8 +34,8 @@
                 createNode: function (containerClass) {
                     var div = document.createElement('div');
                     div.className = containerClass;
-                    div.style.display = 'none';
                     div.style.position = 'absolute';
+                    div.style.display = 'none';
                     return div;
                 }
             };
