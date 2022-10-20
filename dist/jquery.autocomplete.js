@@ -226,7 +226,7 @@
 
             that.fixPosition();
 
-            if (that.el.val().length >= that.options.minChars) {
+            if (that.el.val().trim().length >= that.options.minChars) {
                 that.onValueChange();
             }
         },
@@ -493,7 +493,7 @@
                 return;
             }
 
-            if (query.length < options.minChars) {
+            if (query.trim().length < options.minChars) {
                 that.hide();
             } else {
                 that.getSuggestions(query);
