@@ -819,7 +819,7 @@
             // Cache results if cache is not disabled:
             if (!options.noCache) {
                 that.cachedResponse[cacheKey] = result;
-                if (options.preventBadQueries && !result.suggestions.length) {
+                if (options.preventBadQueries && !result.suggestions.length && originalQuery) {
                     that.badQueries.push(originalQuery);
                 }
             }
