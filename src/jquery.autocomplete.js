@@ -226,7 +226,7 @@
 
             that.fixPosition();
 
-            if (that.el.val().trim().length >= that.options.minChars) {
+            if (that.el.val().replace(/[^A-Z0-9]/ig, '').length >= that.options.minChars) {
                 that.onValueChange();
             }
         },
@@ -493,7 +493,7 @@
                 return;
             }
 
-            if (query.trim().length < options.minChars) {
+            if (query.replace(/[^A-Z0-9]/ig, '').length < options.minChars) {
                 that.hide();
             } else {
                 that.getSuggestions(query);
@@ -776,7 +776,7 @@
             var that = this,
                 onHintCallback = that.options.onHint,
                 hintValue = '';
-            
+
             if (suggestion) {
                 hintValue = that.currentValue + suggestion.value.substr(that.currentValue.length);
             }
@@ -786,7 +786,7 @@
                 if ($.isFunction(onHintCallback)) {
                     onHintCallback.call(that.element, hintValue);
                 }
-            }  
+            }
         },
 
         verifySuggestionsFormat: function (suggestions) {
