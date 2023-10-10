@@ -1,4 +1,4 @@
-///<reference path="../jquery-autocomplete/jquery.autocomplete.d.ts" />
+///<reference path="./jquery.autocomplete.d.ts" />
 
 // ----------------------------------------------------------------------------------------
 // --------------------------------- WEBSITE EXAMPLE --------------------------------------

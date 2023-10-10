@@ -5,7 +5,7 @@
   "homepage": "https://github.com/devbridge/jQuery-Autocomplete",
   "author": "Tomas Kirda (https://twitter.com/tkirda)",
   "main": "dist/jquery.autocomplete.js",
-  "types": "./typings/jquery-autocomplete/jquery.autocomplete.d.ts",
+  "types": "./typings/jquery.autocomplete.d.ts",
   "license": "MIT",
   "scripts": {
     "format": "prettier --write ./src/**"
