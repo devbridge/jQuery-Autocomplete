@@ -14,14 +14,16 @@
     "type": "git",
     "url": "git://github.com/devbridge/jQuery-Autocomplete.git"
   },
-  "dependencies": {
-    "@types/jquery": "^2.0.32",
+  "peerDependencies": {
     "jquery": ">=1.9"
   },
   "devDependencies": {
+    "@types/jquery": "^3.5.22",
     "grunt": "^1.0.1",
     "grunt-contrib-uglify": "^1.0.1",
-    "prettier": "^3.0.3"
+    "jquery-mockjax": "^2.6.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
   },
   "prettier": {
     "printWidth": 100,

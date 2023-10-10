@@ -1,25 +1,20 @@
-// Type definitions for jQuery-Autocomplete 1.2.25
-// Project: https://www.devbridge.com/sourcery/components/jquery-autocomplete/
+// Type definitions for jQuery-Autocomplete 1.4.11
+// Project: https://github.com/devbridge/jQuery-Autocomplete
 // Definitions by: John Gouigouix <https://github.com/orchestra-ts/DefinitelyTyped/>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 /// <reference types="jquery"/>
 
 interface AutocompleteSuggestion {
-
     value: string;
     data: any;
-
 }
 
 interface AutocompleteResponse {
-
     suggestions: AutocompleteSuggestion[];
-
 }
 
 interface JQueryAutocompleteOptions {
-
     //----------------o AJAX SETTINGS
 
     /**
@@ -38,7 +33,7 @@ interface JQueryAutocompleteOptions {
      * You may return a json object in your callback when using jsonp.
      * @default "text"
      */
-    dataType?: "text" | "json" | "jsonp";
+    dataType?: 'text' | 'json' | 'jsonp';
 
     /**
      * The name of the request parameter that contains the query.
@@ -62,7 +57,6 @@ interface JQueryAutocompleteOptions {
      */
     ajaxSettings?: JQueryAjaxSettings;
 
-
     //----------------o CONFIG SETTINGS
 
     /**
@@ -81,7 +75,7 @@ interface JQueryAutocompleteOptions {
      * Called before ajax request. this is bound to input element.
      * @param query
      */
-    onSearchStart? (query: string): void;
+    onSearchStart?(query: string): void;
 
     /**
      * Called after ajax response is processed. this is bound to input element.
@@ -89,7 +83,7 @@ interface JQueryAutocompleteOptions {
      * @param query
      * @param suggestions
      */
-    onSearchComplete? (query: string, suggestions: AutocompleteSuggestion[]): void;
+    onSearchComplete?(query: string, suggestions: AutocompleteSuggestion[]): void;
 
     /**
      * Called if ajax request fails. this is bound to input element.
@@ -98,21 +92,21 @@ interface JQueryAutocompleteOptions {
      * @param textStatus
      * @param errorThrown
      */
-    onSearchError? (query: string, jqXHR: JQueryXHR, textStatus: string, errorThrown: any): void;
+    onSearchError?(query: string, jqXHR: JQueryXHR, textStatus: string, errorThrown: any): void;
 
     /**
      * Called after the result of the query is ready. Converts the result into response.suggestions format.
      * @param response
      * @param originalQuery
      */
-    transformResult? (response: any, originalQuery: string): AutocompleteResponse;
+    transformResult?(response: any, originalQuery: string): AutocompleteResponse;
 
     /**
      * Callback function invoked when user selects suggestion from the list.
      * This inside callback refers to input HtmlElement.
      * @param suggestion
      */
-    onSelect? (suggestion: AutocompleteSuggestion): void;
+    onSelect?(suggestion: AutocompleteSuggestion): void;
 
     /**
      * Minimum number of characters required to trigger autosuggest.
@@ -130,7 +124,10 @@ interface JQueryAutocompleteOptions {
      * Callback function or lookup array for the suggestions. It may be array of strings or suggestion object literals.
      *   -> suggestion: An object literal with the following format: { value: 'string', data: any }.
      */
-    lookup?: { (query: string, done: { (results: AutocompleteResponse): void }): void } | string[] | AutocompleteSuggestion[];
+    lookup?:
+        | { (query: string, done: { (results: AutocompleteResponse): void }): void }
+        | string[]
+        | AutocompleteSuggestion[];
 
     /**
      * Filter function for local lookups. By default it does partial string match (case insensitive).
@@ -138,7 +135,7 @@ interface JQueryAutocompleteOptions {
      * @param query
      * @param queryLowercase
      */
-    lookupFilter? (suggestion: AutocompleteSuggestion, query: string, queryLowercase: string): any;
+    lookupFilter?(suggestion: AutocompleteSuggestion, query: string, queryLowercase: string): any;
 
     /**
      * Boolean value indicating if select should be triggered if it matches suggestion.
@@ -163,8 +160,7 @@ interface JQueryAutocompleteOptions {
      * Called before container will be hidden
      * @param container
      */
-    onHide? (container: any): void;
-
+    onHide?(container: any): void;
 
     //----------------o PRESENTATION SETTINGS
 
@@ -172,14 +168,14 @@ interface JQueryAutocompleteOptions {
      * Called before displaying the suggestions. You may manipulate suggestions DOM before it is displayed.
      * @param container
      */
-    beforeRender? (container: any): void;
+    beforeRender?(container: any): void;
 
     /**
      * Custom function to format suggestion entry inside suggestions container, optional.
      * @param suggestion
      * @param currentValue
      */
-    formatResult? (suggestion: AutocompleteSuggestion, currentValue: string): string;
+    formatResult?(suggestion: AutocompleteSuggestion, currentValue: string): string;
 
     /**
      * Property name of the suggestion data object, by which results should be grouped.
@@ -224,7 +220,7 @@ interface JQueryAutocompleteOptions {
      * If set to auto, the suggestions will be orientated it the way that place them closer to middle of the view port.
      * @default "bottom"
      */
-    orientation?: "bottom" | "auto" | "top"
+    orientation?: 'bottom' | 'auto' | 'top';
 
     /**
      * If true, input value stays the same when navigating over suggestions.
@@ -247,27 +243,23 @@ interface JQueryAutocompleteOptions {
     /**
      * Called when input is altered after selection has been made. this is bound to input element.
      */
-    onInvalidateSelection? (): void;
+    onInvalidateSelection?(): void;
 
     /**
      * Set to true to leave the cursor in the input field after the user tabs to select a suggestion.
      * @default false
      */
     tabDisabled?: boolean;
-
 }
 
 interface AutocompleteStatic {
-
     /**
      * Default options for all instances.
      */
-    defaults: JQueryAutocompleteOptions
-
+    defaults: JQueryAutocompleteOptions;
 }
 
 interface AutocompleteInstance {
-
     /**
      * you may update any option at any time. Options are listed above.
      * @param options
@@ -303,17 +295,13 @@ interface AutocompleteInstance {
      * destroys autocomplete instance. All events are detached and suggestion containers removed.
      */
     dispose(): void;
-
 }
 
 interface JQueryStatic {
-
-    Autocomplete: AutocompleteStatic
-
+    Autocomplete: AutocompleteStatic;
 }
 
 interface JQuery {
-
     /**
      * Create Autocomplete component
      */
@@ -331,43 +319,46 @@ interface JQuery {
      * @param methodName The name of the method
      * @param options
      */
-    autocomplete(methodName: "setOptions", options: JQueryAutocompleteOptions): AutocompleteInstance;
+    autocomplete(
+        methodName: 'setOptions',
+        options: JQueryAutocompleteOptions,
+    ): AutocompleteInstance;
 
     /**
      * Clears suggestion cache and current suggestions suggestions.
      * @param methodName The name of the method
      */
-    autocomplete(methodName: "clear"): AutocompleteInstance;
+    autocomplete(methodName: 'clear'): AutocompleteInstance;
 
     /**
      * Clears suggestion cache.
      * @param methodName The name of the method
      */
-    autocomplete(methodName: "clearCache"): AutocompleteInstance;
+    autocomplete(methodName: 'clearCache'): AutocompleteInstance;
 
     /**
      * Deactivate autocomplete.
      * @param methodName The name of the method
      */
-    autocomplete(methodName: "disable"): AutocompleteInstance;
+    autocomplete(methodName: 'disable'): AutocompleteInstance;
 
     /**
      * Activates autocomplete if it was deactivated before.
      * @param methodName The name of the method
      */
-    autocomplete(methodName: "enable"): AutocompleteInstance;
+    autocomplete(methodName: 'enable'): AutocompleteInstance;
 
     /**
      * Hides suggestions.
      * @param methodName The name of the method
      */
-    autocomplete(methodName: "hide"): AutocompleteInstance;
+    autocomplete(methodName: 'hide'): AutocompleteInstance;
 
     /**
      * Destroys autocomplete instance. All events are detached and suggestion containers removed.
      * @param methodName The name of the method
      */
-    autocomplete(methodName: "dispose"): AutocompleteInstance;
+    autocomplete(methodName: 'dispose'): AutocompleteInstance;
 
     /**
      * Create Autocomplete component via plugin alias
@@ -386,42 +377,44 @@ interface JQuery {
      * @param methodName The name of the method
      * @param options
      */
-    devbridgeAutocomplete(methodName: "setOptions", options: JQueryAutocompleteOptions): AutocompleteInstance;
+    devbridgeAutocomplete(
+        methodName: 'setOptions',
+        options: JQueryAutocompleteOptions,
+    ): AutocompleteInstance;
 
     /**
      * Clears suggestion cache and current suggestions suggestions.
      * @param methodName The name of the method
      */
-    devbridgeAutocomplete(methodName: "clear"): AutocompleteInstance;
+    devbridgeAutocomplete(methodName: 'clear'): AutocompleteInstance;
 
     /**
      * Clears suggestion cache.
      * @param methodName The name of the method
      */
-    devbridgeAutocomplete(methodName: "clearCache"): AutocompleteInstance;
+    devbridgeAutocomplete(methodName: 'clearCache'): AutocompleteInstance;
 
     /**
      * Deactivate autocomplete.
      * @param methodName The name of the method
      */
-    devbridgeAutocomplete(methodName: "disable"): AutocompleteInstance;
+    devbridgeAutocomplete(methodName: 'disable'): AutocompleteInstance;
 
     /**
      * Activates autocomplete if it was deactivated before.
      * @param methodName The name of the method
      */
-    devbridgeAutocomplete(methodName: "enable"): AutocompleteInstance;
+    devbridgeAutocomplete(methodName: 'enable'): AutocompleteInstance;
 
     /**
      * Hides suggestions.
      * @param methodName The name of the method
      */
-    devbridgeAutocomplete(methodName: "hide"): AutocompleteInstance;
+    devbridgeAutocomplete(methodName: 'hide'): AutocompleteInstance;
 
     /**
      * Destroys autocomplete instance. All events are detached and suggestion containers removed.
      * @param methodName The name of the method
      */
-    devbridgeAutocomplete(methodName: "dispose"): AutocompleteInstance;
-
+    devbridgeAutocomplete(methodName: 'dispose'): AutocompleteInstance;
 }

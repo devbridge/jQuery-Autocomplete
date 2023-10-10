@@ -1,7 +1,3 @@
-Devbridge Group accelerates software to market for enterprise clients through dedicated product teams, user experience and software engineering expertise.
-
-[www.devbridge.com](http://www.devbridge.com/)
-
 # Ajax Autocomplete for jQuery
 
 Ajax Autocomplete for jQuery allows you to easily create

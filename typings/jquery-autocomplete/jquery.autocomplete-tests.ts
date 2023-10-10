@@ -1,10 +1,8 @@
-///<reference path="../jquery/jquery.d.ts" />
 ///<reference path="../jquery-autocomplete/jquery.autocomplete.d.ts" />
-
 
 // ----------------------------------------------------------------------------------------
 // --------------------------------- WEBSITE EXAMPLE --------------------------------------
-// ---------- https://www.devbridge.com/sourcery/components/jquery-autocomplete/ ----------
+// --------------- https://devbridge.github.io/jQuery-Autocomplete/ -----------------------
 // ----------------------------------------------------------------------------------------
 
 var input = $('#autocomplete');
@@ -21,33 +19,33 @@ input.autocomplete({
     serviceUrl: '/autocomplete/countries',
     onSelect: function (suggestion) {
         alert('You selected: ' + suggestion.value + ', ' + suggestion.data);
-    }
+    },
 });
 
 // Local lookup (no ajax):
 var countries = [
     { value: 'Andorra', data: 'AD' },
     // ...
-    { value: 'Zimbabwe', data: 'ZZ' }
+    { value: 'Zimbabwe', data: 'ZZ' },
 ];
 
 input.autocomplete({
     lookup: countries,
     onSelect: function (suggestion) {
         alert('You selected: ' + suggestion.value + ', ' + suggestion.data);
-    }
+    },
 });
 
 // Non standard query/results
 input.autocomplete({
     paramName: 'searchString',
-    transformResult: function(response: any, originalQuery: string): AutocompleteResponse {
+    transformResult: function (response: any, originalQuery: string): AutocompleteResponse {
         return {
             suggestions: $.map(response.myData, function (dataItem) {
-                return {value: dataItem.valueField, data: dataItem.dataField};
-            })
+                return { value: dataItem.valueField, data: dataItem.dataField };
+            }),
         };
-    }
+    },
 });
 
 // ----------------------------------------------------------------------------------------
@@ -68,13 +66,11 @@ input.autocomplete().enable();
 input.autocomplete().hide();
 input.autocomplete().dispose();
 
-
 // ----------------------------------------------------------------------------------------
 // ------------------------------ TEST DEFAULT OPTIONS ------------------------------------
 // ----------------------------------------------------------------------------------------
 
 input.autocomplete({
-
     //----------------o AJAX SETTINGS
 
     serviceUrl: '/autocomplete/countries',
@@ -88,69 +84,69 @@ input.autocomplete({
     //----------------o CONFIG SETTINGS
 
     noCache: false,
-    delimiter: "-",
+    delimiter: '-',
     onSearchStart(query: string) {
-        console.log("query: ", query);
+        console.log('query: ', query);
     },
     onSearchComplete(query: string, suggestions: AutocompleteSuggestion[]) {
-        console.log("query: ", query);
-        console.log("suggestions: ", suggestions);
+        console.log('query: ', query);
+        console.log('suggestions: ', suggestions);
     },
     onSearchError(query: string, jqXHR: JQueryXHR, textStatus: string, errorThrown: any) {
-        console.log("query: ", query);
-        console.log("jqXHR: ", jqXHR);
-        console.log("textStatus: ", textStatus);
-        console.log("errorThrown: ", errorThrown);
+        console.log('query: ', query);
+        console.log('jqXHR: ', jqXHR);
+        console.log('textStatus: ', textStatus);
+        console.log('errorThrown: ', errorThrown);
     },
     transformResult(response: any, originalQuery: string): AutocompleteResponse {
-       return {
-           suggestions: [
-               { value: 'Andorra', data: 'AD' },
-               // ...
-               { value: 'Zimbabwe', data: 'ZZ' }
-           ]
-       }
+        return {
+            suggestions: [
+                { value: 'Andorra', data: 'AD' },
+                // ...
+                { value: 'Zimbabwe', data: 'ZZ' },
+            ],
+        };
     },
     onSelect(suggestion: AutocompleteSuggestion) {
-        console.log("suggestions: ", suggestion);
+        console.log('suggestions: ', suggestion);
     },
     minChars: 1,
     lookupLimit: 1,
     lookup: [
         { value: 'Andorra', data: 'AD' },
         // ...
-        { value: 'Zimbabwe', data: 'ZZ' }
+        { value: 'Zimbabwe', data: 'ZZ' },
     ],
     lookupFilter(suggestion: AutocompleteSuggestion, query: string, queryLowercase: string): any {
-        return query !== "query"
+        return query !== 'query';
     },
     triggerSelectOnValidInput: true,
     preventBadQueries: true,
     autoSelectFirst: false,
     onHide(container: any) {
-        console.log("container: ", container);
+        console.log('container: ', container);
     },
 
     //----------------o PRESENTATION SETTINGS
 
     beforeRender(container: any) {
-        console.log("container: ", container);
+        console.log('container: ', container);
     },
     formatResult(suggestion: AutocompleteSuggestion, currentValue: string): string {
         return currentValue;
     },
-    groupBy: "category",
+    groupBy: 'category',
     maxHeight: 300,
-    width: "auto",
+    width: 'auto',
     zIndex: 9999,
     appendTo: document.body,
     forceFixPosition: false,
-    orientation: "bottom",
+    orientation: 'bottom',
     preserveInput: false,
     showNoSuggestionNotice: false,
-    noSuggestionNotice: "No results",
+    noSuggestionNotice: 'No results',
     onInvalidateSelection() {
-        console.log("onInvalidateSelection");
+        console.log('onInvalidateSelection');
     },
-    tabDisabled: false
+    tabDisabled: false,
 });
