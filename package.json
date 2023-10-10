@@ -7,6 +7,9 @@
   "main": "dist/jquery.autocomplete.js",
   "types": "./typings/jquery-autocomplete/jquery.autocomplete.d.ts",
   "license": "MIT",
+  "scripts": {
+    "format": "prettier --write ./src/**"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/devbridge/jQuery-Autocomplete.git"
@@ -17,7 +20,13 @@
   },
   "devDependencies": {
     "grunt": "^1.0.1",
-    "grunt-contrib-uglify": "^1.0.1"
+    "grunt-contrib-uglify": "^1.0.1",
+    "prettier": "^3.0.3"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "singleQuote": true,
+    "tabWidth": 4
   },
   "files": [
     "dist/",

@@ -1,17 +1,17 @@
 /**
-*  Ajax Autocomplete for jQuery, version %version%
-*  (c) 2017 Tomas Kirda
-*
-*  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
-*  For details, see the web site: https://github.com/devbridge/jQuery-Autocomplete
-*/
+ *  Ajax Autocomplete for jQuery, version %version%
+ *  (c) 2017 Tomas Kirda
+ *
+ *  Ajax Autocomplete for jQuery is freely distributable under the terms of an MIT-style license.
+ *  For details, see the web site: https://github.com/devbridge/jQuery-Autocomplete
+ */
 
 /*jslint  browser: true, white: true, single: true, this: true, multivar: true */
 /*global define, window, document, jQuery, exports, require */
 
 // Expose plugin as an AMD module if AMD loader is present:
 (function (factory) {
-    "use strict";
+    'use strict';
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
         define(['jquery'], factory);
@@ -22,14 +22,13 @@
         // Browser globals
         factory(jQuery);
     }
-}(function ($) {
+})(function ($) {
     'use strict';
 
-    var
-        utils = (function () {
+    var utils = (function () {
             return {
                 escapeRegExChars: function (value) {
-                    return value.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&");
+                    return value.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
                 },
                 createNode: function (containerClass) {
                     var div = document.createElement('div');
@@ -37,10 +36,9 @@
                     div.style.position = 'absolute';
                     div.style.display = 'none';
                     return div;
-                }
+                },
             };
-        }()),
-
+        })(),
         keys = {
             ESC: 27,
             TAB: 9,
@@ -48,9 +46,8 @@
             LEFT: 37,
             UP: 38,
             RIGHT: 39,
-            DOWN: 40
+            DOWN: 40,
         },
-
         noop = $.noop;
 
     function Autocomplete(el, options) {
@@ -73,7 +70,7 @@
         that.options = $.extend(true, {}, Autocomplete.defaults, options);
         that.classes = {
             selected: 'autocomplete-selected',
-            suggestion: 'autocomplete-suggestion'
+            suggestion: 'autocomplete-suggestion',
         };
         that.hint = null;
         that.hintValue = '';
@@ -89,50 +86,50 @@
     $.Autocomplete = Autocomplete;
 
     Autocomplete.defaults = {
-            ajaxSettings: {},
-            autoSelectFirst: false,
-            appendTo: 'body',
-            serviceUrl: null,
-            lookup: null,
-            onSelect: null,
-            onHint: null,
-            width: 'auto',
-            minChars: 1,
-            maxHeight: 300,
-            deferRequestBy: 0,
-            params: {},
-            formatResult: _formatResult,
-            formatGroup: _formatGroup,
-            delimiter: null,
-            zIndex: 9999,
-            type: 'GET',
-            noCache: false,
-            onSearchStart: noop,
-            onSearchComplete: noop,
-            onSearchError: noop,
-            preserveInput: false,
-            containerClass: 'autocomplete-suggestions',
-            tabDisabled: false,
-            dataType: 'text',
-            currentRequest: null,
-            triggerSelectOnValidInput: true,
-            preventBadQueries: true,
-            lookupFilter: _lookupFilter,
-            paramName: 'query',
-            transformResult: _transformResult,
-            showNoSuggestionNotice: false,
-            noSuggestionNotice: 'No results',
-            orientation: 'bottom',
-            forceFixPosition: false
+        ajaxSettings: {},
+        autoSelectFirst: false,
+        appendTo: 'body',
+        serviceUrl: null,
+        lookup: null,
+        onSelect: null,
+        onHint: null,
+        width: 'auto',
+        minChars: 1,
+        maxHeight: 300,
+        deferRequestBy: 0,
+        params: {},
+        formatResult: _formatResult,
+        formatGroup: _formatGroup,
+        delimiter: null,
+        zIndex: 9999,
+        type: 'GET',
+        noCache: false,
+        onSearchStart: noop,
+        onSearchComplete: noop,
+        onSearchError: noop,
+        preserveInput: false,
+        containerClass: 'autocomplete-suggestions',
+        tabDisabled: false,
+        dataType: 'text',
+        currentRequest: null,
+        triggerSelectOnValidInput: true,
+        preventBadQueries: true,
+        lookupFilter: _lookupFilter,
+        paramName: 'query',
+        transformResult: _transformResult,
+        showNoSuggestionNotice: false,
+        noSuggestionNotice: 'No results',
+        orientation: 'bottom',
+        forceFixPosition: false,
     };
 
     function _lookupFilter(suggestion, originalQuery, queryLowerCase) {
         return suggestion.value.toLowerCase().indexOf(queryLowerCase) !== -1;
-    };
+    }
 
     function _transformResult(response) {
         return typeof response === 'string' ? $.parseJSON(response) : response;
-    };
+    }
 
     function _formatResult(suggestion, currentValue) {
         // Do not replace anything if the current value is empty
@@ -143,20 +140,19 @@
         var pattern = '(' + utils.escapeRegExChars(currentValue) + ')';
 
         return suggestion.value
-            .replace(new RegExp(pattern, 'gi'), '<strong>$1<\/strong>')
+            .replace(new RegExp(pattern, 'gi'), '<strong>$1</strong>')
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;')
             .replace(/&lt;(\/?strong)&gt;/g, '<$1>');
-    };
+    }
 
     function _formatGroup(suggestion, category) {
         return '<div class="autocomplete-group">' + category + '</div>';
-    };
+    }
 
     Autocomplete.prototype = {
-
         initialize: function () {
             var that = this,
                 suggestionSelector = '.' + that.classes.suggestion,
@@ -168,7 +164,8 @@
 
             // html() deals with many types: htmlString or Element or Array or jQuery
             that.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>')
-                                          .html(this.options.noSuggestionNotice).get(0);
+                .html(this.options.noSuggestionNotice)
+                .get(0);
 
             that.suggestionsContainer = Autocomplete.utils.createNode(options.containerClass);
 
@@ -199,7 +196,7 @@
 
             container.on('click.autocomplete', function () {
                 clearTimeout(that.blurTimeoutId);
-            })
+            });
 
             that.fixPositionCapture = function () {
                 if (that.visible) {
@@ -209,12 +206,24 @@
 
             $(window).on('resize.autocomplete', that.fixPositionCapture);
 
-            that.el.on('keydown.autocomplete', function (e) { that.onKeyPress(e); });
-            that.el.on('keyup.autocomplete', function (e) { that.onKeyUp(e); });
-            that.el.on('blur.autocomplete', function () { that.onBlur(); });
-            that.el.on('focus.autocomplete', function () { that.onFocus(); });
-            that.el.on('change.autocomplete', function (e) { that.onKeyUp(e); });
-            that.el.on('input.autocomplete', function (e) { that.onKeyUp(e); });
+            that.el.on('keydown.autocomplete', function (e) {
+                that.onKeyPress(e);
+            });
+            that.el.on('keyup.autocomplete', function (e) {
+                that.onKeyUp(e);
+            });
+            that.el.on('blur.autocomplete', function () {
+                that.onBlur();
+            });
+            that.el.on('focus.autocomplete', function () {
+                that.onFocus();
+            });
+            that.el.on('change.autocomplete', function (e) {
+                that.onKeyUp(e);
+            });
+            that.el.on('input.autocomplete', function (e) {
+                that.onKeyUp(e);
+            });
         },
 
         onFocus: function () {
@@ -271,13 +280,12 @@
             // Adjust height, width and z-index:
             $(that.suggestionsContainer).css({
                 'max-height': options.maxHeight + 'px',
-                'width': options.width + 'px',
-                'z-index': options.zIndex
+                width: options.width + 'px',
+                'z-index': options.zIndex,
             });
 
             this.options = options;
         },
-
 
         clearCache: function () {
             this.cachedResponse = {};
@@ -318,15 +326,17 @@
                 containerHeight = $container.outerHeight(),
                 height = that.el.outerHeight(),
                 offset = that.el.offset(),
-                styles = { 'top': offset.top, 'left': offset.left };
+                styles = { top: offset.top, left: offset.left };
 
             if (orientation === 'auto') {
                 var viewPortHeight = $(window).height(),
                     scrollTop = $(window).scrollTop(),
                     topOverflow = -scrollTop + offset.top - containerHeight,
-                    bottomOverflow = scrollTop + viewPortHeight - (offset.top + height + containerHeight);
+                    bottomOverflow =
+                        scrollTop + viewPortHeight - (offset.top + height + containerHeight);
 
-                orientation = (Math.max(topOverflow, bottomOverflow) === topOverflow) ? 'top' : 'bottom';
+                orientation =
+                    Math.max(topOverflow, bottomOverflow) === topOverflow ? 'top' : 'bottom';
             }
 
             if (orientation === 'top') {
@@ -337,20 +347,20 @@
 
             // If container is not positioned to body,
             // correct its position using offset parent offset
-            if(containerParent !== document.body) {
+            if (containerParent !== document.body) {
                 var opacity = $container.css('opacity'),
                     parentOffsetDiff;
 
-                    if (!that.visible){
-                        $container.css('opacity', 0).show();
-                    }
+                if (!that.visible) {
+                    $container.css('opacity', 0).show();
+                }
 
                 parentOffsetDiff = $container.offsetParent().offset();
                 styles.top -= parentOffsetDiff.top;
                 styles.top += containerParent.scrollTop;
                 styles.left -= parentOffsetDiff.left;
 
-                if (!that.visible){
+                if (!that.visible) {
                     $container.css('opacity', opacity).hide();
                 }
             }
@@ -503,7 +513,10 @@
         isExactMatch: function (query) {
             var suggestions = this.suggestions;
 
-            return (suggestions.length === 1 && suggestions[0].value.toLowerCase() === query.toLowerCase());
+            return (
+                suggestions.length === 1 &&
+                suggestions[0].value.toLowerCase() === query.toLowerCase()
+            );
         },
 
         getQuery: function (value) {
@@ -528,7 +541,7 @@
             data = {
                 suggestions: $.grep(options.lookup, function (suggestion) {
                     return filter(suggestion, query, queryLowerCase);
-                })
+                }),
             };
 
             if (limit && data.suggestions.length > limit) {
@@ -555,7 +568,7 @@
 
             params = options.ignoreParams ? null : options.params;
 
-            if ($.isFunction(options.lookup)){
+            if ($.isFunction(options.lookup)) {
                 options.lookup(q, function (data) {
                     that.suggestions = data.suggestions;
                     that.suggest();
@@ -585,27 +598,29 @@
                     url: serviceUrl,
                     data: params,
                     type: options.type,
-                    dataType: options.dataType
+                    dataType: options.dataType,
                 };
 
                 $.extend(ajaxSettings, options.ajaxSettings);
 
-                that.currentRequest = $.ajax(ajaxSettings).done(function (data) {
-                    var result;
-                    that.currentRequest = null;
-                    result = options.transformResult(data, q);
-                    that.processResponse(result, q, cacheKey);
-                    options.onSearchComplete.call(that.element, q, result.suggestions);
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    options.onSearchError.call(that.element, q, jqXHR, textStatus, errorThrown);
-                });
+                that.currentRequest = $.ajax(ajaxSettings)
+                    .done(function (data) {
+                        var result;
+                        that.currentRequest = null;
+                        result = options.transformResult(data, q);
+                        that.processResponse(result, q, cacheKey);
+                        options.onSearchComplete.call(that.element, q, result.suggestions);
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        options.onSearchError.call(that.element, q, jqXHR, textStatus, errorThrown);
+                    });
             } else {
                 options.onSearchComplete.call(that.element, q, []);
             }
         },
 
         isBadQuery: function (q) {
-            if (!this.options.preventBadQueries){
+            if (!this.options.preventBadQueries) {
                 return false;
             }
 
@@ -659,16 +674,16 @@
                 html = '',
                 category,
                 formatGroup = function (suggestion, index) {
-                        var currentCategory = suggestion.data[groupBy];
+                    var currentCategory = suggestion.data[groupBy];
 
-                        if (category === currentCategory){
-                            return '';
-                        }
+                    if (category === currentCategory) {
+                        return '';
+                    }
 
-                        category = currentCategory;
+                    category = currentCategory;
 
-                        return options.formatGroup(suggestion, category);
-                    };
+                    return options.formatGroup(suggestion, category);
+                };
 
             if (options.triggerSelectOnValidInput && that.isExactMatch(value)) {
                 that.select(0);
@@ -677,11 +692,18 @@
 
             // Build suggestions inner HTML:
             $.each(that.suggestions, function (i, suggestion) {
-                if (groupBy){
+                if (groupBy) {
                     html += formatGroup(suggestion, value, i);
                 }
 
-                html += '<div class="' + className + '" data-index="' + i + '">' + formatResult(suggestion, value, i) + '</div>';
+                html +=
+                    '<div class="' +
+                    className +
+                    '" data-index="' +
+                    i +
+                    '">' +
+                    formatResult(suggestion, value, i) +
+                    '</div>';
             });
 
             this.adjustContainerWidth();
@@ -700,18 +722,21 @@
             if (options.autoSelectFirst) {
                 that.selectedIndex = 0;
                 container.scrollTop(0);
-                container.children('.' + className).first().addClass(classSelected);
+                container
+                    .children('.' + className)
+                    .first()
+                    .addClass(classSelected);
             }
 
             that.visible = true;
             that.findBestHint();
         },
 
-        noSuggestions: function() {
-             var that = this,
-                 beforeRender = that.options.beforeRender,
-                 container = $(that.suggestionsContainer),
-                 noSuggestionsContainer = $(that.noSuggestionsContainer);
+        noSuggestions: function () {
+            var that = this,
+                beforeRender = that.options.beforeRender,
+                container = $(that.suggestionsContainer),
+                noSuggestionsContainer = $(that.noSuggestionsContainer);
 
             this.adjustContainerWidth();
 
@@ -733,7 +758,7 @@
             that.visible = true;
         },
 
-        adjustContainerWidth: function() {
+        adjustContainerWidth: function () {
             var that = this,
                 options = that.options,
                 width,
@@ -745,7 +770,7 @@
             if (options.width === 'auto') {
                 width = that.el.outerWidth();
                 container.css('width', width > 0 ? width : 300);
-            } else if(options.width === 'flex') {
+            } else if (options.width === 'flex') {
                 // Trust the source! Unset the width property so it will be the max length
                 // the containing elements.
                 container.css('width', '');
@@ -776,7 +801,7 @@
             var that = this,
                 onHintCallback = that.options.onHint,
                 hintValue = '';
-            
+
             if (suggestion) {
                 hintValue = that.currentValue + suggestion.value.substr(that.currentValue.length);
             }
@@ -786,7 +811,7 @@
                 if ($.isFunction(onHintCallback)) {
                     onHintCallback.call(that.element, hintValue);
                 }
-            }  
+            }
         },
 
         verifySuggestionsFormat: function (suggestions) {
@@ -800,10 +825,10 @@
             return suggestions;
         },
 
-        validateOrientation: function(orientation, fallback) {
+        validateOrientation: function (orientation, fallback) {
             orientation = $.trim(orientation || '').toLowerCase();
 
-            if($.inArray(orientation, ['auto', 'bottom', 'top']) === -1){
+            if ($.inArray(orientation, ['auto', 'bottom', 'top']) === -1) {
                 orientation = fallback;
             }
 
@@ -874,7 +899,10 @@
             }
 
             if (that.selectedIndex === 0) {
-                $(that.suggestionsContainer).children('.' + that.classes.suggestion).first().removeClass(that.classes.selected);
+                $(that.suggestionsContainer)
+                    .children('.' + that.classes.suggestion)
+                    .first()
+                    .removeClass(that.classes.selected);
                 that.selectedIndex = -1;
                 that.ignoreValueChange = false;
                 that.el.val(that.currentValue);
@@ -888,7 +916,7 @@
         moveDown: function () {
             var that = this;
 
-            if (that.selectedIndex === (that.suggestions.length - 1)) {
+            if (that.selectedIndex === that.suggestions.length - 1) {
                 return;
             }
 
@@ -915,7 +943,9 @@
             if (offsetTop < upperBound) {
                 $(that.suggestionsContainer).scrollTop(offsetTop);
             } else if (offsetTop > lowerBound) {
-                $(that.suggestionsContainer).scrollTop(offsetTop - that.options.maxHeight + heightDelta);
+                $(that.suggestionsContainer).scrollTop(
+                    offsetTop - that.options.maxHeight + heightDelta,
+                );
             }
 
             if (!that.options.preserveInput) {
@@ -967,7 +997,9 @@
                 return value;
             }
 
-            return currentValue.substr(0, currentValue.length - parts[parts.length - 1].length) + value;
+            return (
+                currentValue.substr(0, currentValue.length - parts[parts.length - 1].length) + value
+            );
         },
 
         dispose: function () {
@@ -975,7 +1007,7 @@
             that.el.off('.autocomplete').removeData('autocomplete');
             $(window).off('resize.autocomplete', that.fixPositionCapture);
             $(that.suggestionsContainer).remove();
-        }
+        },
     };
 
     // Create chainable jQuery plugin:
@@ -1010,4 +1042,4 @@
     if (!$.fn.autocomplete) {
         $.fn.autocomplete = $.fn.devbridgeAutocomplete;
     }
-}));
+});
