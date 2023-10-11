@@ -6,9 +6,6 @@
  *  For details, see the web site: https://github.com/devbridge/jQuery-Autocomplete
  */
 
-/*jslint  browser: true, white: true, single: true, this: true, multivar: true */
-/*global define, window, document, jQuery, exports, require */
-
 // Expose plugin as an AMD module if AMD loader is present:
 (function (factory) {
     'use strict';
@@ -673,7 +670,7 @@
                 beforeRender = options.beforeRender,
                 html = '',
                 category,
-                formatGroup = function (suggestion, index) {
+                formatGroup = function (suggestion) {
                     var currentCategory = suggestion.data[groupBy];
 
                     if (category === currentCategory) {

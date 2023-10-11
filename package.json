@@ -8,7 +8,8 @@
   "types": "./typings/jquery.autocomplete.d.ts",
   "license": "MIT",
   "scripts": {
-    "format": "prettier --write ./src/**"
+    "format": "prettier --write ./src/**",
+    "lint": "eslint ./src"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@types/jquery": "^3.5.22",
+    "eslint": "^8.51.0",
     "grunt": "^1.0.1",
     "grunt-contrib-uglify": "^1.0.1",
     "jquery-mockjax": "^2.6.0",
@@ -30,6 +32,20 @@
     "singleQuote": true,
     "trailingComma": "es5",
     "tabWidth": 4
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "globals": {
+      "define": "readonly",
+      "jQuery": "readonly",
+      "module": "readonly",
+      "require": "readonly"
+    }
   },
   "files": [
     "dist/",
