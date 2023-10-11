@@ -54,17 +54,5 @@ module.exports = function(grunt) {
     } else {
       console.log('No updates for: ' + filePath);
     }
-
-    // Update bower version:
-    filePath = 'bower.json';
-    src = grunt.file.readJSON(filePath);
-
-    if (src.version !== version){
-      src.version = version;
-      console.log('Updating: ' + filePath);
-      grunt.file.write(filePath, JSON.stringify(src, null, 4));
-    } else {
-      console.log('No updates for: ' + filePath);
-    }
   });
 };

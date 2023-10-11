@@ -944,7 +944,7 @@
                 $(that.suggestionsContainer).scrollTop(offsetTop);
             } else if (offsetTop > lowerBound) {
                 $(that.suggestionsContainer).scrollTop(
-                    offsetTop - that.options.maxHeight + heightDelta,
+                    offsetTop - that.options.maxHeight + heightDelta
                 );
             }
 
