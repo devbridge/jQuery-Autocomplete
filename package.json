@@ -7,6 +7,9 @@
   "main": "dist/jquery.autocomplete.js",
   "types": "./typings/jquery.autocomplete.d.ts",
   "license": "MIT",
+  "keywords": [
+    "jquery-plugin"
+  ],
   "scripts": {
     "format": "prettier --write ./src/**",
     "lint": "eslint ./src"
@@ -23,7 +26,6 @@
     "eslint": "^8.51.0",
     "grunt": "^1.0.1",
     "grunt-contrib-uglify": "^1.0.1",
-    "jquery-mockjax": "^2.6.0",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2"
   },
