@@ -19,23 +19,25 @@
         // Browser globals
         factory(jQuery);
     }
-})(function ($) {
+})(
+    /**
+     * @param {jQuery} $
+     */
+    function ($) {
     'use strict';
 
-    var utils = (function () {
-            return {
-                escapeRegExChars: function (value) {
-                    return value.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
-                },
-                createNode: function (containerClass) {
-                    var div = document.createElement('div');
-                    div.className = containerClass;
-                    div.style.position = 'absolute';
-                    div.style.display = 'none';
-                    return div;
-                },
-            };
-        })(),
+    var utils = {
+            escapeRegExChars: function (value) {
+                return value.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+            },
+            createNode: function (containerClass) {
+                var div = document.createElement('div');
+                div.className = containerClass;
+                div.style.position = 'absolute';
+                div.style.display = 'none';
+                return div;
+            },
+        },
         keys = {
             ESC: 27,
             TAB: 9,
