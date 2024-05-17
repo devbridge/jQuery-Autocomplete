@@ -543,6 +543,7 @@
                 that = this,
                 options = that.options,
                 serviceUrl = options.serviceUrl,
+                paramFunc = options.paramFunc || $.param,
                 params,
                 cacheKey,
                 ajaxSettings;
@@ -570,7 +571,7 @@
                 if ($.isFunction(serviceUrl)) {
                     serviceUrl = serviceUrl.call(that.element, q);
                 }
-                cacheKey = serviceUrl + '?' + $.param(params || {});
+                cacheKey = serviceUrl + '?' + paramFunc(params || {});
                 response = that.cachedResponse[cacheKey];
             }
 
