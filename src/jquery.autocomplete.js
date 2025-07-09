@@ -127,7 +127,6 @@
     }
 
     function _transformResult(response) {
-//         return typeof response === 'string' ? $.parseJSON(response) : response;
         return typeof response === 'string' ? JSON.parse(response) : response;
     }
 
@@ -527,7 +526,6 @@
                 return value;
             }
             parts = value.split(delimiter);
-//             return $.trim(parts[parts.length - 1]);
             return parts[parts.length - 1].trim();
         },
 
@@ -569,7 +567,6 @@
 
             params = options.ignoreParams ? null : options.params;
 
-//             if ($.isFunction(options.lookup)) {
             if (typeof options.lookup === 'function') {
                 options.lookup(q, function (data) {
                     that.suggestions = data.suggestions;
@@ -582,7 +579,6 @@
             if (that.isLocal) {
                 response = that.getSuggestionsLocal(q);
             } else {
-//                 if ($.isFunction(serviceUrl)) {
                 if (typeof serviceUrl === 'function') {
                     serviceUrl = serviceUrl.call(that.element, q);
                 }
@@ -643,7 +639,6 @@
             var that = this,
                 container = $(that.suggestionsContainer);
 
-//             if ($.isFunction(that.options.onHide) && that.visible) {
             if ((typeof that.options.onHide === 'function') && that.visible) {
                 that.options.onHide.call(that.element, container);
             }
@@ -715,7 +710,6 @@
             noSuggestionsContainer.detach();
             container.html(html);
 
-//             if ($.isFunction(beforeRender)) {
             if (typeof beforeRender === 'function') {
                 beforeRender.call(that.element, container, that.suggestions);
             }
@@ -753,7 +747,6 @@
             container.empty();
             container.append(noSuggestionsContainer);
 
-//             if ($.isFunction(beforeRender)) {
             if (typeof beforeRender === 'function') {
                 beforeRender.call(that.element, container, that.suggestions);
             }
@@ -814,7 +807,6 @@
             if (that.hintValue !== hintValue) {
                 that.hintValue = hintValue;
                 that.hint = suggestion;
-//                 if ($.isFunction(onHintCallback)) {
                 if (typeof onHintCallback === 'function') {
                     onHintCallback.call(that.element, hintValue);
                 }
@@ -833,7 +825,6 @@
         },
 
         validateOrientation: function (orientation, fallback) {
-//             orientation = $.trim(orientation || '').toLowerCase();
             orientation = (orientation || '').trim().toLowerCase();
 
             if ($.inArray(orientation, ['auto', 'bottom', 'top']) === -1) {
@@ -983,7 +974,6 @@
             that.suggestions = [];
             that.selection = suggestion;
 
-//             if ($.isFunction(onSelectCallback)) {
             if (typeof onSelectCallback === 'function') {
                 onSelectCallback.call(that.element, suggestion);
             }
