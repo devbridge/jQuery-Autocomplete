@@ -416,8 +416,10 @@ export class Autocomplete {
         if (typeof options.lookup === "function") {
             (options.lookup as LookupCallback)(q, (data) => {
                 this.suggestions = data.suggestions;
-                this.suggest();
+                // Fire onSearchComplete before suggest() so consumers see
+                // "search complete" before any auto-select fires onSelect.
                 options.onSearchComplete.call(this.element, q, data.suggestions);
+                this.suggest();
             });
             return;
         }
@@ -434,8 +436,8 @@ export class Autocomplete {
 
         if (response && Array.isArray(response.suggestions)) {
             this.suggestions = response.suggestions;
-            this.suggest();
             options.onSearchComplete.call(this.element, q, response.suggestions);
+            this.suggest();
         } else if (!this.isBadQuery(q)) {
             this.abortAjax();
 
@@ -451,8 +453,8 @@ export class Autocomplete {
                 .done((data) => {
                     this.currentRequest = null;
                     const result = options.transformResult(data, q);
-                    this.processResponse(result, q, cacheKey!);
                     options.onSearchComplete.call(this.element, q, result.suggestions);
+                    this.processResponse(result, q, cacheKey!);
                 })
                 .fail((jqXHR, textStatus, errorThrown) => {
                     options.onSearchError.call(this.element, q, jqXHR, textStatus, errorThrown);

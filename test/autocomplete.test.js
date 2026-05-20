@@ -708,6 +708,27 @@ describe("Autocomplete", () => {
     });
 });
 
+describe("Autocomplete event ordering", () => {
+    afterEach(() => {
+        $(".autocomplete-suggestions").remove();
+    });
+
+    it("fires onSearchComplete before onSelect when a single match auto-selects", () => {
+        const input = document.createElement("input");
+        const calls = [];
+        const autocomplete = new $.Autocomplete(input, {
+            lookup: [{ value: "Apple", data: 1 }],
+            onSearchComplete: () => calls.push("searchComplete"),
+            onSelect: () => calls.push("select"),
+        });
+
+        input.value = "Apple";
+        autocomplete.onValueChange();
+
+        expect(calls).toEqual(["searchComplete", "select"]);
+    });
+});
+
 describe("Autocomplete groupBy", () => {
     afterEach(() => {
         $(".autocomplete-suggestions").remove();
