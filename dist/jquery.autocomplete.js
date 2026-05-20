@@ -407,8 +407,9 @@
       const params = options.ignoreParams ? null : options.params;
       if (typeof options.lookup === "function") {
         options.lookup(q, (data) => {
-          this.suggestions = data.suggestions;
-          options.onSearchComplete.call(this.element, q, data.suggestions);
+          const suggestions = this.verifySuggestionsFormat(data.suggestions);
+          this.suggestions = suggestions;
+          options.onSearchComplete.call(this.element, q, suggestions);
           this.suggest();
         });
         return;
@@ -438,6 +439,7 @@
         this.currentRequest = $2.ajax(ajaxSettings).done((data) => {
           this.currentRequest = null;
           const result = options.transformResult(data, q);
+          result.suggestions = this.verifySuggestionsFormat(result.suggestions);
           options.onSearchComplete.call(this.element, q, result.suggestions);
           this.processResponse(result, q, cacheKey);
         }).fail((jqXHR, textStatus, errorThrown) => {
@@ -568,7 +570,9 @@
       if (suggestions.length && typeof suggestions[0] === "string") {
         return suggestions.map((value) => ({ value, data: null }));
       }
-      return suggestions;
+      return suggestions.map(
+        (s) => typeof s.value === "string" ? s : { ...s, value: String(s.value) }
+      );
     }
     validateOrientation(orientation, fallback) {
       const normalized = (orientation || "").trim().toLowerCase();
