@@ -10,9 +10,9 @@ This is a single-file jQuery plugin (Ajax Autocomplete). The entire implementati
 
 - `npm test` — Vitest run (headless, jsdom). Single-shot, exits nonzero on failure.
 - `npm run test:watch` — Vitest watch mode for local TDD.
-- `npm run lint` — ESLint (flat config in `eslint.config.mjs`) over `src/` and `test/`.
-- `npm run format` — Prettier rewrite of `src/` and `test/` (100-col, 4-space, ES5 trailing commas — config in `package.json`).
-- `npm run build` — `grunt build`: copies `src/jquery.autocomplete.js` to `dist/jquery.autocomplete.js` while substituting the `%version%` placeholder with `package.json` `version`, uglifies to `dist/jquery.autocomplete.min.js`, and syncs `devbridge-autocomplete.jquery.json` version. Run this before release/commit when source changes. *(Slated for replacement with a smaller Node script in the next modernization PR.)*
+- `npm run lint` — ESLint (flat config in `eslint.config.mjs`) over `src/`, `test/`, and `scripts/build.mjs`.
+- `npm run format` — Prettier rewrite of `src/`, `test/`, and `scripts/build.mjs` (100-col, 4-space, ES5 trailing commas — config in `package.json`). Demo files under `scripts/` (`countries.js`, `demo.js`) are intentionally excluded.
+- `npm run build` — runs `scripts/build.mjs` (Node ESM, no bundler): copies `src/jquery.autocomplete.js` to `dist/jquery.autocomplete.js` while substituting the `%version%` placeholder with `package.json` `version`, minifies to `dist/jquery.autocomplete.min.js` via terser with a fresh banner, and syncs `devbridge-autocomplete.jquery.json` version. Run this before release/commit when source changes.
 
 ## Tests
 

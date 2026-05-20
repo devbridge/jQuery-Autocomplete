@@ -11,9 +11,9 @@
     "jquery-plugin"
   ],
   "scripts": {
-    "build": "grunt build",
-    "format": "prettier --write ./src ./test",
-    "lint": "eslint ./src ./test",
+    "build": "node scripts/build.mjs",
+    "format": "prettier --write ./src ./test ./scripts/build.mjs",
+    "lint": "eslint ./src ./test ./scripts/build.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -27,12 +27,11 @@
   "devDependencies": {
     "@types/jquery": "^3.5.32",
     "eslint": "^9.30.1",
-    "grunt": "^1.6.1",
-    "grunt-contrib-uglify": "^5.2.2",
     "jquery": "^3.7.1",
     "jquery-mockjax": "^2.6.0",
     "jsdom": "^29.1.1",
     "prettier": "^3.6.2",
+    "terser": "^5.47.1",
     "typescript": "^5.8.3",
     "vitest": "^4.1.6"
   },
