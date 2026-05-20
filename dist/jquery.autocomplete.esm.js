@@ -400,8 +400,8 @@ var _Autocomplete = class _Autocomplete {
     if (typeof options.lookup === "function") {
       options.lookup(q, (data) => {
         this.suggestions = data.suggestions;
-        this.suggest();
         options.onSearchComplete.call(this.element, q, data.suggestions);
+        this.suggest();
       });
       return;
     }
@@ -416,8 +416,8 @@ var _Autocomplete = class _Autocomplete {
     }
     if (response && Array.isArray(response.suggestions)) {
       this.suggestions = response.suggestions;
-      this.suggest();
       options.onSearchComplete.call(this.element, q, response.suggestions);
+      this.suggest();
     } else if (!this.isBadQuery(q)) {
       this.abortAjax();
       const ajaxSettings = {
@@ -430,8 +430,8 @@ var _Autocomplete = class _Autocomplete {
       this.currentRequest = $.ajax(ajaxSettings).done((data) => {
         this.currentRequest = null;
         const result = options.transformResult(data, q);
-        this.processResponse(result, q, cacheKey);
         options.onSearchComplete.call(this.element, q, result.suggestions);
+        this.processResponse(result, q, cacheKey);
       }).fail((jqXHR, textStatus, errorThrown) => {
         options.onSearchError.call(this.element, q, jqXHR, textStatus, errorThrown);
       });
