@@ -29,9 +29,16 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          # Node 24 ships npm 11.x natively, which has Trusted Publisher
+          # OIDC publish support (landed in npm 11.5.1). Node 20 ships
+          # npm 10.x and would need a separate `npm install -g npm@latest`.
+          # The CI workflow stays on Node 20 to verify package.json
+          # engines.node minimum — but for releasing we want the modern CLI.
+          node-version: 24
           cache: npm
-          registry-url: https://registry.npmjs.org
+          # Deliberately no `registry-url:` — that flag makes setup-node
+          # write an .npmrc with `_authToken=${NODE_AUTH_TOKEN}` which
+          # overrides OIDC. We want npm to use the native OIDC auth flow.
 
       - run: npm ci
 
