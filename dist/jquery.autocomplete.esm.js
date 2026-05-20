@@ -116,57 +116,45 @@ var _Autocomplete = class _Autocomplete {
     this.setOptions(options);
   }
   initialize() {
-    const that = this;
-    const suggestionSelector = "." + that.classes.suggestion;
-    const selected = that.classes.selected;
-    const options = that.options;
-    that.element.setAttribute("autocomplete", "off");
-    that.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>').html(options.noSuggestionNotice).get(0);
-    that.suggestionsContainer = _Autocomplete.utils.createNode(options.containerClass);
-    const container = $(that.suggestionsContainer);
+    const self = this;
+    const suggestionSelector = `.${this.classes.suggestion}`;
+    const selected = this.classes.selected;
+    const options = this.options;
+    this.element.setAttribute("autocomplete", "off");
+    this.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>').html(options.noSuggestionNotice).get(0);
+    this.suggestionsContainer = _Autocomplete.utils.createNode(options.containerClass);
+    const container = $(this.suggestionsContainer);
     container.appendTo(options.appendTo || "body");
     if (options.width !== "auto") {
       container.css("width", options.width);
     }
     container.on("mouseover.autocomplete", suggestionSelector, function() {
-      that.activate($(this).data("index"));
-    });
-    container.on("mouseout.autocomplete", function() {
-      that.selectedIndex = -1;
-      container.children("." + selected).removeClass(selected);
+      self.activate($(this).data("index"));
     });
     container.on("click.autocomplete", suggestionSelector, function() {
-      that.select($(this).data("index"));
+      self.select($(this).data("index"));
     });
-    container.on("click.autocomplete", function() {
-      if (that.blurTimeoutId !== void 0) {
-        clearTimeout(that.blurTimeoutId);
+    container.on("mouseout.autocomplete", () => {
+      this.selectedIndex = -1;
+      container.children(`.${selected}`).removeClass(selected);
+    });
+    container.on("click.autocomplete", () => {
+      if (this.blurTimeoutId !== void 0) {
+        clearTimeout(this.blurTimeoutId);
       }
     });
-    that.fixPositionCapture = function() {
-      if (that.visible) {
-        that.fixPosition();
+    this.fixPositionCapture = () => {
+      if (this.visible) {
+        this.fixPosition();
       }
     };
-    $(window).on("resize.autocomplete", that.fixPositionCapture);
-    that.el.on("keydown.autocomplete", function(e) {
-      that.onKeyPress(e);
-    });
-    that.el.on("keyup.autocomplete", function(e) {
-      that.onKeyUp(e);
-    });
-    that.el.on("blur.autocomplete", function() {
-      that.onBlur();
-    });
-    that.el.on("focus.autocomplete", function() {
-      that.onFocus();
-    });
-    that.el.on("change.autocomplete", function(e) {
-      that.onKeyUp(e);
-    });
-    that.el.on("input.autocomplete", function(e) {
-      that.onKeyUp(e);
-    });
+    $(window).on("resize.autocomplete", this.fixPositionCapture);
+    this.el.on("keydown.autocomplete", (e) => this.onKeyPress(e));
+    this.el.on("keyup.autocomplete", (e) => this.onKeyUp(e));
+    this.el.on("blur.autocomplete", () => this.onBlur());
+    this.el.on("focus.autocomplete", () => this.onFocus());
+    this.el.on("change.autocomplete", (e) => this.onKeyUp(e));
+    this.el.on("input.autocomplete", (e) => this.onKeyUp(e));
   }
   onFocus() {
     if (this.disabled) {
@@ -178,14 +166,12 @@ var _Autocomplete = class _Autocomplete {
     }
   }
   onBlur() {
-    const that = this;
-    const options = that.options;
-    const value = that.el.val();
-    const query = that.getQuery(value);
-    that.blurTimeoutId = setTimeout(function() {
-      that.hide();
-      if (that.selection && that.currentValue !== query) {
-        options.onInvalidateSelection?.call(that.element);
+    const options = this.options;
+    const query = this.getQuery(this.el.val());
+    this.blurTimeoutId = setTimeout(() => {
+      this.hide();
+      if (this.selection && this.currentValue !== query) {
+        options.onInvalidateSelection?.call(this.element);
       }
     }, 200);
   }
@@ -196,16 +182,15 @@ var _Autocomplete = class _Autocomplete {
     }
   }
   setOptions(suppliedOptions) {
-    const that = this;
-    const options = $.extend({}, that.options, suppliedOptions);
-    that.isLocal = Array.isArray(options.lookup);
-    if (that.isLocal) {
-      options.lookup = that.verifySuggestionsFormat(options.lookup);
+    const options = { ...this.options, ...suppliedOptions };
+    this.isLocal = Array.isArray(options.lookup);
+    if (this.isLocal) {
+      options.lookup = this.verifySuggestionsFormat(options.lookup);
     }
-    options.orientation = that.validateOrientation(options.orientation, "bottom");
-    $(that.suggestionsContainer).css({
-      "max-height": options.maxHeight + "px",
-      width: options.width + "px",
+    options.orientation = this.validateOrientation(options.orientation, "bottom");
+    $(this.suggestionsContainer).css({
+      "max-height": `${options.maxHeight}px`,
+      width: `${options.width}px`,
       "z-index": options.zIndex
     });
     this.options = options;
@@ -230,16 +215,15 @@ var _Autocomplete = class _Autocomplete {
     this.disabled = false;
   }
   fixPosition() {
-    const that = this;
-    const $container = $(that.suggestionsContainer);
+    const $container = $(this.suggestionsContainer);
     const containerParent = $container.parent().get(0);
-    if (containerParent !== document.body && !that.options.forceFixPosition) {
+    if (containerParent !== document.body && !this.options.forceFixPosition) {
       return;
     }
-    let orientation = that.options.orientation;
+    let orientation = this.options.orientation;
     const containerHeight = $container.outerHeight() ?? 0;
-    const height = that.el.outerHeight() ?? 0;
-    const offset = that.el.offset() ?? { top: 0, left: 0 };
+    const height = this.el.outerHeight() ?? 0;
+    const offset = this.el.offset() ?? { top: 0, left: 0 };
     const styles = {
       top: offset.top,
       left: offset.left
@@ -251,80 +235,75 @@ var _Autocomplete = class _Autocomplete {
       const bottomOverflow = scrollTop + viewPortHeight - (offset.top + height + containerHeight);
       orientation = Math.max(topOverflow, bottomOverflow) === topOverflow ? "top" : "bottom";
     }
-    if (orientation === "top") {
-      styles.top += -containerHeight;
-    } else {
-      styles.top += height;
-    }
+    styles.top += orientation === "top" ? -containerHeight : height;
     if (containerParent !== document.body && containerParent !== void 0) {
       const opacity = $container.css("opacity");
-      if (!that.visible) {
+      if (!this.visible) {
         $container.css("opacity", 0).show();
       }
       const parentOffsetDiff = $container.offsetParent().offset() ?? { top: 0, left: 0 };
       styles.top -= parentOffsetDiff.top;
       styles.top += containerParent.scrollTop;
       styles.left -= parentOffsetDiff.left;
-      if (!that.visible) {
+      if (!this.visible) {
         $container.css("opacity", opacity).hide();
       }
     }
-    if (that.options.width === "auto") {
-      styles.width = (that.el.outerWidth() ?? 0) + "px";
+    if (this.options.width === "auto") {
+      styles.width = `${this.el.outerWidth() ?? 0}px`;
     }
     $container.css(styles);
   }
   isCursorAtEnd() {
     const valLength = this.el.val().length;
-    const selectionStart = this.element.selectionStart;
+    const { selectionStart } = this.element;
     return typeof selectionStart === "number" ? selectionStart === valLength : true;
   }
   onKeyPress(e) {
-    const that = this;
-    if (!that.disabled && !that.visible && e.which === keys.DOWN && that.currentValue) {
-      that.suggest();
+    if (!this.disabled && !this.visible && e.which === keys.DOWN && this.currentValue) {
+      this.suggest();
       return;
     }
-    if (that.disabled || !that.visible) {
+    if (this.disabled || !this.visible) {
       return;
     }
     switch (e.which) {
       case keys.ESC:
-        that.el.val(that.currentValue);
-        that.hide();
+        this.el.val(this.currentValue);
+        this.hide();
         break;
       case keys.RIGHT:
-        if (that.hint && that.options.onHint && that.isCursorAtEnd()) {
-          that.selectHint();
+        if (this.hint && this.options.onHint && this.isCursorAtEnd()) {
+          this.selectHint();
           break;
         }
         return;
       case keys.TAB:
-        if (that.hint && that.options.onHint) {
-          that.selectHint();
+        if (this.hint && this.options.onHint) {
+          this.selectHint();
           return;
         }
-        if (that.selectedIndex === -1) {
-          that.hide();
+        if (this.selectedIndex === -1) {
+          this.hide();
           return;
         }
-        that.select(that.selectedIndex);
-        if (that.options.tabDisabled === false) {
+        this.select(this.selectedIndex);
+        if (this.options.tabDisabled === false) {
           return;
         }
         break;
       case keys.RETURN:
-        if (that.selectedIndex === -1) {
-          that.hide();
+        if (this.selectedIndex === -1) {
+          this.hide();
           return;
         }
-        that.select(that.selectedIndex);
+        this.select(this.selectedIndex);
         break;
       case keys.UP:
-        that.moveUp();
+        this.moveUp();
         break;
       case keys.DOWN:
-        that.moveDown();
+        this.moveDown();
         break;
       default:
         return;
@@ -333,26 +312,24 @@ var _Autocomplete = class _Autocomplete {
     e.preventDefault();
   }
   onKeyUp(e) {
-    const that = this;
-    if (that.disabled) {
+    if (this.disabled) {
       return;
     }
-    switch (e.which) {
-      case keys.UP:
-      case keys.DOWN:
-        return;
+    if (e.which === keys.UP || e.which === keys.DOWN) {
+      return;
     }
-    if (that.onChangeTimeout) {
-      clearTimeout(that.onChangeTimeout);
+    if (this.onChangeTimeout) {
+      clearTimeout(this.onChangeTimeout);
     }
-    if (that.currentValue !== that.el.val()) {
-      that.findBestHint();
-      if (that.options.deferRequestBy > 0) {
-        that.onChangeTimeout = setTimeout(function() {
-          that.onValueChange();
-        }, that.options.deferRequestBy);
+    if (this.currentValue !== this.el.val()) {
+      this.findBestHint();
+      if (this.options.deferRequestBy > 0) {
+        this.onChangeTimeout = setTimeout(
+          () => this.onValueChange(),
+          this.options.deferRequestBy
+        );
       } else {
-        that.onValueChange();
+        this.onValueChange();
       }
     }
   }
@@ -361,35 +338,34 @@ var _Autocomplete = class _Autocomplete {
       this.ignoreValueChange = false;
       return;
     }
-    const that = this;
-    const options = that.options;
-    const value = that.el.val();
-    const query = that.getQuery(value);
-    if (that.selection && that.currentValue !== query) {
-      that.selection = null;
-      options.onInvalidateSelection?.call(that.element);
+    const options = this.options;
+    const value = this.el.val();
+    const query = this.getQuery(value);
+    if (this.selection && this.currentValue !== query) {
+      this.selection = null;
+      options.onInvalidateSelection?.call(this.element);
     }
-    if (that.onChangeTimeout) {
-      clearTimeout(that.onChangeTimeout);
+    if (this.onChangeTimeout) {
+      clearTimeout(this.onChangeTimeout);
     }
-    that.currentValue = value;
-    that.selectedIndex = -1;
-    if (options.triggerSelectOnValidInput && that.isExactMatch(query)) {
-      that.select(0);
+    this.currentValue = value;
+    this.selectedIndex = -1;
+    if (options.triggerSelectOnValidInput && this.isExactMatch(query)) {
+      this.select(0);
       return;
     }
     if (query.length < options.minChars) {
-      that.hide();
+      this.hide();
     } else {
-      that.getSuggestions(query);
+      this.getSuggestions(query);
     }
   }
   isExactMatch(query) {
-    const suggestions = this.suggestions;
+    const { suggestions } = this;
     return suggestions.length === 1 && suggestions[0].value.toLowerCase() === query.toLowerCase();
   }
   getQuery(value) {
-    const delimiter = this.options.delimiter;
+    const { delimiter } = this.options;
     if (!delimiter) {
       return value;
     }
@@ -401,95 +377,82 @@ var _Autocomplete = class _Autocomplete {
     const queryLowerCase = query.toLowerCase();
     const filter = options.lookupFilter;
     const limit = parseInt(options.lookupLimit, 10);
-    const data = {
-      suggestions: $.grep(options.lookup, function(suggestion) {
-        return filter(suggestion, query, queryLowerCase);
-      })
+    const lookup = options.lookup;
+    const matched = lookup.filter((suggestion) => filter(suggestion, query, queryLowerCase));
+    return {
+      suggestions: limit && matched.length > limit ? matched.slice(0, limit) : matched
     };
-    if (limit && data.suggestions.length > limit) {
-      data.suggestions = data.suggestions.slice(0, limit);
-    }
-    return data;
   }
   getSuggestions(q) {
-    const that = this;
-    const options = that.options;
+    const options = this.options;
     let serviceUrl = options.serviceUrl;
     let response;
     let cacheKey;
     options.params[options.paramName] = q;
-    if (options.onSearchStart.call(that.element, options.params) === false) {
+    if (options.onSearchStart.call(this.element, options.params) === false) {
       return;
     }
     const params = options.ignoreParams ? null : options.params;
     if (typeof options.lookup === "function") {
-      options.lookup(q, function(data) {
-        that.suggestions = data.suggestions;
-        that.suggest();
-        options.onSearchComplete.call(that.element, q, data.suggestions);
+      options.lookup(q, (data) => {
+        this.suggestions = data.suggestions;
+        this.suggest();
+        options.onSearchComplete.call(this.element, q, data.suggestions);
       });
       return;
     }
-    if (that.isLocal) {
-      response = that.getSuggestionsLocal(q);
+    if (this.isLocal) {
+      response = this.getSuggestionsLocal(q);
     } else {
       if (typeof serviceUrl === "function") {
-        serviceUrl = serviceUrl.call(that.element, q);
+        serviceUrl = serviceUrl.call(this.element, q);
       }
-      cacheKey = serviceUrl + "?" + $.param(params ?? {});
-      response = that.cachedResponse[cacheKey];
+      cacheKey = `${serviceUrl}?${$.param(params ?? {})}`;
+      response = this.cachedResponse[cacheKey];
     }
     if (response && Array.isArray(response.suggestions)) {
-      that.suggestions = response.suggestions;
-      that.suggest();
-      options.onSearchComplete.call(that.element, q, response.suggestions);
-    } else if (!that.isBadQuery(q)) {
-      that.abortAjax();
+      this.suggestions = response.suggestions;
+      this.suggest();
+      options.onSearchComplete.call(this.element, q, response.suggestions);
+    } else if (!this.isBadQuery(q)) {
+      this.abortAjax();
       const ajaxSettings = {
         url: serviceUrl,
         data: params ?? void 0,
         type: options.type,
-        dataType: options.dataType
+        dataType: options.dataType,
+        ...options.ajaxSettings
       };
-      $.extend(ajaxSettings, options.ajaxSettings);
-      that.currentRequest = $.ajax(ajaxSettings).done(function(data) {
-        that.currentRequest = null;
+      this.currentRequest = $.ajax(ajaxSettings).done((data) => {
+        this.currentRequest = null;
         const result = options.transformResult(data, q);
-        that.processResponse(result, q, cacheKey);
-        options.onSearchComplete.call(that.element, q, result.suggestions);
-      }).fail(function(jqXHR, textStatus, errorThrown) {
-        options.onSearchError.call(that.element, q, jqXHR, textStatus, errorThrown);
+        this.processResponse(result, q, cacheKey);
+        options.onSearchComplete.call(this.element, q, result.suggestions);
+      }).fail((jqXHR, textStatus, errorThrown) => {
+        options.onSearchError.call(this.element, q, jqXHR, textStatus, errorThrown);
       });
     } else {
-      options.onSearchComplete.call(that.element, q, []);
+      options.onSearchComplete.call(this.element, q, []);
     }
   }
   isBadQuery(q) {
     if (!this.options.preventBadQueries) {
       return false;
     }
-    const badQueries = this.badQueries;
-    let i = badQueries.length;
-    while (i--) {
-      if (q.indexOf(badQueries[i]) === 0) {
-        return true;
-      }
-    }
-    return false;
+    return this.badQueries.some((bad) => q.indexOf(bad) === 0);
   }
   hide() {
-    const that = this;
-    const container = $(that.suggestionsContainer);
-    if (that.options.onHide && that.visible) {
-      that.options.onHide.call(that.element, container);
+    const container = $(this.suggestionsContainer);
+    if (this.options.onHide && this.visible) {
+      this.options.onHide.call(this.element, container);
     }
-    that.visible = false;
-    that.selectedIndex = -1;
-    if (that.onChangeTimeout) {
-      clearTimeout(that.onChangeTimeout);
+    this.visible = false;
+    this.selectedIndex = -1;
+    if (this.onChangeTimeout) {
+      clearTimeout(this.onChangeTimeout);
     }
-    $(that.suggestionsContainer).hide();
-    that.onHint(null);
+    container.hide();
+    this.onHint(null);
   }
   suggest() {
     if (!this.suggestions.length) {
@@ -500,17 +463,17 @@ var _Autocomplete = class _Autocomplete {
       }
       return;
     }
-    const that = this;
-    const options = that.options;
-    const groupBy = options.groupBy;
-    const formatResultFn = options.formatResult;
-    const value = that.getQuery(that.currentValue);
-    const className = that.classes.suggestion;
-    const classSelected = that.classes.selected;
-    const container = $(that.suggestionsContainer);
-    const noSuggestionsContainer = $(that.noSuggestionsContainer);
-    const beforeRender = options.beforeRender;
-    let html = "";
+    const options = this.options;
+    const { groupBy, formatResult: formatResultFn, beforeRender } = options;
+    const value = this.getQuery(this.currentValue);
+    const className = this.classes.suggestion;
+    const classSelected = this.classes.selected;
+    const container = $(this.suggestionsContainer);
+    const noSuggestionsContainer = $(this.noSuggestionsContainer);
+    if (options.triggerSelectOnValidInput && this.isExactMatch(value)) {
+      this.select(0);
+      return;
+    }
     let category;
     const formatGroupFn = (suggestion) => {
       const currentCategory = suggestion.data[groupBy];
@@ -520,88 +483,67 @@ var _Autocomplete = class _Autocomplete {
       category = currentCategory;
       return options.formatGroup(suggestion, category);
     };
-    if (options.triggerSelectOnValidInput && that.isExactMatch(value)) {
-      that.select(0);
-      return;
-    }
-    $.each(that.suggestions, function(i, suggestion) {
-      if (groupBy) {
-        html += formatGroupFn(suggestion);
-      }
-      html += '<div class="' + className + '" data-index="' + i + '">' + formatResultFn(suggestion, value, i) + "</div>";
-    });
+    const html = this.suggestions.map((suggestion, i) => {
+      const group = groupBy ? formatGroupFn(suggestion) : "";
+      return `${group}<div class="${className}" data-index="${i}">${formatResultFn(suggestion, value, i)}</div>`;
+    }).join("");
     this.adjustContainerWidth();
     noSuggestionsContainer.detach();
     container.html(html);
-    beforeRender?.call(that.element, container, that.suggestions);
-    that.fixPosition();
+    beforeRender?.call(this.element, container, this.suggestions);
+    this.fixPosition();
     container.show();
     if (options.autoSelectFirst) {
-      that.selectedIndex = 0;
+      this.selectedIndex = 0;
       container.scrollTop(0);
-      container.children("." + className).first().addClass(classSelected);
+      container.children(`.${className}`).first().addClass(classSelected);
     }
-    that.visible = true;
-    that.findBestHint();
+    this.visible = true;
+    this.findBestHint();
   }
   noSuggestions() {
-    const that = this;
-    const beforeRender = that.options.beforeRender;
-    const container = $(that.suggestionsContainer);
-    const noSuggestionsContainer = $(that.noSuggestionsContainer);
+    const { beforeRender } = this.options;
+    const container = $(this.suggestionsContainer);
+    const noSuggestionsContainer = $(this.noSuggestionsContainer);
     this.adjustContainerWidth();
     noSuggestionsContainer.detach();
     container.empty();
     container.append(noSuggestionsContainer);
-    beforeRender?.call(that.element, container, that.suggestions);
-    that.fixPosition();
+    beforeRender?.call(this.element, container, this.suggestions);
+    this.fixPosition();
     container.show();
-    that.visible = true;
+    this.visible = true;
   }
   adjustContainerWidth() {
-    const options = this.options;
+    const { width } = this.options;
     const container = $(this.suggestionsContainer);
-    if (options.width === "auto") {
-      const width = this.el.outerWidth() ?? 0;
-      container.css("width", width > 0 ? width : 300);
-    } else if (options.width === "flex") {
+    if (width === "auto") {
+      const w = this.el.outerWidth() ?? 0;
+      container.css("width", w > 0 ? w : 300);
+    } else if (width === "flex") {
       container.css("width", "");
     }
   }
   findBestHint() {
-    const that = this;
-    const value = that.el.val().toLowerCase();
-    let bestMatch = null;
+    const value = this.el.val().toLowerCase();
     if (!value) {
       return;
     }
-    $.each(that.suggestions, function(_i, suggestion) {
-      const foundMatch = suggestion.value.toLowerCase().indexOf(value) === 0;
-      if (foundMatch) {
-        bestMatch = suggestion;
-      }
-      return !foundMatch;
-    });
-    that.onHint(bestMatch);
+    const bestMatch = this.suggestions.find((s) => s.value.toLowerCase().indexOf(value) === 0) ?? null;
+    this.onHint(bestMatch);
   }
   onHint(suggestion) {
-    const that = this;
-    const onHintCallback = that.options.onHint;
-    let hintValue = "";
-    if (suggestion) {
-      hintValue = that.currentValue + suggestion.value.substr(that.currentValue.length);
-    }
-    if (that.hintValue !== hintValue) {
-      that.hintValue = hintValue;
-      that.hint = suggestion;
-      onHintCallback?.call(that.element, hintValue);
+    const { onHint: onHintCallback } = this.options;
+    const hintValue = suggestion ? this.currentValue + suggestion.value.substr(this.currentValue.length) : "";
+    if (this.hintValue !== hintValue) {
+      this.hintValue = hintValue;
+      this.hint = suggestion;
+      onHintCallback?.call(this.element, hintValue);
     }
   }
   verifySuggestionsFormat(suggestions) {
     if (suggestions.length && typeof suggestions[0] === "string") {
-      return $.map(suggestions, function(value) {
-        return { value, data: null };
-      });
+      return suggestions.map((value) => ({ value, data: null }));
     }
     return suggestions;
   }
@@ -613,57 +555,53 @@ var _Autocomplete = class _Autocomplete {
     return fallback;
   }
   processResponse(result, originalQuery, cacheKey) {
-    const that = this;
-    const options = that.options;
-    result.suggestions = that.verifySuggestionsFormat(result.suggestions);
+    const options = this.options;
+    result.suggestions = this.verifySuggestionsFormat(result.suggestions);
     if (!options.noCache) {
-      that.cachedResponse[cacheKey] = result;
+      this.cachedResponse[cacheKey] = result;
       if (options.preventBadQueries && !result.suggestions.length) {
-        that.badQueries.push(originalQuery);
+        this.badQueries.push(originalQuery);
       }
     }
-    if (originalQuery !== that.getQuery(that.currentValue)) {
+    if (originalQuery !== this.getQuery(this.currentValue)) {
       return;
     }
-    that.suggestions = result.suggestions;
-    that.suggest();
+    this.suggestions = result.suggestions;
+    this.suggest();
   }
   activate(index) {
-    const that = this;
-    const selected = that.classes.selected;
-    const container = $(that.suggestionsContainer);
-    const children = container.find("." + that.classes.suggestion);
-    container.find("." + selected).removeClass(selected);
-    that.selectedIndex = index;
-    if (that.selectedIndex !== -1 && children.length > that.selectedIndex) {
-      const activeItem = children.get(that.selectedIndex);
+    const selected = this.classes.selected;
+    const container = $(this.suggestionsContainer);
+    const children = container.find(`.${this.classes.suggestion}`);
+    container.find(`.${selected}`).removeClass(selected);
+    this.selectedIndex = index;
+    if (this.selectedIndex !== -1 && children.length > this.selectedIndex) {
+      const activeItem = children.get(this.selectedIndex);
       $(activeItem).addClass(selected);
       return activeItem;
     }
     return null;
   }
   selectHint() {
-    const i = $.inArray(this.hint, this.suggestions);
-    this.select(i);
+    this.select(this.suggestions.indexOf(this.hint));
   }
   select(i) {
     this.hide();
     this.onSelect(i);
   }
   moveUp() {
-    const that = this;
-    if (that.selectedIndex === -1) {
+    if (this.selectedIndex === -1) {
       return;
     }
-    if (that.selectedIndex === 0) {
-      $(that.suggestionsContainer).children("." + that.classes.suggestion).first().removeClass(that.classes.selected);
-      that.selectedIndex = -1;
-      that.ignoreValueChange = false;
-      that.el.val(that.currentValue);
-      that.findBestHint();
+    if (this.selectedIndex === 0) {
+      $(this.suggestionsContainer).children(`.${this.classes.suggestion}`).first().removeClass(this.classes.selected);
+      this.selectedIndex = -1;
+      this.ignoreValueChange = false;
+      this.el.val(this.currentValue);
+      this.findBestHint();
       return;
     }
-    that.adjustScroll(that.selectedIndex - 1);
+    this.adjustScroll(this.selectedIndex - 1);
   }
   moveDown() {
     if (this.selectedIndex === this.suggestions.length - 1) {
@@ -672,41 +610,40 @@ var _Autocomplete = class _Autocomplete {
     this.adjustScroll(this.selectedIndex + 1);
   }
   adjustScroll(index) {
-    const that = this;
-    const activeItem = that.activate(index);
+    const activeItem = this.activate(index);
     if (!activeItem) {
       return;
     }
     const heightDelta = $(activeItem).outerHeight() ?? 0;
     const offsetTop = activeItem.offsetTop;
-    const upperBound = $(that.suggestionsContainer).scrollTop() ?? 0;
-    const lowerBound = upperBound + that.options.maxHeight - heightDelta;
+    const container = $(this.suggestionsContainer);
+    const upperBound = container.scrollTop() ?? 0;
+    const lowerBound = upperBound + this.options.maxHeight - heightDelta;
     if (offsetTop < upperBound) {
-      $(that.suggestionsContainer).scrollTop(offsetTop);
+      container.scrollTop(offsetTop);
     } else if (offsetTop > lowerBound) {
-      $(that.suggestionsContainer).scrollTop(offsetTop - that.options.maxHeight + heightDelta);
+      container.scrollTop(offsetTop - this.options.maxHeight + heightDelta);
     }
-    if (!that.options.preserveInput) {
-      that.ignoreValueChange = true;
-      that.el.val(that.getValue(that.suggestions[index].value));
+    if (!this.options.preserveInput) {
+      this.ignoreValueChange = true;
+      this.el.val(this.getValue(this.suggestions[index].value));
     }
-    that.onHint(null);
+    this.onHint(null);
   }
   onSelect(index) {
-    const that = this;
-    const onSelectCallback = that.options.onSelect;
-    const suggestion = that.suggestions[index];
-    that.currentValue = that.getValue(suggestion.value);
-    if (that.currentValue !== that.el.val() && !that.options.preserveInput) {
-      that.el.val(that.currentValue);
+    const onSelectCallback = this.options.onSelect;
+    const suggestion = this.suggestions[index];
+    this.currentValue = this.getValue(suggestion.value);
+    if (this.currentValue !== this.el.val() && !this.options.preserveInput) {
+      this.el.val(this.currentValue);
     }
-    that.onHint(null);
-    that.suggestions = [];
-    that.selection = suggestion;
-    onSelectCallback?.call(that.element, suggestion);
+    this.onHint(null);
+    this.suggestions = [];
+    this.selection = suggestion;
+    onSelectCallback?.call(this.element, suggestion);
   }
   getValue(value) {
-    const delimiter = this.options.delimiter;
+    const { delimiter } = this.options;
     if (!delimiter) {
       return value;
     }
