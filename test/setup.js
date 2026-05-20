@@ -15,7 +15,8 @@ mockjaxFactory(jQuery, window);
 // Silence mockjax's per-request console.log spam.
 jQuery.mockjaxSettings.logging = 0;
 
-// Load the plugin under test. The source is a UMD wrapper that picks up the
-// global jQuery we just attached and registers $.Autocomplete and
-// $.fn.autocomplete / $.fn.devbridgeAutocomplete.
-await import("../src/jquery.autocomplete.js");
+// Load the plugin under test. Vitest's built-in esbuild transform handles the
+// TS source. We import the plugin glue directly and pass it the same jQuery
+// instance we attached above so all symbols register on a single jQuery.
+const { installAutocomplete } = await import("../src/jquery-plugin.ts");
+installAutocomplete(jQuery);

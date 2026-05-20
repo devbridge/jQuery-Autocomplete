@@ -7,9 +7,12 @@ export default defineConfig({
         include: ["test/**/*.test.js"],
         globals: false,
         restoreMocks: true,
-        // The `forks` pool (Vitest 4 default on Windows) starves the worker
-        // ready handshake when the setup file does heavy synchronous work
-        // (jQuery + mockjax + UMD plugin load). `threads` keeps it in-process.
-        pool: "threads",
+        // `threads` pool starved the worker handshake once we moved to TS
+        // source (transform pushed startup past the 60s timeout). `forks`
+        // with isolate:false runs all specs in one process — same shared-
+        // module-state model the original Jasmine runner used, so the
+        // describe blocks that mutate global jQuery state stay consistent.
+        pool: "forks",
+        isolate: false,
     },
 });

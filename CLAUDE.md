@@ -4,48 +4,75 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project shape
 
-This is a single-file jQuery plugin (Ajax Autocomplete). The entire implementation lives in `src/jquery.autocomplete.js` (~1k lines). Everything else — `dist/`, `typings/`, `spec/`, `scripts/`, `index.htm` — is produced from, tests, types, or demos that one source file. Edits almost always belong in `src/jquery.autocomplete.js`; never edit `dist/*` directly (the build overwrites it).
+TypeScript source under `src/` (~700 lines split into ~8 modules) compiles to a UMD bundle + an ESM bundle + a minified UMD + bundled `.d.ts` types in `dist/`. Edits belong in `src/*.ts`; never touch `dist/*` (the build overwrites it). The plugin is jQuery-only — `jQuery >=3.0` is a peer dependency.
+
+`src/` layout:
+
+| File | Role |
+|---|---|
+| `src/index.ts` | ESM entry point. Imports jquery, calls `installAutocomplete(jQuery)`, re-exports `Autocomplete` and types. |
+| `src/umd-body.ts` | UMD entry point. References `$` as a free variable that the hand-written UMD wrapper (in `scripts/build.mjs`) provides as a factory parameter. |
+| `src/jquery-plugin.ts` | `installAutocomplete($)` — registers `$.Autocomplete`, `$.fn.devbridgeAutocomplete`, and conditionally `$.fn.autocomplete` (jQuery UI guard). |
+| `src/Autocomplete.ts` | The plugin class. |
+| `src/defaults.ts` | The `Autocomplete.defaults` options object. |
+| `src/format.ts` | Default `formatResult`, `formatGroup`, `lookupFilter`, `transformResult`. |
+| `src/utils.ts` | `escapeRegExChars`, `createNode`, `keys` constants. |
+| `src/jquery-ref.ts` | `export let $: JQueryStatic` set at install time via `setJQuery`. Live ES-module binding — every importer sees the value once `installAutocomplete` has run. |
+| `src/types.ts` | Public types (`AutocompleteOptions`, `Suggestion`, callback signatures). |
 
 ## Commands
 
 - `npm test` — Vitest run (headless, jsdom). Single-shot, exits nonzero on failure.
-- `npm run test:watch` — Vitest watch mode for local TDD.
-- `npm run lint` — ESLint (flat config in `eslint.config.mjs`) over `src/`, `test/`, and `scripts/build.mjs`.
-- `npm run format` — Prettier rewrite of `src/`, `test/`, and `scripts/build.mjs` (100-col, 4-space, ES5 trailing commas — config in `package.json`). Demo files under `scripts/` (`countries.js`, `demo.js`) are intentionally excluded.
-- `npm run format:check` — Prettier check-only, same scope. Used by CI; fails if anything would be rewritten.
-- `npm run build` — runs `scripts/build.mjs` (Node ESM, no bundler): copies `src/jquery.autocomplete.js` to `dist/jquery.autocomplete.js` while substituting the `%version%` placeholder with `package.json` `version`, minifies to `dist/jquery.autocomplete.min.js` via terser with a fresh banner, and syncs `devbridge-autocomplete.jquery.json` version. Run this before release/commit when source changes.
+- `npm run test:watch` — Vitest watch mode.
+- `npm run lint` — ESLint over `test/` and `scripts/build.mjs`. **TS source is not linted by ESLint** — `tsc --noEmit` covers it via the `typecheck` script.
+- `npm run typecheck` — `tsc --noEmit`. Strict mode; runs on `src/`.
+- `npm run format` — Prettier rewrite of `src/`, `test/`, and `scripts/build.mjs` (100-col, 4-space, ES5 trailing commas). Demo files under `scripts/` (`countries.js`, `demo.js`) are intentionally excluded.
+- `npm run format:check` — Prettier check-only, same scope. CI gate.
+- `npm run build` — runs `scripts/build.mjs` (Node ESM): esbuild emits `dist/jquery.autocomplete.esm.js` (ESM) and `dist/jquery.autocomplete.js` / `.min.js` (UMD, hand-wrapped); `tsc --declaration` emits the `.d.ts` files; the version field in `devbridge-autocomplete.jquery.json` is synced from `package.json`.
 
 ## CI
 
-`.github/workflows/ci.yml` runs on every push to `master` and every pull request: `npm ci`, then `lint`, `format:check`, `test`, `build` — in that order, all required. Node 20 LTS, Ubuntu, single job. The `engines.node` field in `package.json` mirrors the runner version.
+`.github/workflows/ci.yml` runs on every push to `master` and every pull request: `npm ci`, then `lint`, `format:check`, `typecheck`, `test`, `build` — in that order, all required. Node 20 LTS, Ubuntu, single job. The `engines.node` field in `package.json` mirrors the runner version.
 
 ## Tests
 
-Vitest + jsdom, headless. Specs live in `test/autocomplete.test.js`. `test/setup.js` attaches a single jQuery instance to the jsdom `window` and `globalThis`, registers `jquery-mockjax` against it, silences mockjax's per-request console logging, then loads `src/jquery.autocomplete.js`. The plugin's UMD wrapper picks up `globalThis.jQuery` and registers `$.Autocomplete` plus `$.fn.autocomplete`/`$.fn.devbridgeAutocomplete` against that same instance.
+Vitest + jsdom, headless. Specs live in `test/autocomplete.test.js`. `test/setup.js` attaches a single jQuery instance to `globalThis` / the jsdom `window`, registers `jquery-mockjax`, silences mockjax's per-request console logging, then calls `installAutocomplete(jQuery)` directly (bypassing the UMD wrapper). All test code shares one jQuery instance, one DOM, one set of plugin registrations.
 
-The Vitest pool is pinned to `threads` in `vitest.config.js` — the default `forks` pool times out the worker handshake on Windows when the setup file does heavy synchronous work (jQuery + mockjax + UMD plugin load). Don't switch pools without re-verifying.
+`vitest.config.js` pins `pool: "forks"` with `isolate: false`. **Don't change either.** `threads` pool starved the worker handshake once we moved to TS source (esbuild transform overhead pushed startup past the 60s timeout). `isolate: false` keeps every spec in one process — same shared-module-state model the original Jasmine runner used, so describe blocks that mutate global jQuery state stay consistent.
 
-To run a single test, use `npx vitest run -t "test name substring"` or temporarily change `describe`/`it` to `describe.only`/`it.only`.
+To run a single test: `npx vitest run -t "test name substring"` or temporarily `describe.only` / `it.only`.
 
-The demo page `index.htm` is the manual test surface (Ajax lookup, local lookup with grouping, custom container, dynamic width). It loads jQuery + mockjax from CDN; just open in a browser.
+The demo page `index.htm` is the manual test surface (Ajax lookup, local lookup with grouping, custom container, dynamic width). It loads jQuery + mockjax from CDN; open in a browser.
+
+## Build internals
+
+`scripts/build.mjs` does three things in order:
+
+1. **ESM bundle** (`dist/jquery.autocomplete.esm.js`) — esbuild bundles `src/index.ts` with `external: ['jquery']`. Consumers `import 'devbridge-autocomplete'` and the plugin self-registers.
+2. **UMD bundles** (`dist/jquery.autocomplete.js` and `.min.js`) — esbuild bundles `src/umd-body.ts` as IIFE (no `external`); the result is wrapped by a hand-written UMD detection shim (AMD / CommonJS / browser-global), with `$` flowing in as the factory parameter. The shim format intentionally matches the JS source that shipped before 2.0.0 so consumers don't see a contract change.
+3. **Types** (`dist/*.d.ts`) — `tsc --declaration --emitDeclarationOnly`. One `.d.ts` per source file; `package.json` `types` points at `dist/index.d.ts`.
+
+The minified UMD is ~13 KB; the unminified is ~26 KB.
 
 ## Release/version flow
 
 1. Bump `version` in `package.json`.
-2. `npm run build` — this propagates the new version into `dist/jquery.autocomplete.js` (via `%version%` placeholder) and `devbridge-autocomplete.jquery.json`. The placeholder only exists in `src/`; do not hand-edit version strings in `dist/`.
+2. `npm run build` — propagates the new version into the banner of each `dist/` JS file (via the build script) and syncs `devbridge-autocomplete.jquery.json`.
 
-## Architecture notes that aren't obvious from a single file
+## Architecture notes that aren't obvious from a glance
 
-- **UMD wrapper** at the top of `src/jquery.autocomplete.js` registers under AMD, CommonJS, or browser global — keep all three branches working when touching the wrapper.
-- **Dual plugin name**: registers `$.fn.devbridgeAutocomplete` unconditionally, and aliases `$.fn.autocomplete` only if it is not already taken (jQuery UI defines one). Tests and the README rely on this fallback behavior — don't remove the guard.
-- **Defaults live on `Autocomplete.defaults`** and are merged per-instance via `$.extend(true, {}, defaults, options)`. New options must be added to the defaults object so deep-merge picks them up, and mirrored in `typings/jquery.autocomplete.d.ts` and the option tables in `readme.md`.
-- **Response normalization**: server responses pass through `transformResult` (default JSON.parse for `dataType: 'text'`). Local `lookup` may be an array or a `function(query, done)` callback; both paths converge on the same `{ value, data }` suggestion shape used everywhere downstream (`formatResult`, `onSelect`, grouping).
-- **Caching + bad-query guard**: `cachedResponse` keys by query string, and `preventBadQueries` records prefixes that returned no results so future queries with the same prefix short-circuit. `clearCache` / `clear` reset these — when adding new request paths, decide whether they should populate or honor these caches.
+- **Dual plugin name**: `$.fn.devbridgeAutocomplete` is always registered. `$.fn.autocomplete` is only aliased to it if not already taken (jQuery UI defines its own). Tests and the README rely on this fallback — don't remove the guard.
+- **Live `$` binding**: `src/jquery-ref.ts` exports a `let $` that `installAutocomplete` mutates at install time via `setJQuery`. Every other module (Autocomplete, format, etc.) imports `{ $ }` and sees the live value. This avoids passing `$` through every constructor / function signature.
+- **Defaults**: `Autocomplete.defaults` (in `src/defaults.ts`) is merged per-instance via `$.extend(true, {}, defaults, options)`. New options must be added there AND in the `AutocompleteOptions` interface in `src/types.ts`; the option tables in `readme.md` also need updating.
+- **Defaults uses `() => {}` not `$.noop`** as the no-op callback. That avoids load-time `$` access (the file is imported before `installAutocomplete` runs). Specs don't assert on identity, only behavior.
+- **Response normalization**: server responses pass through `transformResult` (default JSON.parse for `dataType: 'text'`). Local `lookup` may be an array or a `function(query, done)` callback; both paths converge on the same `{ value, data }` suggestion shape used everywhere downstream.
+- **Caching + bad-query guard**: `cachedResponse` keys by query string; `preventBadQueries` records prefixes that returned no results so future queries with the same prefix short-circuit. `clearCache` / `clear` reset these — when adding new request paths, decide whether they should populate or honor these caches.
 
 ## Conventions
 
-- Source style is the existing one: ES5 inside the IIFE (no `let`/`const`/arrow funcs in `src/jquery.autocomplete.js`), `"use strict"`, `var that = this` pattern. ESLint config targets `ecmaVersion: 2022` but the file is intentionally written to run in old browsers — match the existing style rather than modernizing.
-- Prettier owns formatting; run `npm run format` before committing source changes.
+- TypeScript strict mode is on. Don't introduce `any` in public types. Internal `as unknown as X` casts are OK at jQuery boundaries where typings are imprecise.
+- The IE-only `document.selection` branch in `isCursorAtEnd` is kept for behavioral parity with the pre-2.0 source. Modern browsers fall through it.
+- Prettier owns formatting. Run `npm run format` before committing source changes.
 
 ## Commit messages
 
@@ -56,4 +83,4 @@ Use [Conventional Commits](https://www.conventionalcommits.org/): `<type>(<optio
 - Breaking changes: append `!` after the type/scope (`feat!: ...`) and/or add a `BREAKING CHANGE:` footer.
 - Scope, when useful, names the area touched: `build`, `test`, `deps`, `autocomplete`.
 
-Examples: `test: port specs to vitest + jsdom`, `build: replace grunt with node script`, `chore(deps): bump prettier to 3.6.2`, `feat!: drop ie11 support`.
+Examples: `test: port specs to vitest + jsdom`, `build: replace grunt with node script`, `chore(deps): bump prettier to 3.6.2`, `refactor!: rewrite source in typescript`.
