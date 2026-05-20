@@ -415,10 +415,11 @@ export class Autocomplete {
 
         if (typeof options.lookup === "function") {
             (options.lookup as LookupCallback)(q, (data) => {
-                this.suggestions = data.suggestions;
+                const suggestions = this.verifySuggestionsFormat(data.suggestions);
+                this.suggestions = suggestions;
                 // Fire onSearchComplete before suggest() so consumers see
                 // "search complete" before any auto-select fires onSelect.
-                options.onSearchComplete.call(this.element, q, data.suggestions);
+                options.onSearchComplete.call(this.element, q, suggestions);
                 this.suggest();
             });
             return;
@@ -453,6 +454,7 @@ export class Autocomplete {
                 .done((data) => {
                     this.currentRequest = null;
                     const result = options.transformResult(data, q);
+                    result.suggestions = this.verifySuggestionsFormat(result.suggestions);
                     options.onSearchComplete.call(this.element, q, result.suggestions);
                     this.processResponse(result, q, cacheKey!);
                 })
@@ -622,7 +624,11 @@ export class Autocomplete {
         if (suggestions.length && typeof suggestions[0] === "string") {
             return (suggestions as string[]).map((value) => ({ value, data: null }));
         }
-        return suggestions as Suggestion[];
+        // Coerce non-string `value` so downstream string methods (toLowerCase,
+        // replace, substr, indexOf) don't throw on numeric or other types.
+        return (suggestions as Suggestion[]).map((s) =>
+            typeof s.value === "string" ? s : { ...s, value: String(s.value) }
+        );
     }
 
     validateOrientation(orientation: string | undefined, fallback: Orientation): Orientation {

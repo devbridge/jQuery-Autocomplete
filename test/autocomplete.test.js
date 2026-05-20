@@ -708,6 +708,47 @@ describe("Autocomplete", () => {
     });
 });
 
+describe("Autocomplete non-string suggestion values", () => {
+    afterEach(() => {
+        $(".autocomplete-suggestions").remove();
+    });
+
+    it("coerces numeric value from a local lookup so render does not throw", () => {
+        const input = document.createElement("input");
+        const autocomplete = new $.Autocomplete(input, {
+            lookup: [{ value: 12345, data: "n" }],
+            triggerSelectOnValidInput: false,
+        });
+
+        input.value = "1";
+        expect(() => autocomplete.onValueChange()).not.toThrow();
+
+        expect(typeof autocomplete.suggestions[0].value).toBe("string");
+        expect(autocomplete.suggestions[0].value).toBe("12345");
+    });
+
+    it("coerces numeric value from a function lookup callback", () => {
+        const input = document.createElement("input");
+        let completedValueType;
+        let selectedValueType;
+        const autocomplete = new $.Autocomplete(input, {
+            lookup: (_q, done) => done({ suggestions: [{ value: 42, data: "n" }] }),
+            onSearchComplete: (_q, suggestions) => {
+                completedValueType = typeof suggestions[0].value;
+            },
+            onSelect: (suggestion) => {
+                selectedValueType = typeof suggestion.value;
+            },
+        });
+
+        input.value = "42";
+        autocomplete.onValueChange();
+
+        expect(completedValueType).toBe("string");
+        expect(selectedValueType).toBe("string");
+    });
+});
+
 describe("Autocomplete event ordering", () => {
     afterEach(() => {
         $(".autocomplete-suggestions").remove();
