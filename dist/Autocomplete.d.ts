@@ -20,6 +20,8 @@ export declare class Autocomplete {
     isLocal: boolean;
     suggestionsContainer: HTMLDivElement;
     noSuggestionsContainer: HTMLElement;
+    $container: JQuery;
+    $noSuggestionsContainer: JQuery;
     options: ResolvedOptions;
     classes: Classes;
     hint: Suggestion | null;

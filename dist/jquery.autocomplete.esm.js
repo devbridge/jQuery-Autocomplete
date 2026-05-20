@@ -121,13 +121,17 @@ var _Autocomplete = class _Autocomplete {
     const selected = this.classes.selected;
     const options = this.options;
     this.element.setAttribute("autocomplete", "off");
-    this.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>').html(options.noSuggestionNotice).get(0);
+    this.$noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>').html(
+      options.noSuggestionNotice
+    );
+    this.noSuggestionsContainer = this.$noSuggestionsContainer.get(0);
     this.suggestionsContainer = _Autocomplete.utils.createNode(options.containerClass);
-    const container = $(this.suggestionsContainer);
-    container.appendTo(options.appendTo || "body");
+    this.$container = $(this.suggestionsContainer);
+    this.$container.appendTo(options.appendTo || "body");
     if (options.width !== "auto") {
-      container.css("width", options.width);
+      this.$container.css("width", options.width);
     }
+    const container = this.$container;
     container.on("mouseover.autocomplete", suggestionSelector, function() {
       self.activate($(this).data("index"));
     });
@@ -188,7 +192,7 @@ var _Autocomplete = class _Autocomplete {
       options.lookup = this.verifySuggestionsFormat(options.lookup);
     }
     options.orientation = this.validateOrientation(options.orientation, "bottom");
-    $(this.suggestionsContainer).css({
+    this.$container.css({
       "max-height": `${options.maxHeight}px`,
       width: `${options.width}px`,
       "z-index": options.zIndex
@@ -215,7 +219,7 @@ var _Autocomplete = class _Autocomplete {
     this.disabled = false;
   }
   fixPosition() {
-    const $container = $(this.suggestionsContainer);
+    const $container = this.$container;
     const containerParent = $container.parent().get(0);
     if (containerParent !== document.body && !this.options.forceFixPosition) {
       return;
@@ -442,16 +446,15 @@ var _Autocomplete = class _Autocomplete {
     return this.badQueries.some((bad) => q.indexOf(bad) === 0);
   }
   hide() {
-    const container = $(this.suggestionsContainer);
     if (this.options.onHide && this.visible) {
-      this.options.onHide.call(this.element, container);
+      this.options.onHide.call(this.element, this.$container);
     }
     this.visible = false;
     this.selectedIndex = -1;
     if (this.onChangeTimeout) {
       clearTimeout(this.onChangeTimeout);
     }
-    container.hide();
+    this.$container.hide();
     this.onHint(null);
   }
   suggest() {
@@ -468,8 +471,7 @@ var _Autocomplete = class _Autocomplete {
     const value = this.getQuery(this.currentValue);
     const className = this.classes.suggestion;
     const classSelected = this.classes.selected;
-    const container = $(this.suggestionsContainer);
-    const noSuggestionsContainer = $(this.noSuggestionsContainer);
+    const container = this.$container;
     if (options.triggerSelectOnValidInput && this.isExactMatch(value)) {
       this.select(0);
       return;
@@ -488,7 +490,7 @@ var _Autocomplete = class _Autocomplete {
       return `${group}<div class="${className}" data-index="${i}">${formatResultFn(suggestion, value, i)}</div>`;
     }).join("");
     this.adjustContainerWidth();
-    noSuggestionsContainer.detach();
+    this.$noSuggestionsContainer.detach();
     container.html(html);
     beforeRender?.call(this.element, container, this.suggestions);
     this.fixPosition();
@@ -503,12 +505,10 @@ var _Autocomplete = class _Autocomplete {
   }
   noSuggestions() {
     const { beforeRender } = this.options;
-    const container = $(this.suggestionsContainer);
-    const noSuggestionsContainer = $(this.noSuggestionsContainer);
+    const container = this.$container;
     this.adjustContainerWidth();
-    noSuggestionsContainer.detach();
-    container.empty();
-    container.append(noSuggestionsContainer);
+    this.$noSuggestionsContainer.detach();
+    container.empty().append(this.$noSuggestionsContainer);
     beforeRender?.call(this.element, container, this.suggestions);
     this.fixPosition();
     container.show();
@@ -516,12 +516,11 @@ var _Autocomplete = class _Autocomplete {
   }
   adjustContainerWidth() {
     const { width } = this.options;
-    const container = $(this.suggestionsContainer);
     if (width === "auto") {
       const w = this.el.outerWidth() ?? 0;
-      container.css("width", w > 0 ? w : 300);
+      this.$container.css("width", w > 0 ? w : 300);
     } else if (width === "flex") {
-      container.css("width", "");
+      this.$container.css("width", "");
     }
   }
   findBestHint() {
@@ -571,7 +570,7 @@ var _Autocomplete = class _Autocomplete {
   }
   activate(index) {
     const selected = this.classes.selected;
-    const container = $(this.suggestionsContainer);
+    const container = this.$container;
     const children = container.find(`.${this.classes.suggestion}`);
     container.find(`.${selected}`).removeClass(selected);
     this.selectedIndex = index;
@@ -594,7 +593,7 @@ var _Autocomplete = class _Autocomplete {
       return;
     }
     if (this.selectedIndex === 0) {
-      $(this.suggestionsContainer).children(`.${this.classes.suggestion}`).first().removeClass(this.classes.selected);
+      this.$container.children(`.${this.classes.suggestion}`).first().removeClass(this.classes.selected);
       this.selectedIndex = -1;
       this.ignoreValueChange = false;
       this.el.val(this.currentValue);
@@ -616,7 +615,7 @@ var _Autocomplete = class _Autocomplete {
     }
     const heightDelta = $(activeItem).outerHeight() ?? 0;
     const offsetTop = activeItem.offsetTop;
-    const container = $(this.suggestionsContainer);
+    const container = this.$container;
     const upperBound = container.scrollTop() ?? 0;
     const lowerBound = upperBound + this.options.maxHeight - heightDelta;
     if (offsetTop < upperBound) {
@@ -659,7 +658,7 @@ var _Autocomplete = class _Autocomplete {
     if (this.fixPositionCapture) {
       $(window).off("resize.autocomplete", this.fixPositionCapture);
     }
-    $(this.suggestionsContainer).remove();
+    this.$container.remove();
   }
 };
 _Autocomplete.defaults = defaults;

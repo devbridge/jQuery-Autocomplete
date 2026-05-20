@@ -32,6 +32,10 @@ export class Autocomplete {
     isLocal = false;
     suggestionsContainer!: HTMLDivElement;
     noSuggestionsContainer!: HTMLElement;
+    // Cached jQuery wrappers — avoid re-wrapping the same DOM node on every
+    // method call (~12 call sites used to invoke `$(this.suggestionsContainer)`).
+    $container!: JQuery;
+    $noSuggestionsContainer!: JQuery;
     options: ResolvedOptions;
     classes: Classes = {
         selected: "autocomplete-selected",
@@ -71,18 +75,20 @@ export class Autocomplete {
         this.element.setAttribute("autocomplete", "off");
 
         // html() deals with many types: htmlString or Element or Array or jQuery
-        this.noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>')
-            .html(options.noSuggestionNotice as string)
-            .get(0) as HTMLElement;
+        this.$noSuggestionsContainer = $('<div class="autocomplete-no-suggestion"></div>').html(
+            options.noSuggestionNotice as string
+        );
+        this.noSuggestionsContainer = this.$noSuggestionsContainer.get(0) as HTMLElement;
 
         this.suggestionsContainer = Autocomplete.utils.createNode(options.containerClass);
-
-        const container = $(this.suggestionsContainer);
-        container.appendTo(options.appendTo || "body");
+        this.$container = $(this.suggestionsContainer);
+        this.$container.appendTo(options.appendTo || "body");
 
         if (options.width !== "auto") {
-            container.css("width", options.width);
+            this.$container.css("width", options.width);
         }
+
+        const container = this.$container;
 
         container.on("mouseover.autocomplete", suggestionSelector, function (this: HTMLElement) {
             self.activate($(this).data("index") as number);
@@ -157,7 +163,7 @@ export class Autocomplete {
         }
         options.orientation = this.validateOrientation(options.orientation, "bottom");
 
-        $(this.suggestionsContainer).css({
+        this.$container.css({
             "max-height": `${options.maxHeight}px`,
             width: `${options.width}px`,
             "z-index": options.zIndex,
@@ -190,7 +196,7 @@ export class Autocomplete {
     }
 
     fixPosition(): void {
-        const $container = $(this.suggestionsContainer);
+        const $container = this.$container;
         const containerParent = $container.parent().get(0);
 
         if (containerParent !== document.body && !this.options.forceFixPosition) {
@@ -464,10 +470,8 @@ export class Autocomplete {
     }
 
     hide(): void {
-        const container = $(this.suggestionsContainer);
-
         if (this.options.onHide && this.visible) {
-            this.options.onHide.call(this.element, container);
+            this.options.onHide.call(this.element, this.$container);
         }
 
         this.visible = false;
@@ -475,7 +479,7 @@ export class Autocomplete {
         if (this.onChangeTimeout) {
             clearTimeout(this.onChangeTimeout);
         }
-        container.hide();
+        this.$container.hide();
         this.onHint(null);
     }
 
@@ -494,8 +498,7 @@ export class Autocomplete {
         const value = this.getQuery(this.currentValue);
         const className = this.classes.suggestion;
         const classSelected = this.classes.selected;
-        const container = $(this.suggestionsContainer);
-        const noSuggestionsContainer = $(this.noSuggestionsContainer);
+        const container = this.$container;
 
         if (options.triggerSelectOnValidInput && this.isExactMatch(value)) {
             this.select(0);
@@ -521,7 +524,7 @@ export class Autocomplete {
 
         this.adjustContainerWidth();
 
-        noSuggestionsContainer.detach();
+        this.$noSuggestionsContainer.detach();
         container.html(html);
 
         beforeRender?.call(this.element, container, this.suggestions);
@@ -541,13 +544,11 @@ export class Autocomplete {
 
     noSuggestions(): void {
         const { beforeRender } = this.options;
-        const container = $(this.suggestionsContainer);
-        const noSuggestionsContainer = $(this.noSuggestionsContainer);
+        const container = this.$container;
 
         this.adjustContainerWidth();
-        noSuggestionsContainer.detach();
-        container.empty();
-        container.append(noSuggestionsContainer);
+        this.$noSuggestionsContainer.detach();
+        container.empty().append(this.$noSuggestionsContainer);
 
         beforeRender?.call(this.element, container, this.suggestions);
 
@@ -558,13 +559,11 @@ export class Autocomplete {
 
     adjustContainerWidth(): void {
         const { width } = this.options;
-        const container = $(this.suggestionsContainer);
-
         if (width === "auto") {
             const w = this.el.outerWidth() ?? 0;
-            container.css("width", w > 0 ? w : 300);
+            this.$container.css("width", w > 0 ? w : 300);
         } else if (width === "flex") {
-            container.css("width", "");
+            this.$container.css("width", "");
         }
     }
 
@@ -632,7 +631,7 @@ export class Autocomplete {
 
     activate(index: number): HTMLElement | null {
         const selected = this.classes.selected;
-        const container = $(this.suggestionsContainer);
+        const container = this.$container;
         const children = container.find(`.${this.classes.suggestion}`);
 
         container.find(`.${selected}`).removeClass(selected);
@@ -662,7 +661,7 @@ export class Autocomplete {
         }
 
         if (this.selectedIndex === 0) {
-            $(this.suggestionsContainer)
+            this.$container
                 .children(`.${this.classes.suggestion}`)
                 .first()
                 .removeClass(this.classes.selected);
@@ -691,7 +690,7 @@ export class Autocomplete {
 
         const heightDelta = $(activeItem).outerHeight() ?? 0;
         const offsetTop = activeItem.offsetTop;
-        const container = $(this.suggestionsContainer);
+        const container = this.$container;
         const upperBound = container.scrollTop() ?? 0;
         const lowerBound = upperBound + this.options.maxHeight - heightDelta;
 
@@ -749,6 +748,6 @@ export class Autocomplete {
         if (this.fixPositionCapture) {
             $(window).off("resize.autocomplete", this.fixPositionCapture);
         }
-        $(this.suggestionsContainer).remove();
+        this.$container.remove();
     }
 }
