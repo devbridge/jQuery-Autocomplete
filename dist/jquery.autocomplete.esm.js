@@ -63,10 +63,6 @@ var defaults = {
   ajaxSettings: {},
   autoSelectFirst: false,
   appendTo: "body",
-  serviceUrl: null,
-  lookup: null,
-  onSelect: null,
-  onHint: null,
   width: "auto",
   minChars: 1,
   maxHeight: 300,
@@ -74,7 +70,6 @@ var defaults = {
   params: {},
   formatResult,
   formatGroup,
-  delimiter: null,
   zIndex: 9999,
   type: "GET",
   noCache: false,
@@ -85,7 +80,6 @@ var defaults = {
   containerClass: "autocomplete-suggestions",
   tabDisabled: false,
   dataType: "text",
-  currentRequest: null,
   triggerSelectOnValidInput: true,
   preventBadQueries: true,
   lookupFilter,
@@ -103,13 +97,9 @@ var _Autocomplete = class _Autocomplete {
     this.suggestions = [];
     this.badQueries = [];
     this.selectedIndex = -1;
-    this.timeoutId = null;
     this.cachedResponse = {};
     this.onChangeTimeout = null;
-    this.onChange = null;
     this.isLocal = false;
-    this.suggestionsContainer = null;
-    this.noSuggestionsContainer = null;
     this.classes = {
       selected: "autocomplete-selected",
       suggestion: "autocomplete-suggestion"
@@ -195,7 +185,7 @@ var _Autocomplete = class _Autocomplete {
     that.blurTimeoutId = setTimeout(function() {
       that.hide();
       if (that.selection && that.currentValue !== query) {
-        (options.onInvalidateSelection || $.noop).call(that.element);
+        options.onInvalidateSelection?.call(that.element);
       }
     }, 200);
   }
@@ -287,16 +277,7 @@ var _Autocomplete = class _Autocomplete {
   isCursorAtEnd() {
     const valLength = this.el.val().length;
     const selectionStart = this.element.selectionStart;
-    if (typeof selectionStart === "number") {
-      return selectionStart === valLength;
-    }
-    const legacyDoc = document;
-    if (legacyDoc.selection) {
-      const range = legacyDoc.selection.createRange();
-      range.moveStart("character", -valLength);
-      return valLength === range.text.length;
-    }
-    return true;
+    return typeof selectionStart === "number" ? selectionStart === valLength : true;
   }
   onKeyPress(e) {
     const that = this;
@@ -386,9 +367,7 @@ var _Autocomplete = class _Autocomplete {
     const query = that.getQuery(value);
     if (that.selection && that.currentValue !== query) {
       that.selection = null;
-      (options.onInvalidateSelection || $.noop).call(
-        that.element
-      );
+      options.onInvalidateSelection?.call(that.element);
     }
     if (that.onChangeTimeout) {
       clearTimeout(that.onChangeTimeout);
@@ -457,7 +436,7 @@ var _Autocomplete = class _Autocomplete {
       if (typeof serviceUrl === "function") {
         serviceUrl = serviceUrl.call(that.element, q);
       }
-      cacheKey = serviceUrl + "?" + $.param(params || {});
+      cacheKey = serviceUrl + "?" + $.param(params ?? {});
       response = that.cachedResponse[cacheKey];
     }
     if (response && Array.isArray(response.suggestions)) {
@@ -501,7 +480,7 @@ var _Autocomplete = class _Autocomplete {
   hide() {
     const that = this;
     const container = $(that.suggestionsContainer);
-    if (typeof that.options.onHide === "function" && that.visible) {
+    if (that.options.onHide && that.visible) {
       that.options.onHide.call(that.element, container);
     }
     that.visible = false;
@@ -554,9 +533,7 @@ var _Autocomplete = class _Autocomplete {
     this.adjustContainerWidth();
     noSuggestionsContainer.detach();
     container.html(html);
-    if (typeof beforeRender === "function") {
-      beforeRender.call(that.element, container, that.suggestions);
-    }
+    beforeRender?.call(that.element, container, that.suggestions);
     that.fixPosition();
     container.show();
     if (options.autoSelectFirst) {
@@ -576,9 +553,7 @@ var _Autocomplete = class _Autocomplete {
     noSuggestionsContainer.detach();
     container.empty();
     container.append(noSuggestionsContainer);
-    if (typeof beforeRender === "function") {
-      beforeRender.call(that.element, container, that.suggestions);
-    }
+    beforeRender?.call(that.element, container, that.suggestions);
     that.fixPosition();
     container.show();
     that.visible = true;
@@ -619,9 +594,7 @@ var _Autocomplete = class _Autocomplete {
     if (that.hintValue !== hintValue) {
       that.hintValue = hintValue;
       that.hint = suggestion;
-      if (typeof onHintCallback === "function") {
-        onHintCallback.call(that.element, hintValue);
-      }
+      onHintCallback?.call(that.element, hintValue);
     }
   }
   verifySuggestionsFormat(suggestions) {
@@ -634,10 +607,10 @@ var _Autocomplete = class _Autocomplete {
   }
   validateOrientation(orientation, fallback) {
     const normalized = (orientation || "").trim().toLowerCase();
-    if ($.inArray(normalized, ["auto", "bottom", "top"]) === -1) {
-      return fallback;
+    if (normalized === "auto" || normalized === "top" || normalized === "bottom") {
+      return normalized;
     }
-    return normalized;
+    return fallback;
   }
   processResponse(result, originalQuery, cacheKey) {
     const that = this;
@@ -711,9 +684,7 @@ var _Autocomplete = class _Autocomplete {
     if (offsetTop < upperBound) {
       $(that.suggestionsContainer).scrollTop(offsetTop);
     } else if (offsetTop > lowerBound) {
-      $(that.suggestionsContainer).scrollTop(
-        offsetTop - that.options.maxHeight + heightDelta
-      );
+      $(that.suggestionsContainer).scrollTop(offsetTop - that.options.maxHeight + heightDelta);
     }
     if (!that.options.preserveInput) {
       that.ignoreValueChange = true;
@@ -732,9 +703,7 @@ var _Autocomplete = class _Autocomplete {
     that.onHint(null);
     that.suggestions = [];
     that.selection = suggestion;
-    if (typeof onSelectCallback === "function") {
-      onSelectCallback.call(that.element, suggestion);
-    }
+    onSelectCallback?.call(that.element, suggestion);
   }
   getValue(value) {
     const delimiter = this.options.delimiter;

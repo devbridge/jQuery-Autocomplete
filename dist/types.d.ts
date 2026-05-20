@@ -23,46 +23,52 @@ export type HintCallback = (this: HTMLElement, hint: string) => void;
 export type HideCallback = (this: HTMLElement, container: JQuery) => void;
 export type BeforeRenderCallback = (this: HTMLElement, container: JQuery, suggestions: Suggestion[]) => void;
 export type InvalidateSelectionCallback = (this: HTMLElement) => void;
-export interface AutocompleteOptions {
-    ajaxSettings?: JQuery.AjaxSettings;
-    autoSelectFirst?: boolean;
-    appendTo?: string | Element | JQuery;
+interface DefaultedOptions {
+    ajaxSettings: JQuery.AjaxSettings;
+    autoSelectFirst: boolean;
+    appendTo: string | Element | JQuery;
+    width: WidthOption;
+    minChars: number;
+    maxHeight: number;
+    deferRequestBy: number;
+    params: Record<string, unknown>;
+    formatResult: FormatResult;
+    formatGroup: FormatGroup;
+    zIndex: number;
+    type: string;
+    noCache: boolean;
+    onSearchStart: SearchStartCallback;
+    onSearchComplete: SearchCompleteCallback;
+    onSearchError: SearchErrorCallback;
+    preserveInput: boolean;
+    containerClass: string;
+    tabDisabled: boolean;
+    dataType: "text" | "json" | "jsonp";
+    triggerSelectOnValidInput: boolean;
+    preventBadQueries: boolean;
+    lookupFilter: LookupFilter;
+    paramName: string;
+    transformResult: TransformResult;
+    showNoSuggestionNotice: boolean;
+    noSuggestionNotice: string | HTMLElement | JQuery;
+    orientation: Orientation;
+    forceFixPosition: boolean;
+}
+interface OptionalOptionsMixin {
     serviceUrl?: ServiceUrl | null;
     lookup?: LookupArray | LookupCallback | null;
     onSelect?: SelectCallback | null;
     onHint?: HintCallback | null;
-    width?: WidthOption;
-    minChars?: number;
-    maxHeight?: number;
-    deferRequestBy?: number;
-    params?: Record<string, unknown>;
-    formatResult?: FormatResult;
-    formatGroup?: FormatGroup;
-    delimiter?: string | RegExp | null;
-    zIndex?: number;
-    type?: string;
-    noCache?: boolean;
-    onSearchStart?: SearchStartCallback;
-    onSearchComplete?: SearchCompleteCallback;
-    onSearchError?: SearchErrorCallback;
     onHide?: HideCallback;
     beforeRender?: BeforeRenderCallback;
     onInvalidateSelection?: InvalidateSelectionCallback;
-    preserveInput?: boolean;
-    containerClass?: string;
-    tabDisabled?: boolean;
-    dataType?: "text" | "json" | "jsonp";
-    currentRequest?: JQuery.jqXHR | null;
-    triggerSelectOnValidInput?: boolean;
-    preventBadQueries?: boolean;
-    lookupFilter?: LookupFilter;
-    lookupLimit?: number | string;
-    paramName?: string;
-    transformResult?: TransformResult;
-    showNoSuggestionNotice?: boolean;
-    noSuggestionNotice?: string | HTMLElement | JQuery;
-    orientation?: Orientation;
-    forceFixPosition?: boolean;
+    delimiter?: string | RegExp | null;
     groupBy?: string;
     ignoreParams?: boolean;
+    lookupLimit?: number | string;
 }
+export interface AutocompleteOptions extends Partial<DefaultedOptions>, OptionalOptionsMixin {
+}
+export interface ResolvedOptions extends DefaultedOptions, OptionalOptionsMixin {
+}
+export {};

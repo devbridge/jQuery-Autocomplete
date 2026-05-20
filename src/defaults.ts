@@ -1,26 +1,23 @@
-import type { AutocompleteOptions } from "./types";
+import type { ResolvedOptions } from "./types";
 import { formatGroup, formatResult, lookupFilter, transformResult } from "./format";
 
 // `() => {}` instead of `$.noop` so this file has no load-time jQuery dependency.
 // Specs do not assert on noop identity, only on no-op behavior.
 const noop = (): void => {};
 
-export const defaults: AutocompleteOptions = {
+// Typed as ResolvedOptions (no Partial<>) — TypeScript will flag any future
+// `DefaultedOptions` field added without a default here.
+export const defaults: ResolvedOptions = {
     ajaxSettings: {},
     autoSelectFirst: false,
     appendTo: "body",
-    serviceUrl: null,
-    lookup: null,
-    onSelect: null,
-    onHint: null,
     width: "auto",
     minChars: 1,
     maxHeight: 300,
     deferRequestBy: 0,
     params: {},
-    formatResult: formatResult,
-    formatGroup: formatGroup,
-    delimiter: null,
+    formatResult,
+    formatGroup,
     zIndex: 9999,
     type: "GET",
     noCache: false,
@@ -31,12 +28,11 @@ export const defaults: AutocompleteOptions = {
     containerClass: "autocomplete-suggestions",
     tabDisabled: false,
     dataType: "text",
-    currentRequest: null,
     triggerSelectOnValidInput: true,
     preventBadQueries: true,
-    lookupFilter: lookupFilter,
+    lookupFilter,
     paramName: "query",
-    transformResult: transformResult,
+    transformResult,
     showNoSuggestionNotice: false,
     noSuggestionNotice: "No results",
     orientation: "bottom",

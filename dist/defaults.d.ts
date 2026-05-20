@@ -1,2 +1,2 @@
-import type { AutocompleteOptions } from "./types";
-export declare const defaults: AutocompleteOptions;
+import type { ResolvedOptions } from "./types";
+export declare const defaults: ResolvedOptions;

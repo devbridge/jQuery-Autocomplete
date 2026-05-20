@@ -1,10 +1,10 @@
-import type { AutocompleteOptions, AutocompleteResponse, LookupArray, Orientation, Suggestion } from "./types";
+import type { AutocompleteOptions, AutocompleteResponse, LookupArray, Orientation, ResolvedOptions, Suggestion } from "./types";
 interface Classes {
     selected: string;
     suggestion: string;
 }
 export declare class Autocomplete {
-    static defaults: AutocompleteOptions;
+    static defaults: ResolvedOptions;
     static utils: {
         escapeRegExChars(value: string): string;
         createNode(containerClass: string): HTMLDivElement;
@@ -15,14 +15,12 @@ export declare class Autocomplete {
     badQueries: string[];
     selectedIndex: number;
     currentValue: string;
-    timeoutId: number | null;
     cachedResponse: Record<string, AutocompleteResponse>;
     onChangeTimeout: ReturnType<typeof setTimeout> | null;
-    onChange: (() => void) | null;
     isLocal: boolean;
     suggestionsContainer: HTMLDivElement;
     noSuggestionsContainer: HTMLElement;
-    options: AutocompleteOptions;
+    options: ResolvedOptions;
     classes: Classes;
     hint: Suggestion | null;
     hintValue: string;
@@ -60,7 +58,7 @@ export declare class Autocomplete {
     findBestHint(): void;
     onHint(suggestion: Suggestion | null): void;
     verifySuggestionsFormat(suggestions: LookupArray): Suggestion[];
-    validateOrientation(orientation: Orientation | undefined, fallback: Orientation): Orientation;
+    validateOrientation(orientation: string | undefined, fallback: Orientation): Orientation;
     processResponse(result: AutocompleteResponse, originalQuery: string, cacheKey: string): void;
     activate(index: number): HTMLElement | null;
     selectHint(): void;

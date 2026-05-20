@@ -4,10 +4,10 @@ import { keys, utils } from "./utils";
 import type {
     AutocompleteOptions,
     AutocompleteResponse,
-    InvalidateSelectionCallback,
     LookupArray,
     LookupCallback,
     Orientation,
+    ResolvedOptions,
     ServiceUrl,
     Suggestion,
 } from "./types";
@@ -18,7 +18,7 @@ interface Classes {
 }
 
 export class Autocomplete {
-    static defaults: AutocompleteOptions = defaults;
+    static defaults: ResolvedOptions = defaults;
     static utils = utils;
 
     element: HTMLInputElement;
@@ -27,14 +27,12 @@ export class Autocomplete {
     badQueries: string[] = [];
     selectedIndex = -1;
     currentValue: string;
-    timeoutId: number | null = null;
     cachedResponse: Record<string, AutocompleteResponse> = {};
     onChangeTimeout: ReturnType<typeof setTimeout> | null = null;
-    onChange: (() => void) | null = null;
     isLocal = false;
-    suggestionsContainer: HTMLDivElement = null as unknown as HTMLDivElement;
-    noSuggestionsContainer: HTMLElement = null as unknown as HTMLElement;
-    options: AutocompleteOptions;
+    suggestionsContainer!: HTMLDivElement;
+    noSuggestionsContainer!: HTMLElement;
+    options: ResolvedOptions;
     classes: Classes = {
         selected: "autocomplete-selected",
         suggestion: "autocomplete-suggestion",
@@ -54,7 +52,7 @@ export class Autocomplete {
         this.element = el;
         this.el = $(el);
         this.currentValue = el.value;
-        this.options = $.extend(true, {}, Autocomplete.defaults, options) as AutocompleteOptions;
+        this.options = $.extend(true, {}, Autocomplete.defaults, options) as ResolvedOptions;
 
         this.initialize();
         this.setOptions(options);
@@ -73,14 +71,14 @@ export class Autocomplete {
             .html(options.noSuggestionNotice as string)
             .get(0) as HTMLElement;
 
-        that.suggestionsContainer = Autocomplete.utils.createNode(options.containerClass as string);
+        that.suggestionsContainer = Autocomplete.utils.createNode(options.containerClass);
 
         const container = $(that.suggestionsContainer);
 
-        container.appendTo((options.appendTo as string) || "body");
+        container.appendTo(options.appendTo || "body");
 
         if (options.width !== "auto") {
-            container.css("width", options.width as string | number);
+            container.css("width", options.width);
         }
 
         container.on("mouseover.autocomplete", suggestionSelector, function (this: HTMLElement) {
@@ -135,7 +133,7 @@ export class Autocomplete {
             return;
         }
         this.fixPosition();
-        if ((this.el.val() as string).length >= (this.options.minChars as number)) {
+        if ((this.el.val() as string).length >= this.options.minChars) {
             this.onValueChange();
         }
     }
@@ -150,9 +148,7 @@ export class Autocomplete {
             that.hide();
 
             if (that.selection && that.currentValue !== query) {
-                (
-                    (options.onInvalidateSelection as InvalidateSelectionCallback | null) || $.noop
-                ).call(that.element);
+                options.onInvalidateSelection?.call(that.element);
             }
         }, 200);
     }
@@ -166,7 +162,7 @@ export class Autocomplete {
 
     setOptions(suppliedOptions?: AutocompleteOptions): void {
         const that = this;
-        const options = $.extend({}, that.options, suppliedOptions) as AutocompleteOptions;
+        const options = $.extend({}, that.options, suppliedOptions) as ResolvedOptions;
 
         that.isLocal = Array.isArray(options.lookup);
 
@@ -179,7 +175,7 @@ export class Autocomplete {
         $(that.suggestionsContainer).css({
             "max-height": options.maxHeight + "px",
             width: options.width + "px",
-            "z-index": options.zIndex as number,
+            "z-index": options.zIndex,
         });
 
         this.options = options;
@@ -217,7 +213,7 @@ export class Autocomplete {
             return;
         }
 
-        let orientation = that.options.orientation as Orientation;
+        let orientation = that.options.orientation;
         const containerHeight = $container.outerHeight() ?? 0;
         const height = that.el.outerHeight() ?? 0;
         const offset = that.el.offset() ?? { top: 0, left: 0 };
@@ -269,23 +265,7 @@ export class Autocomplete {
     isCursorAtEnd(): boolean {
         const valLength = (this.el.val() as string).length;
         const selectionStart = this.element.selectionStart;
-
-        if (typeof selectionStart === "number") {
-            return selectionStart === valLength;
-        }
-        // Legacy IE branch kept for behavioral parity with the JS source; harmless
-        // in modern browsers because `document.selection` is undefined.
-        const legacyDoc = document as unknown as {
-            selection?: {
-                createRange(): { moveStart(unit: string, count: number): void; text: string };
-            };
-        };
-        if (legacyDoc.selection) {
-            const range = legacyDoc.selection.createRange();
-            range.moveStart("character", -valLength);
-            return valLength === range.text.length;
-        }
-        return true;
+        return typeof selectionStart === "number" ? selectionStart === valLength : true;
     }
 
     onKeyPress(e: JQuery.KeyDownEvent): void {
@@ -365,10 +345,10 @@ export class Autocomplete {
 
         if (that.currentValue !== that.el.val()) {
             that.findBestHint();
-            if ((that.options.deferRequestBy as number) > 0) {
+            if (that.options.deferRequestBy > 0) {
                 that.onChangeTimeout = setTimeout(function () {
                     that.onValueChange();
-                }, that.options.deferRequestBy as number);
+                }, that.options.deferRequestBy);
             } else {
                 that.onValueChange();
             }
@@ -388,9 +368,7 @@ export class Autocomplete {
 
         if (that.selection && that.currentValue !== query) {
             that.selection = null;
-            ((options.onInvalidateSelection as InvalidateSelectionCallback | null) || $.noop).call(
-                that.element
-            );
+            options.onInvalidateSelection?.call(that.element);
         }
 
         if (that.onChangeTimeout) {
@@ -404,7 +382,7 @@ export class Autocomplete {
             return;
         }
 
-        if (query.length < (options.minChars as number)) {
+        if (query.length < options.minChars) {
             that.hide();
         } else {
             that.getSuggestions(query);
@@ -423,14 +401,14 @@ export class Autocomplete {
         if (!delimiter) {
             return value;
         }
-        const parts = value.split(delimiter as string | RegExp);
+        const parts = value.split(delimiter);
         return parts[parts.length - 1]!.trim();
     }
 
     getSuggestionsLocal(query: string): AutocompleteResponse {
         const options = this.options;
         const queryLowerCase = query.toLowerCase();
-        const filter = options.lookupFilter!;
+        const filter = options.lookupFilter;
         const limit = parseInt(options.lookupLimit as string, 10);
 
         const data: AutocompleteResponse = {
@@ -453,16 +431,9 @@ export class Autocomplete {
         let response: AutocompleteResponse | undefined;
         let cacheKey: string | undefined;
 
-        (options.params as Record<string, unknown>)[options.paramName as string] = q;
+        options.params[options.paramName] = q;
 
-        if (
-            (
-                options.onSearchStart as (
-                    this: HTMLElement,
-                    params: Record<string, unknown>
-                ) => unknown
-            ).call(that.element, options.params as Record<string, unknown>) === false
-        ) {
+        if (options.onSearchStart.call(that.element, options.params) === false) {
             return;
         }
 
@@ -472,7 +443,7 @@ export class Autocomplete {
             (options.lookup as LookupCallback)(q, function (data) {
                 that.suggestions = data.suggestions;
                 that.suggest();
-                options.onSearchComplete!.call(that.element, q, data.suggestions);
+                options.onSearchComplete.call(that.element, q, data.suggestions);
             });
             return;
         }
@@ -483,23 +454,22 @@ export class Autocomplete {
             if (typeof serviceUrl === "function") {
                 serviceUrl = serviceUrl.call(that.element, q);
             }
-            cacheKey =
-                (serviceUrl as string) + "?" + $.param((params as Record<string, unknown>) || {});
+            cacheKey = serviceUrl + "?" + $.param(params ?? {});
             response = that.cachedResponse[cacheKey];
         }
 
         if (response && Array.isArray(response.suggestions)) {
             that.suggestions = response.suggestions;
             that.suggest();
-            options.onSearchComplete!.call(that.element, q, response.suggestions);
+            options.onSearchComplete.call(that.element, q, response.suggestions);
         } else if (!that.isBadQuery(q)) {
             that.abortAjax();
 
             const ajaxSettings: JQuery.AjaxSettings = {
                 url: serviceUrl as string,
-                data: (params as Record<string, unknown>) ?? undefined,
-                type: options.type as string,
-                dataType: options.dataType as string,
+                data: params ?? undefined,
+                type: options.type,
+                dataType: options.dataType,
             };
 
             $.extend(ajaxSettings, options.ajaxSettings);
@@ -507,15 +477,15 @@ export class Autocomplete {
             that.currentRequest = $.ajax(ajaxSettings)
                 .done(function (data) {
                     that.currentRequest = null;
-                    const result = options.transformResult!(data, q);
+                    const result = options.transformResult(data, q);
                     that.processResponse(result, q, cacheKey!);
-                    options.onSearchComplete!.call(that.element, q, result.suggestions);
+                    options.onSearchComplete.call(that.element, q, result.suggestions);
                 })
                 .fail(function (jqXHR, textStatus, errorThrown) {
-                    options.onSearchError!.call(that.element, q, jqXHR, textStatus, errorThrown);
+                    options.onSearchError.call(that.element, q, jqXHR, textStatus, errorThrown);
                 });
         } else {
-            options.onSearchComplete!.call(that.element, q, []);
+            options.onSearchComplete.call(that.element, q, []);
         }
     }
 
@@ -538,7 +508,7 @@ export class Autocomplete {
         const that = this;
         const container = $(that.suggestionsContainer);
 
-        if (typeof that.options.onHide === "function" && that.visible) {
+        if (that.options.onHide && that.visible) {
             that.options.onHide.call(that.element, container);
         }
 
@@ -564,7 +534,7 @@ export class Autocomplete {
         const that = this;
         const options = that.options;
         const groupBy = options.groupBy;
-        const formatResultFn = options.formatResult!;
+        const formatResultFn = options.formatResult;
         const value = that.getQuery(that.currentValue);
         const className = that.classes.suggestion;
         const classSelected = that.classes.selected;
@@ -574,12 +544,12 @@ export class Autocomplete {
         let html = "";
         let category: string | undefined;
         const formatGroupFn = (suggestion: Suggestion): string => {
-            const currentCategory = (suggestion.data as Record<string, string>)[groupBy as string]!;
+            const currentCategory = (suggestion.data as Record<string, string>)[groupBy!]!;
             if (category === currentCategory) {
                 return "";
             }
             category = currentCategory;
-            return options.formatGroup!(suggestion, category);
+            return options.formatGroup(suggestion, category);
         };
 
         if (options.triggerSelectOnValidInput && that.isExactMatch(value)) {
@@ -606,9 +576,7 @@ export class Autocomplete {
         noSuggestionsContainer.detach();
         container.html(html);
 
-        if (typeof beforeRender === "function") {
-            beforeRender.call(that.element, container, that.suggestions);
-        }
+        beforeRender?.call(that.element, container, that.suggestions);
 
         that.fixPosition();
         container.show();
@@ -638,9 +606,7 @@ export class Autocomplete {
         container.empty();
         container.append(noSuggestionsContainer);
 
-        if (typeof beforeRender === "function") {
-            beforeRender.call(that.element, container, that.suggestions);
-        }
+        beforeRender?.call(that.element, container, that.suggestions);
 
         that.fixPosition();
         container.show();
@@ -690,9 +656,7 @@ export class Autocomplete {
         if (that.hintValue !== hintValue) {
             that.hintValue = hintValue;
             that.hint = suggestion;
-            if (typeof onHintCallback === "function") {
-                onHintCallback.call(that.element, hintValue);
-            }
+            onHintCallback?.call(that.element, hintValue);
         }
     }
 
@@ -705,12 +669,12 @@ export class Autocomplete {
         return suggestions as Suggestion[];
     }
 
-    validateOrientation(orientation: Orientation | undefined, fallback: Orientation): Orientation {
-        const normalized = (orientation || "").trim().toLowerCase() as Orientation;
-        if ($.inArray(normalized, ["auto", "bottom", "top"]) === -1) {
-            return fallback;
+    validateOrientation(orientation: string | undefined, fallback: Orientation): Orientation {
+        const normalized = (orientation || "").trim().toLowerCase();
+        if (normalized === "auto" || normalized === "top" || normalized === "bottom") {
+            return normalized;
         }
-        return normalized;
+        return fallback;
     }
 
     processResponse(result: AutocompleteResponse, originalQuery: string, cacheKey: string): void {
@@ -803,13 +767,13 @@ export class Autocomplete {
         const heightDelta = $(activeItem).outerHeight() ?? 0;
         const offsetTop = activeItem.offsetTop;
         const upperBound = $(that.suggestionsContainer).scrollTop() ?? 0;
-        const lowerBound = upperBound + (that.options.maxHeight as number) - heightDelta;
+        const lowerBound = upperBound + that.options.maxHeight - heightDelta;
 
         if (offsetTop < upperBound) {
             $(that.suggestionsContainer).scrollTop(offsetTop);
         } else if (offsetTop > lowerBound) {
             $(that.suggestionsContainer).scrollTop(
-                offsetTop - (that.options.maxHeight as number) + heightDelta
+                offsetTop - that.options.maxHeight + heightDelta
             );
         }
 
@@ -836,9 +800,7 @@ export class Autocomplete {
         that.suggestions = [];
         that.selection = suggestion;
 
-        if (typeof onSelectCallback === "function") {
-            onSelectCallback.call(that.element, suggestion);
-        }
+        onSelectCallback?.call(that.element, suggestion);
     }
 
     getValue(value: string): string {
@@ -848,7 +810,7 @@ export class Autocomplete {
         }
 
         const currentValue = this.currentValue;
-        const parts = currentValue.split(delimiter as string | RegExp);
+        const parts = currentValue.split(delimiter);
 
         if (parts.length === 1) {
             return value;

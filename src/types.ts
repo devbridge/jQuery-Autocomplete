@@ -53,46 +53,61 @@ export type BeforeRenderCallback = (
 ) => void;
 export type InvalidateSelectionCallback = (this: HTMLElement) => void;
 
-export interface AutocompleteOptions {
-    ajaxSettings?: JQuery.AjaxSettings;
-    autoSelectFirst?: boolean;
-    appendTo?: string | Element | JQuery;
+// Fields that always have a value after the constructor merges supplied options
+// with Autocomplete.defaults. Keeping these required in ResolvedOptions removes
+// dozens of `as number` / `as string` / `!` casts from the implementation.
+interface DefaultedOptions {
+    ajaxSettings: JQuery.AjaxSettings;
+    autoSelectFirst: boolean;
+    appendTo: string | Element | JQuery;
+    width: WidthOption;
+    minChars: number;
+    maxHeight: number;
+    deferRequestBy: number;
+    params: Record<string, unknown>;
+    formatResult: FormatResult;
+    formatGroup: FormatGroup;
+    zIndex: number;
+    type: string;
+    noCache: boolean;
+    onSearchStart: SearchStartCallback;
+    onSearchComplete: SearchCompleteCallback;
+    onSearchError: SearchErrorCallback;
+    preserveInput: boolean;
+    containerClass: string;
+    tabDisabled: boolean;
+    dataType: "text" | "json" | "jsonp";
+    triggerSelectOnValidInput: boolean;
+    preventBadQueries: boolean;
+    lookupFilter: LookupFilter;
+    paramName: string;
+    transformResult: TransformResult;
+    showNoSuggestionNotice: boolean;
+    noSuggestionNotice: string | HTMLElement | JQuery;
+    orientation: Orientation;
+    forceFixPosition: boolean;
+}
+
+// Fields that are genuinely optional — no default exists. Code paths that read
+// them must handle `undefined` (or `null` where the JS source documented it).
+interface OptionalOptionsMixin {
     serviceUrl?: ServiceUrl | null;
     lookup?: LookupArray | LookupCallback | null;
     onSelect?: SelectCallback | null;
     onHint?: HintCallback | null;
-    width?: WidthOption;
-    minChars?: number;
-    maxHeight?: number;
-    deferRequestBy?: number;
-    params?: Record<string, unknown>;
-    formatResult?: FormatResult;
-    formatGroup?: FormatGroup;
-    delimiter?: string | RegExp | null;
-    zIndex?: number;
-    type?: string;
-    noCache?: boolean;
-    onSearchStart?: SearchStartCallback;
-    onSearchComplete?: SearchCompleteCallback;
-    onSearchError?: SearchErrorCallback;
     onHide?: HideCallback;
     beforeRender?: BeforeRenderCallback;
     onInvalidateSelection?: InvalidateSelectionCallback;
-    preserveInput?: boolean;
-    containerClass?: string;
-    tabDisabled?: boolean;
-    dataType?: "text" | "json" | "jsonp";
-    currentRequest?: JQuery.jqXHR | null;
-    triggerSelectOnValidInput?: boolean;
-    preventBadQueries?: boolean;
-    lookupFilter?: LookupFilter;
-    lookupLimit?: number | string;
-    paramName?: string;
-    transformResult?: TransformResult;
-    showNoSuggestionNotice?: boolean;
-    noSuggestionNotice?: string | HTMLElement | JQuery;
-    orientation?: Orientation;
-    forceFixPosition?: boolean;
+    delimiter?: string | RegExp | null;
     groupBy?: string;
     ignoreParams?: boolean;
+    lookupLimit?: number | string;
 }
+
+// What consumers pass to `new Autocomplete(el, options)` and `setOptions(...)`:
+// everything is optional.
+export interface AutocompleteOptions extends Partial<DefaultedOptions>, OptionalOptionsMixin {}
+
+// What `Autocomplete.options` and `Autocomplete.defaults` hold internally after
+// merging. Defaulted fields are guaranteed present; truly optional ones aren't.
+export interface ResolvedOptions extends DefaultedOptions, OptionalOptionsMixin {}
