@@ -13,9 +13,13 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "format": "prettier --write ./src ./test ./scripts/build.mjs",
+    "format:check": "prettier --check ./src ./test ./scripts/build.mjs",
     "lint": "eslint ./src ./test ./scripts/build.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "repository": {
     "type": "git",

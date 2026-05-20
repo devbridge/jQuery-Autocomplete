@@ -12,7 +12,12 @@ This is a single-file jQuery plugin (Ajax Autocomplete). The entire implementati
 - `npm run test:watch` — Vitest watch mode for local TDD.
 - `npm run lint` — ESLint (flat config in `eslint.config.mjs`) over `src/`, `test/`, and `scripts/build.mjs`.
 - `npm run format` — Prettier rewrite of `src/`, `test/`, and `scripts/build.mjs` (100-col, 4-space, ES5 trailing commas — config in `package.json`). Demo files under `scripts/` (`countries.js`, `demo.js`) are intentionally excluded.
+- `npm run format:check` — Prettier check-only, same scope. Used by CI; fails if anything would be rewritten.
 - `npm run build` — runs `scripts/build.mjs` (Node ESM, no bundler): copies `src/jquery.autocomplete.js` to `dist/jquery.autocomplete.js` while substituting the `%version%` placeholder with `package.json` `version`, minifies to `dist/jquery.autocomplete.min.js` via terser with a fresh banner, and syncs `devbridge-autocomplete.jquery.json` version. Run this before release/commit when source changes.
+
+## CI
+
+`.github/workflows/ci.yml` runs on every push to `master` and every pull request: `npm ci`, then `lint`, `format:check`, `test`, `build` — in that order, all required. Node 20 LTS, Ubuntu, single job. The `engines.node` field in `package.json` mirrors the runner version.
 
 ## Tests
 
