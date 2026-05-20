@@ -18,7 +18,7 @@ TypeScript source under `src/` (~700 lines split into ~8 modules) compiles to a 
 | `src/format.ts` | Default `formatResult`, `formatGroup`, `lookupFilter`, `transformResult`. |
 | `src/utils.ts` | `escapeRegExChars`, `createNode`, `keys` constants. |
 | `src/jquery-ref.ts` | `export let $: JQueryStatic` set at install time via `setJQuery`. Live ES-module binding — every importer sees the value once `installAutocomplete` has run. |
-| `src/types.ts` | Public types (`AutocompleteOptions`, `Suggestion`, callback signatures). |
+| `src/types.ts` | Public types (`AutocompleteOptions`, `ResolvedOptions`, `Suggestion`, callback signatures). |
 
 ## Commands
 
@@ -63,15 +63,18 @@ The minified UMD is ~13 KB; the unminified is ~26 KB.
 
 - **Dual plugin name**: `$.fn.devbridgeAutocomplete` is always registered. `$.fn.autocomplete` is only aliased to it if not already taken (jQuery UI defines its own). Tests and the README rely on this fallback — don't remove the guard.
 - **Live `$` binding**: `src/jquery-ref.ts` exports a `let $` that `installAutocomplete` mutates at install time via `setJQuery`. Every other module (Autocomplete, format, etc.) imports `{ $ }` and sees the live value. This avoids passing `$` through every constructor / function signature.
-- **Defaults**: `Autocomplete.defaults` (in `src/defaults.ts`) is merged per-instance via `$.extend(true, {}, defaults, options)`. New options must be added there AND in the `AutocompleteOptions` interface in `src/types.ts`; the option tables in `readme.md` also need updating.
+- **Two options types — pick the right one.** `AutocompleteOptions` is what consumers pass (everything optional). `ResolvedOptions` is what the constructor produces after deep-merging with `Autocomplete.defaults` — the ~29 defaulted fields are required, the ~12 truly optional ones stay optional. `this.options` and the static `defaults` are typed `ResolvedOptions`; method bodies read them directly without `as number` / `as string` casts. When adding a new option: put it in `DefaultedOptions` (and `src/defaults.ts`) if it has a default, otherwise in `OptionalOptionsMixin`. Also add it to the option tables in `readme.md`.
 - **Defaults uses `() => {}` not `$.noop`** as the no-op callback. That avoids load-time `$` access (the file is imported before `installAutocomplete` runs). Specs don't assert on identity, only behavior.
+- **Cached jQuery wrappers**: `this.$container` and `this.$noSuggestionsContainer` are set once in `initialize()` and used throughout. Don't re-wrap the underlying DOM nodes with `$(this.suggestionsContainer)` — the hot paths (`suggest`, `fixPosition`, `adjustScroll`, `hide`, `activate`) were deliberately refactored away from that.
 - **Response normalization**: server responses pass through `transformResult` (default JSON.parse for `dataType: 'text'`). Local `lookup` may be an array or a `function(query, done)` callback; both paths converge on the same `{ value, data }` suggestion shape used everywhere downstream.
 - **Caching + bad-query guard**: `cachedResponse` keys by query string; `preventBadQueries` records prefixes that returned no results so future queries with the same prefix short-circuit. `clearCache` / `clear` reset these — when adding new request paths, decide whether they should populate or honor these caches.
+- **`findBestHint` is first-match-wins.** It uses `Array.prototype.find` because the original `$.each` callback stopped at the first prefix match by returning `false`. Don't "improve" it to a `for` loop that keeps scanning — that's a different algorithm (last-match wins) and breaks the hint behavior on adjacent matches.
 
 ## Conventions
 
 - TypeScript strict mode is on. Don't introduce `any` in public types. Internal `as unknown as X` casts are OK at jQuery boundaries where typings are imprecise.
-- The IE-only `document.selection` branch in `isCursorAtEnd` is kept for behavioral parity with the pre-2.0 source. Modern browsers fall through it.
+- Methods use `this` directly. The one exception is `initialize()`, which aliases `const self = this` for the jQuery delegation handlers (`function (this: HTMLElement)`) that need both `$(this)` for the matched element AND access to the Autocomplete instance. Don't add new `that = this` aliases elsewhere — use arrow functions for callbacks instead.
+- Prefer native array methods (`.map`, `.filter`, `.find`, `.some`, `.indexOf`) over jQuery's `$.each` / `$.grep` / `$.map` / `$.inArray` in new code; the JS-source equivalents have already been swapped where semantics match.
 - Prettier owns formatting. Run `npm run format` before committing source changes.
 
 ## Commit messages
