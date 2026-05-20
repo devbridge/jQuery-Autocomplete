@@ -708,6 +708,73 @@ describe("Autocomplete", () => {
     });
 });
 
+describe("Autocomplete groupBy", () => {
+    afterEach(() => {
+        $(".autocomplete-suggestions").remove();
+    });
+
+    it("regroups interleaved categories under a single header each", () => {
+        const input = document.createElement("input");
+        const lookup = [
+            { value: "Anaheim Ducks", data: { category: "NHL" } },
+            { value: "Portland Trail Blazers", data: { category: "NBA" } },
+            { value: "Chicago Blackhawks", data: { category: "NHL" } },
+            { value: "Boston BlCeltics", data: { category: "NBA" } },
+            { value: "Columbus Blue Jackets", data: { category: "NHL" } },
+        ];
+        const autocomplete = new $.Autocomplete(input, {
+            lookup,
+            groupBy: "category",
+            triggerSelectOnValidInput: false,
+        });
+
+        input.value = "bl";
+        autocomplete.onValueChange();
+
+        // 4 of 5 entries match "bl"; reordered so NBA (first-seen group with
+        // a match) renders first, then NHL.
+        expect(autocomplete.suggestions.map((s) => s.data.category)).toEqual([
+            "NBA",
+            "NBA",
+            "NHL",
+            "NHL",
+        ]);
+
+        // One group header per distinct category, not per category boundary.
+        const headers = $(".autocomplete-group");
+        expect(headers.length).toBe(2);
+        expect(headers.eq(0).text()).toBe("NBA");
+        expect(headers.eq(1).text()).toBe("NHL");
+    });
+
+    it("preserves relative order within each category", () => {
+        const input = document.createElement("input");
+        const lookup = [
+            { value: "Boston Bruins", data: { category: "NHL" } },
+            { value: "Boston Celtics", data: { category: "NBA" } },
+            { value: "Brooklyn Nets", data: { category: "NBA" } },
+            { value: "Buffalo Sabres", data: { category: "NHL" } },
+        ];
+        const autocomplete = new $.Autocomplete(input, {
+            lookup,
+            groupBy: "category",
+            triggerSelectOnValidInput: false,
+        });
+
+        input.value = "B";
+        autocomplete.onValueChange();
+
+        // NHL came first in lookup, so renders first; within each group,
+        // original relative order is preserved.
+        expect(autocomplete.suggestions.map((s) => s.value)).toEqual([
+            "Boston Bruins",
+            "Buffalo Sabres",
+            "Boston Celtics",
+            "Brooklyn Nets",
+        ]);
+    });
+});
+
 describe("When options.preserveInput is true", () => {
     const input = $("<input />");
     let instance;

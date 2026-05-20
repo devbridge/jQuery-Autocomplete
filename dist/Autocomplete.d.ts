@@ -54,6 +54,7 @@ export declare class Autocomplete {
     getSuggestions(q: string): void;
     isBadQuery(q: string): boolean;
     hide(): void;
+    groupSuggestionsByCategory(suggestions: Suggestion[], key: string): Suggestion[];
     suggest(): void;
     noSuggestions(): void;
     adjustContainerWidth(): void;

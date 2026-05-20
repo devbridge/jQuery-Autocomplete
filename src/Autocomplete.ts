@@ -483,6 +483,20 @@ export class Autocomplete {
         this.onHint(null);
     }
 
+    groupSuggestionsByCategory(suggestions: Suggestion[], key: string): Suggestion[] {
+        const groups = new Map<unknown, Suggestion[]>();
+        for (const s of suggestions) {
+            const cat = (s.data as Record<string, unknown>)[key];
+            const arr = groups.get(cat);
+            if (arr) {
+                arr.push(s);
+            } else {
+                groups.set(cat, [s]);
+            }
+        }
+        return Array.from(groups.values()).flat();
+    }
+
     suggest(): void {
         if (!this.suggestions.length) {
             if (this.options.showNoSuggestionNotice) {
@@ -503,6 +517,13 @@ export class Autocomplete {
         if (options.triggerSelectOnValidInput && this.isExactMatch(value)) {
             this.select(0);
             return;
+        }
+
+        // Reorder so all items in a category render under a single header.
+        // Without this, interleaved categories produce a repeated header per
+        // category boundary in the array.
+        if (groupBy) {
+            this.suggestions = this.groupSuggestionsByCategory(this.suggestions, groupBy);
         }
 
         let category: string | undefined;

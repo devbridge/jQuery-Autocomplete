@@ -457,6 +457,19 @@ var _Autocomplete = class _Autocomplete {
     this.$container.hide();
     this.onHint(null);
   }
+  groupSuggestionsByCategory(suggestions, key) {
+    const groups = /* @__PURE__ */ new Map();
+    for (const s of suggestions) {
+      const cat = s.data[key];
+      const arr = groups.get(cat);
+      if (arr) {
+        arr.push(s);
+      } else {
+        groups.set(cat, [s]);
+      }
+    }
+    return Array.from(groups.values()).flat();
+  }
   suggest() {
     if (!this.suggestions.length) {
       if (this.options.showNoSuggestionNotice) {
@@ -475,6 +488,9 @@ var _Autocomplete = class _Autocomplete {
     if (options.triggerSelectOnValidInput && this.isExactMatch(value)) {
       this.select(0);
       return;
+    }
+    if (groupBy) {
+      this.suggestions = this.groupSuggestionsByCategory(this.suggestions, groupBy);
     }
     let category;
     const formatGroupFn = (suggestion) => {
