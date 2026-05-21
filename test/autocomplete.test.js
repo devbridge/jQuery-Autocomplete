@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
+import { formatGroup, formatResult } from "../src/format.ts";
+
 const $ = globalThis.jQuery;
 
 // Clear mockjax handlers and any leftover suggestion containers between tests
@@ -834,6 +836,51 @@ describe("Autocomplete groupBy", () => {
             "Boston Celtics",
             "Brooklyn Nets",
         ]);
+    });
+});
+
+describe("XSS in default formatters (GHSA-hvqh-jw65-wcpq)", () => {
+    const PAYLOAD = "<img src=x onerror=\"alert('XSS')\">";
+
+    afterEach(() => {
+        $(".autocomplete-suggestions").remove();
+    });
+
+    it("formatGroup escapes the category", () => {
+        const html = formatGroup({ value: "x", data: null }, PAYLOAD);
+        expect(html).not.toContain("<img");
+        expect(html).toContain("&lt;img");
+    });
+
+    it("formatResult escapes the value when currentValue is empty", () => {
+        const html = formatResult({ value: PAYLOAD, data: null }, "");
+        expect(html).not.toContain("<img");
+        expect(html).toContain("&lt;img");
+    });
+
+    it("does not inject DOM nodes when groupBy category is poisoned", () => {
+        const input = document.createElement("input");
+        document.body.appendChild(input);
+        const ac = new $.Autocomplete(input, {
+            lookup: [
+                { value: "Apple", data: { category: PAYLOAD } },
+                { value: "Avocado", data: { category: "Safe" } },
+            ],
+            groupBy: "category",
+            minChars: 1,
+            triggerSelectOnValidInput: false,
+        });
+
+        input.value = "A";
+        ac.onValueChange();
+
+        // Poisoned category renders as text inside the group header — no img
+        // element is created.
+        const container = ac.suggestionsContainer;
+        expect(container.querySelectorAll("img").length).toBe(0);
+        expect(container.querySelector(".autocomplete-group").textContent).toBe(PAYLOAD);
+
+        document.body.removeChild(input);
     });
 });
 

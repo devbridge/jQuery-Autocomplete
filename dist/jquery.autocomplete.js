@@ -55,13 +55,18 @@
   }
   function formatResult(suggestion, currentValue) {
     if (!currentValue) {
-      return suggestion.value;
+      const span = document.createElement("span");
+      span.textContent = suggestion.value;
+      return span.innerHTML;
     }
     const pattern = "(" + utils.escapeRegExChars(currentValue) + ")";
     return suggestion.value.replace(new RegExp(pattern, "gi"), "<strong>$1</strong>").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/&lt;(\/?strong)&gt;/g, "<$1>");
   }
   function formatGroup(_suggestion, category) {
-    return '<div class="autocomplete-group">' + category + "</div>";
+    const div = document.createElement("div");
+    div.className = "autocomplete-group";
+    div.textContent = category;
+    return div.outerHTML;
   }
 
   // src/defaults.ts

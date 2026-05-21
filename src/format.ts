@@ -15,7 +15,11 @@ export function transformResult(response: string | AutocompleteResponse): Autoco
 
 export function formatResult(suggestion: Suggestion, currentValue: string): string {
     if (!currentValue) {
-        return suggestion.value;
+        // Same escaping channel as formatGroup — let the browser handle entities
+        // so an HTML-bearing suggestion.value can't break out of the text node.
+        const span = document.createElement("span");
+        span.textContent = suggestion.value;
+        return span.innerHTML;
     }
 
     const pattern = "(" + utils.escapeRegExChars(currentValue) + ")";
@@ -30,5 +34,8 @@ export function formatResult(suggestion: Suggestion, currentValue: string): stri
 }
 
 export function formatGroup(_suggestion: Suggestion, category: string): string {
-    return '<div class="autocomplete-group">' + category + "</div>";
+    const div = document.createElement("div");
+    div.className = "autocomplete-group";
+    div.textContent = category;
+    return div.outerHTML;
 }
