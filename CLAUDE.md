@@ -87,3 +87,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org/): `<type>(<optio
 - Scope, when useful, names the area touched: `build`, `test`, `deps`, `autocomplete`.
 
 Examples: `test: port specs to vitest + jsdom`, `build: replace grunt with node script`, `chore(deps): bump prettier to 3.6.2`, `refactor!: rewrite source in typescript`.
+
+## Pushing
+
+**Never push without explicit confirmation.** Make the commit, show the diff if non-trivial, and wait for the user to say "push" (or equivalent) before `git push`. This applies to every branch including `master`, every push including tag pushes that fire the release workflow, and every working tree including this one and any auxiliary clones (e.g. GHSA private forks). Bundling commit + push in one shell invocation counts as pushing without confirmation — split them.
