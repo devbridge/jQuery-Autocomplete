@@ -283,7 +283,7 @@ $('.autocomplete').devbridgeAutocomplete({ ... });
 ## License
 
 Ajax Autocomplete for jQuery is freely distributable under the terms of an
-MIT-style [license](https://github.com/devbridge/jQuery-Autocomplete/blob/master/license.txt).
+MIT-style [license](https://github.com/devbridge/jQuery-Autocomplete/blob/master/LICENSE).
 The copyright and permission notices must be included with any copy or
 substantial portion of the software.
 

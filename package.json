@@ -56,6 +56,6 @@
   "files": [
     "dist/",
     "readme.md",
-    "license.txt"
+    "LICENSE"
   ]
 }
