@@ -362,6 +362,44 @@ describe("Autocomplete Async — preventBadQueries", () => {
     });
 });
 
+describe("Autocomplete Async — empty originalQuery", () => {
+    it("does not push an empty originalQuery onto badQueries", async () => {
+        const input = $("<input />");
+        const serviceUrl = "/autocomplete/empty-bad-query";
+        let ajaxCount = 0;
+
+        input.autocomplete({
+            serviceUrl,
+            minChars: 0,
+            preventBadQueries: true,
+        });
+        const instance = input.autocomplete();
+
+        $.mockjax({
+            url: serviceUrl,
+            responseTime: 1,
+            response: function () {
+                ajaxCount += 1;
+                this.responseText = JSON.stringify({ suggestions: [] });
+            },
+        });
+
+        // First lookup: empty query with no results.
+        input.val("");
+        instance.onValueChange();
+        await new Promise((r) => setTimeout(r, 30));
+
+        // Second lookup: real query — must not be short-circuited by an empty
+        // prefix sitting in badQueries.
+        input.val("Jam");
+        instance.onValueChange();
+        await new Promise((r) => setTimeout(r, 30));
+
+        expect(instance.badQueries).not.toContain("");
+        expect(ajaxCount).toBe(2);
+    });
+});
+
 describe("Autocomplete", () => {
     afterEach(() => {
         $(".autocomplete-suggestions").hide();

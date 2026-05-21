@@ -583,7 +583,7 @@ var _Autocomplete = class _Autocomplete {
     result.suggestions = this.verifySuggestionsFormat(result.suggestions);
     if (!options.noCache) {
       this.cachedResponse[cacheKey] = result;
-      if (options.preventBadQueries && !result.suggestions.length) {
+      if (options.preventBadQueries && !result.suggestions.length && originalQuery) {
         this.badQueries.push(originalQuery);
       }
     }

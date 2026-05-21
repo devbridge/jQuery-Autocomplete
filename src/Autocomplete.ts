@@ -645,7 +645,11 @@ export class Autocomplete {
 
         if (!options.noCache) {
             this.cachedResponse[cacheKey] = result;
-            if (options.preventBadQueries && !result.suggestions.length) {
+            // Guard against pushing an empty `originalQuery`. `isBadQuery`
+            // matches by prefix (`q.indexOf(bad) === 0`); an empty entry
+            // would match every subsequent query and silently block all
+            // ajax requests after the first empty-query response.
+            if (options.preventBadQueries && !result.suggestions.length && originalQuery) {
                 this.badQueries.push(originalQuery);
             }
         }
