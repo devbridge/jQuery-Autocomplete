@@ -9,7 +9,6 @@
     --paper:        #f4eee2;
     --paper-2:      #faf6ec;
     --paper-3:      #ebe3d0;
-    --paper-4:      #e0d5bb;
     --ink:          #1c1a16;
     --ink-2:        #524c43;
     --ink-3:        #8a8275;
@@ -320,7 +319,6 @@ p, h1, h2, h3 { margin: 0; }
     line-height: 1.45;
     transition: border-color 0.2s ease, color 0.2s ease;
 }
-.demo__readout:not(:empty):not(:has(*)) { /* default empty state */ }
 .demo__readout.has-selection {
     border-left-color: var(--accent);
     color: var(--ink);
@@ -361,7 +359,8 @@ p, h1, h2, h3 { margin: 0; }
 /* ghost (#01) */
 .ghost-stack {
     position: relative;
-    height: 3.5rem;
+    min-height: 3.5rem;
+    height: calc(1lh + 1.4em + 2px); /* font line + 2× 0.7em padding + 1px border */
 }
 .ghost-stack__main,
 .ghost-stack__ghost {
@@ -455,7 +454,7 @@ p, h1, h2, h3 { margin: 0; }
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: background 0.08s ease, color 0.08s ease;
+    transition: background 0.08s ease;
     line-height: 1.35;
 }
 .autocomplete-no-suggestion {
@@ -469,11 +468,11 @@ p, h1, h2, h3 { margin: 0; }
     color: var(--ink);
 }
 .autocomplete-suggestions strong {
+    /* match highlight rendered as an editor's underline, not bold-only */
     font-weight: 600;
     color: var(--accent-2);
-    border-bottom: 1.5px solid var(--accent);
-    padding-bottom: 0.5px;
-    /* a printer's editorial underline, not a bold-only emphasis */
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 1px;
 }
 .autocomplete-group {
     padding: 0.6em 0.95em 0.5em;

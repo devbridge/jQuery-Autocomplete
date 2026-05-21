@@ -38,6 +38,7 @@ $(function () {
     // 01 — Ajax lookup with ghost completion
     // -----------------------------------------------------------------
     var $selectionAjax = $('#selection-ajax');
+    var $ghost = $('#autocomplete-ajax-x');
 
     $('#autocomplete-ajax').devbridgeAutocomplete({
         serviceUrl: '/api/countries',
@@ -50,7 +51,7 @@ $(function () {
                 );
         },
         onHint: function (hint) {
-            $('#autocomplete-ajax-x').val(hint);
+            $ghost.val(hint);
         },
         onInvalidateSelection: function () {
             $selectionAjax.removeClass('has-selection').text('No selection.');
