@@ -3,46 +3,223 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ajax Autocomplete for jQuery &mdash; Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+        rel="stylesheet">
     <link href="content/styles.css" rel="stylesheet">
 </head>
 
 <body>
-    <div class="container">
-        <h1>Ajax Autocomplete Demo</h1>
 
-        <h2>Ajax Lookup</h2>
-        <p>Type country name in english:</p>
-        <div style="position: relative; height: 80px;">
-            <input type="text" name="country" id="autocomplete-ajax"
-                style="position: absolute; z-index: 2; background: transparent;">
-            <input type="text" name="country" id="autocomplete-ajax-x" disabled="disabled"
-                style="color: #CCC; position: absolute; background: transparent; z-index: 1;">
+    <header class="masthead">
+        <div class="masthead__deck">
+            <p class="eyebrow">A jQuery plugin &middot; since 2012</p>
+            <h1 class="lockup">
+                <span class="lockup__a">Ajax</span>
+                <span class="lockup__b">Autocomplete</span>
+            </h1>
+            <p class="lede">
+                A small typeahead field that has been quietly doing its job for
+                <em>fourteen&nbsp;years</em>. Rebuilt in TypeScript for 2.x.
+                Same plugin API. Still under twenty kilobytes minified.
+            </p>
         </div>
-        <div id="selection-ajax"></div>
+        <aside class="stamp" aria-hidden="true">
+            <span class="stamp__line1">Version</span>
+            <span class="stamp__big">2.0.2</span>
+            <span class="stamp__line3">May &middot; 2026</span>
+        </aside>
+    </header>
 
-        <h2>Local Lookup and Grouping</h2>
-        <p>Type NHL or NBA team name:</p>
-        <div>
-            <input type="text" name="country" id="autocomplete">
+    <section class="install" aria-label="Install">
+        <div class="install__row install__row--npm">
+            <p class="install__label">npm</p>
+            <pre class="install__snippet"><code><span class="prompt">$</span> npm i devbridge-autocomplete</code></pre>
         </div>
-        <div id="selection"></div>
+        <div class="install__row install__row--cdn">
+            <p class="install__label">CDN</p>
+            <pre
+                class="install__snippet"><code>&lt;script src=&quot;https://cdn.jsdelivr.net/npm/devbridge-autocomplete@2/dist/jquery.autocomplete.js&quot;&gt;&lt;/script&gt;</code></pre>
+        </div>
+        <dl class="install__meta">
+            <div><dt>Peer</dt><dd>jQuery&nbsp;&ge;&nbsp;3.0</dd></div>
+            <div><dt>Size</dt><dd>~13&nbsp;KB&nbsp;min</dd></div>
+            <div><dt>License</dt><dd>MIT</dd></div>
+            <div><dt>Source</dt><dd><a href="https://github.com/devbridge/jQuery-Autocomplete">github.com/devbridge/jQuery-Autocomplete</a></dd></div>
+        </dl>
+    </section>
 
-        <h2>Custom Lookup Container</h2>
-        <p>Type country name in english:</p>
-        <div>
-            <input type="text" name="country" id="autocomplete-custom-append" style="float: left;">
-            <div id="suggestions-container" style="position: relative; float: left; width: 400px; margin: 10px;"></div>
-        </div>
-    </div>
+    <main class="demos">
 
-    <div style="width: 50%; margin: 0 auto; clear: both;">
-        <h2>Dynamic Width</h2>
-        <p>Type country name in english:</p>
-        <div>
-            <input type="text" name="country" id="autocomplete-dynamic" style="width: 100%; border-width: 5px;">
-        </div>
-    </div>
+        <!-- ============== 01 ============== -->
+        <article class="demo">
+            <header class="demo__head">
+                <span class="demo__num">01</span>
+                <h2 class="demo__title">Ajax lookup, with ghost completion</h2>
+                <p class="demo__sub">
+                    Send the typed query to a server endpoint and render the suggestions it returns.
+                    The grey ghost letters drifting behind your typing are the
+                    <code>onHint</code> callback &mdash; a best-match preview of what
+                    pressing <kbd>Tab</kbd> would select.
+                </p>
+            </header>
+            <div class="demo__body">
+                <div class="demo__try">
+                    <p class="demo__try-label">Try &mdash; start typing a country</p>
+                    <div class="ghost-stack">
+                        <input class="ghost-stack__ghost" type="text" id="autocomplete-ajax-x"
+                            disabled tabindex="-1" aria-hidden="true">
+                        <input class="ghost-stack__main" type="text" id="autocomplete-ajax"
+                            autocomplete="off" placeholder="e.g. brazil, japan, peru&hellip;">
+                    </div>
+                    <div class="demo__readout" id="selection-ajax">No selection yet.</div>
+                </div>
+                <div class="demo__codewrap">
+                    <pre class="demo__code"><code>$(<span class="s">'#country'</span>).<span class="m">devbridgeAutocomplete</span>({
+    <span class="k">serviceUrl</span>: <span class="s">'/api/countries'</span>,
+    <span class="k">onSelect</span>: <span class="kw">function</span> (suggestion) {
+        <span class="c">// suggestion.value, suggestion.data</span>
+    },
+    <span class="k">onHint</span>: <span class="kw">function</span> (hint) {
+        <span class="c">// fill the ghost field behind the input</span>
+        $(<span class="s">'#country-ghost'</span>).val(hint);
+    },
+});</code></pre>
+                    <p class="demo__codenote">
+                        Built in: query debounce, response caching, and bad-query
+                        suppression keep the network quiet.
+                    </p>
+                </div>
+            </div>
+        </article>
+
+        <!-- ============== 02 ============== -->
+        <article class="demo">
+            <header class="demo__head">
+                <span class="demo__num">02</span>
+                <h2 class="demo__title">Local data with grouping</h2>
+                <p class="demo__sub">
+                    Pass an array of suggestions directly &mdash; no server needed.
+                    Use <code>groupBy</code> to render category headers. As of
+                    2.0.2 the renderer stably groups by the chosen field, so
+                    interleaved categories collapse to one header each.
+                </p>
+            </header>
+            <div class="demo__body">
+                <div class="demo__try">
+                    <p class="demo__try-label">Try &mdash; type an NHL or NBA team</p>
+                    <input class="demo__input" type="text" id="autocomplete"
+                        autocomplete="off" placeholder="e.g. blue, red, kings&hellip;">
+                    <div class="demo__readout" id="selection">No selection yet.</div>
+                </div>
+                <div class="demo__codewrap">
+                    <pre class="demo__code"><code>$(<span class="s">'#team'</span>).<span class="m">devbridgeAutocomplete</span>({
+    <span class="k">lookup</span>: teams,   <span class="c">// [{value, data: {category: 'NHL'}}, &hellip;]</span>
+    <span class="k">groupBy</span>: <span class="s">'category'</span>,
+    <span class="k">showNoSuggestionNotice</span>: <span class="kw">true</span>,
+    <span class="k">noSuggestionNotice</span>: <span class="s">'Sorry, no matching results'</span>,
+});</code></pre>
+                    <p class="demo__codenote">
+                        Matched substring is wrapped in <code>&lt;strong&gt;</code>
+                        automatically; override with <code>formatResult</code> for
+                        custom markup.
+                    </p>
+                </div>
+            </div>
+        </article>
+
+        <!-- ============== 03 ============== -->
+        <article class="demo">
+            <header class="demo__head">
+                <span class="demo__num">03</span>
+                <h2 class="demo__title">Custom suggestion container</h2>
+                <p class="demo__sub">
+                    By default the suggestions float in a fixed-positioned panel
+                    attached to <code>&lt;body&gt;</code>. Pass <code>appendTo</code>
+                    to render them inline next to (or anywhere relative to)
+                    the input &mdash; useful when they need to live inside
+                    a layout rather than above it.
+                </p>
+            </header>
+            <div class="demo__body">
+                <div class="demo__try">
+                    <p class="demo__try-label">Try &mdash; type a country</p>
+                    <div class="inline-stack">
+                        <input class="demo__input demo__input--narrow" type="text"
+                            id="autocomplete-custom-append" autocomplete="off"
+                            placeholder="country">
+                        <div id="suggestions-container" class="inline-stack__sink"
+                            aria-label="Suggestions render here">
+                            <span class="inline-stack__hint">Suggestions render here &rarr;</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="demo__codewrap">
+                    <pre class="demo__code"><code>$(<span class="s">'#country-inline'</span>).<span class="m">devbridgeAutocomplete</span>({
+    <span class="k">lookup</span>: countries,
+    <span class="k">appendTo</span>: <span class="s">'#suggestions-container'</span>,
+});</code></pre>
+                    <p class="demo__codenote">
+                        Accepts a selector string, a DOM <code>Element</code>, or a
+                        jQuery object.
+                    </p>
+                </div>
+            </div>
+        </article>
+
+        <!-- ============== 04 ============== -->
+        <article class="demo">
+            <header class="demo__head">
+                <span class="demo__num">04</span>
+                <h2 class="demo__title">Dynamic width</h2>
+                <p class="demo__sub">
+                    The suggestion panel matches the input's outer width by
+                    default (<code>width: 'auto'</code>). Resize the window and
+                    the dropdown follows the input. <code>width: 'flex'</code>
+                    sizes the panel to its content; a number locks an explicit
+                    width in pixels.
+                </p>
+            </header>
+            <div class="demo__body">
+                <div class="demo__try">
+                    <p class="demo__try-label">Try &mdash; the input fills its column</p>
+                    <input class="demo__input demo__input--wide" type="text"
+                        id="autocomplete-dynamic" autocomplete="off"
+                        placeholder="resize the window and watch the dropdown follow&hellip;">
+                </div>
+                <div class="demo__codewrap">
+                    <pre class="demo__code"><code>$(<span class="s">'#country-flex'</span>).<span class="m">devbridgeAutocomplete</span>({
+    <span class="k">lookup</span>: countries,
+    <span class="c">// 'auto' (default) tracks the input's outerWidth</span>
+    <span class="c">// 'flex' sizes the panel to its widest suggestion</span>
+    <span class="c">// a Number locks an explicit pixel width</span>
+});</code></pre>
+                </div>
+            </div>
+        </article>
+
+    </main>
+
+    <footer class="colophon">
+        <p class="colophon__line">
+            <strong>Ajax Autocomplete for jQuery</strong>
+            <span class="colophon__rule">&middot;</span>
+            <a href="https://github.com/devbridge/jQuery-Autocomplete">source</a>
+            <span class="colophon__rule">&middot;</span>
+            <a href="https://www.npmjs.com/package/devbridge-autocomplete">npm</a>
+            <span class="colophon__rule">&middot;</span>
+            <a href="https://github.com/devbridge/jQuery-Autocomplete/blob/master/LICENSE">MIT&nbsp;license</a>
+            <span class="colophon__rule">&middot;</span>
+            maintained by <a href="https://github.com/tkirda">Tomas&nbsp;Kirda</a>
+        </p>
+        <p class="colophon__set">
+            Set in <em>Fraunces</em> and <em>IBM&nbsp;Plex&nbsp;Mono</em>.
+        </p>
+    </footer>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://unpkg.com/jquery-mockjax@2.6.0/dist/jquery.mockjax.js"></script>
