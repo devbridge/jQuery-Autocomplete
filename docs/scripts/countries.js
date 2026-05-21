@@ -1,4 +1,4 @@
-﻿var countries = {
+var countries = {
     "AD": "Andorra",
     "A2": "Andorra Test",
     "AE": "United Arab Emirates",

@@ -26,7 +26,7 @@ TypeScript source under `src/` (~700 lines split into ~8 modules) compiles to a 
 - `npm run test:watch` — Vitest watch mode.
 - `npm run lint` — ESLint over `test/` and `scripts/build.mjs`. **TS source is not linted by ESLint** — `tsc --noEmit` covers it via the `typecheck` script.
 - `npm run typecheck` — `tsc --noEmit`. Strict mode; runs on `src/`.
-- `npm run format` — Prettier rewrite of `src/`, `test/`, and `scripts/build.mjs` (100-col, 4-space, ES5 trailing commas). Demo files under `scripts/` (`countries.js`, `demo.js`) are intentionally excluded.
+- `npm run format` — Prettier rewrite of `src/`, `test/`, and `scripts/build.mjs` (100-col, 4-space, ES5 trailing commas). Demo files under `docs/` are intentionally excluded.
 - `npm run format:check` — Prettier check-only, same scope. CI gate.
 - `npm run build` — runs `scripts/build.mjs` (Node ESM): esbuild emits `dist/jquery.autocomplete.esm.js` (ESM) and `dist/jquery.autocomplete.js` / `.min.js` (UMD, hand-wrapped); `tsc --declaration` emits the `.d.ts` files; the version field in `devbridge-autocomplete.jquery.json` is synced from `package.json`.
 
@@ -42,7 +42,7 @@ Vitest + jsdom, headless. Specs live in `test/autocomplete.test.js`. `test/setup
 
 To run a single test: `npx vitest run -t "test name substring"` or temporarily `describe.only` / `it.only`.
 
-The demo page `index.htm` is the manual test surface (Ajax lookup, local lookup with grouping, custom container, dynamic width). It loads jQuery + mockjax from CDN; open in a browser.
+The demo page `docs/index.htm` is the manual test surface (Ajax lookup, local lookup with grouping, custom container, dynamic width) **and** the live demo published at https://devbridge.github.io/jQuery-Autocomplete/ via GitHub Pages (configured to serve from `master/docs`). It loads jQuery, mockjax, and the plugin itself from CDN (`cdn.jsdelivr.net/npm/devbridge-autocomplete@2/...`); open in a browser.
 
 ## Build internals
 
