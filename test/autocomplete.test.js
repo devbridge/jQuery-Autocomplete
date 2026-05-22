@@ -314,50 +314,57 @@ describe("Autocomplete Async — cache key", () => {
 });
 
 describe("Autocomplete Async — preventBadQueries", () => {
-    let ajaxCount = 0;
+    it("blocks queries that share a no-results prefix, until the guard is disabled", async () => {
+        const input = $("<input />");
+        const serviceUrl = "/autocomplete/prevent/ajax";
+        let ajaxCount = 0;
 
-    beforeEach(async () => {
-        await new Promise((resolve) => {
-            const input = $("<input />");
-            let instance;
-            const serviceUrl = "/autocomplete/prevent/ajax";
+        // Drive the test off the plugin's own `onSearchComplete` callback
+        // instead of wall-clock setTimeouts. onSearchComplete fires for every
+        // query attempt — ajax-succeeded, ajax-failed, AND bad-query-short-
+        // circuit — so it's a single deterministic synchronisation point.
+        const searchResolvers = [];
+        const nextSearchComplete = () =>
+            new Promise((resolve) => searchResolvers.push(resolve));
 
-            input.autocomplete({ serviceUrl });
-
-            $.mockjax({
-                url: serviceUrl,
-                responseTime: 1,
-                response: function () {
-                    ajaxCount += 1;
-                    this.responseText = JSON.stringify({ suggestions: [] });
-                    if (ajaxCount === 2) {
-                        resolve();
-                    }
-                },
-            });
-
-            setTimeout(() => {
-                input.val("Jam");
-                instance = input.autocomplete();
-                instance.onValueChange();
-            }, 10);
-
-            setTimeout(() => {
-                input.val("Jama");
-                instance.onValueChange();
-            }, 20);
-
-            setTimeout(() => {
-                instance.setOptions({ preventBadQueries: false });
-                input.val("Jamai");
-                instance.onValueChange();
-            }, 30);
+        $.mockjax({
+            url: serviceUrl,
+            responseTime: 1,
+            response: function () {
+                ajaxCount += 1;
+                this.responseText = JSON.stringify({ suggestions: [] });
+            },
         });
-    });
 
-    it("Should prevent Ajax requests if previous query with matching root failed.", () => {
-        // Ajax call should have been made twice (then short-circuited by the
-        // bad-query guard until preventBadQueries was disabled).
+        input.autocomplete({
+            serviceUrl,
+            onSearchComplete: () => {
+                const resolve = searchResolvers.shift();
+                if (resolve) resolve();
+            },
+        });
+        const instance = input.autocomplete();
+
+        // 1. "Jam" → ajax fires, empty response → "Jam" added to badQueries.
+        const ack1 = nextSearchComplete();
+        input.val("Jam");
+        instance.onValueChange();
+        await ack1;
+
+        // 2. "Jama" starts with "Jam" → blocked by isBadQuery, no ajax;
+        //    onSearchComplete still fires synchronously with `[]`.
+        const ack2 = nextSearchComplete();
+        input.val("Jama");
+        instance.onValueChange();
+        await ack2;
+
+        // 3. Disable the guard, type a fresh query → ajax fires again.
+        const ack3 = nextSearchComplete();
+        instance.setOptions({ preventBadQueries: false });
+        input.val("Jamai");
+        instance.onValueChange();
+        await ack3;
+
         expect(ajaxCount).toBe(2);
     });
 });
