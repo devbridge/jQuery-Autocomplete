@@ -1,0 +1,31 @@
+version: 2
+updates:
+  # Dev-dependencies: weekly grouped PR. Production has only `jquery` as a
+  # peer dep (and no runtime deps); production updates are handled per release.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+    open-pull-requests-limit: 5
+    groups:
+      dev-dependencies:
+        dependency-type: development
+        update-types:
+          - minor
+          - patch
+    commit-message:
+      prefix: "chore(deps)"
+
+  # GitHub Actions used in workflows (CodeQL, CI, release). Pin updates so we
+  # don't drift behind a security-relevant action.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "ci(deps)"

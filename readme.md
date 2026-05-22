@@ -280,6 +280,14 @@ the alias:
 $('.autocomplete').devbridgeAutocomplete({ ... });
 ```
 
+## Security
+
+To report a vulnerability, **please do not open a public GitHub issue.**
+Use GitHub's [Private Vulnerability Reporting](https://github.com/devbridge/jQuery-Autocomplete/security/advisories/new)
+form on this repository — it routes the report directly to the
+maintainers. Full policy and supported-version table:
+[SECURITY.md](https://github.com/devbridge/jQuery-Autocomplete/blob/master/SECURITY.md).
+
 ## License
 
 Ajax Autocomplete for jQuery is freely distributable under the terms of an
