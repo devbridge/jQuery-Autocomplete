@@ -48,10 +48,10 @@
     "jquery": ">=3.0"
   },
   "devDependencies": {
-    "@types/jquery": "^3.5.32",
+    "@types/jquery": "^4.0.0",
     "esbuild": "^0.28.0",
     "eslint": "^9.30.1",
-    "jquery": "^3.7.1",
+    "jquery": "^4.0.0",
     "jquery-mockjax": "^2.6.0",
     "jsdom": "^29.1.1",
     "prettier": "^3.6.2",
