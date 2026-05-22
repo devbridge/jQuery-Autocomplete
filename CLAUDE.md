@@ -73,6 +73,7 @@ The minified UMD is ~13 KB; the unminified is ~26 KB.
 ## Conventions
 
 - TypeScript strict mode is on. Don't introduce `any` in public types. Internal `as unknown as X` casts are OK at jQuery boundaries where typings are imprecise.
+- The `Autocomplete` class explicitly marks every member `private` unless it's part of the documented public API in `readme.md` (`setOptions`, `clear`, `clearCache`, `disable`, `enable`, `hide`, `select`, `dispose`, plus the `options` field and the static `defaults`/`utils`). When adding a new member, default to `private`; only drop the keyword when you also add a row to the README's instance-method table. JS callers can still reach private members at runtime — they're a TypeScript-surface contract, not a runtime fence — but the contract is what consumers will rely on.
 - Methods use `this` directly. The one exception is `initialize()`, which aliases `const self = this` for the jQuery delegation handlers (`function (this: HTMLElement)`) that need both `$(this)` for the matched element AND access to the Autocomplete instance. Don't add new `that = this` aliases elsewhere — use arrow functions for callbacks instead.
 - Prefer native array methods (`.map`, `.filter`, `.find`, `.some`, `.indexOf`) over jQuery's `$.each` / `$.grep` / `$.map` / `$.inArray` in new code; the JS-source equivalents have already been swapped where semantics match.
 - Prettier owns formatting. Run `npm run format` before committing source changes.

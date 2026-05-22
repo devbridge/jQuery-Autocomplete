@@ -21,36 +21,36 @@ export class Autocomplete {
     static defaults: ResolvedOptions = defaults;
     static utils = utils;
 
-    element: HTMLInputElement;
-    el: JQuery;
-    suggestions: Suggestion[] = [];
-    badQueries: string[] = [];
-    selectedIndex = -1;
-    currentValue: string;
-    cachedResponse: Record<string, AutocompleteResponse> = {};
-    onChangeTimeout: ReturnType<typeof setTimeout> | null = null;
-    isLocal = false;
-    suggestionsContainer!: HTMLDivElement;
-    noSuggestionsContainer!: HTMLElement;
+    private element: HTMLInputElement;
+    private el: JQuery;
+    private suggestions: Suggestion[] = [];
+    private badQueries: string[] = [];
+    private selectedIndex = -1;
+    private currentValue: string;
+    private cachedResponse: Record<string, AutocompleteResponse> = {};
+    private onChangeTimeout: ReturnType<typeof setTimeout> | null = null;
+    private isLocal = false;
+    private suggestionsContainer!: HTMLDivElement;
+    private noSuggestionsContainer!: HTMLElement;
     // Cached jQuery wrappers — avoid re-wrapping the same DOM node on every
     // method call (~12 call sites used to invoke `$(this.suggestionsContainer)`).
-    $container!: JQuery;
-    $noSuggestionsContainer!: JQuery;
+    private $container!: JQuery;
+    private $noSuggestionsContainer!: JQuery;
     options: ResolvedOptions;
-    classes: Classes = {
+    private classes: Classes = {
         selected: "autocomplete-selected",
         suggestion: "autocomplete-suggestion",
     };
-    hint: Suggestion | null = null;
-    hintValue = "";
-    selection: Suggestion | null = null;
+    private hint: Suggestion | null = null;
+    private hintValue = "";
+    private selection: Suggestion | null = null;
 
-    disabled?: boolean;
-    visible?: boolean;
-    ignoreValueChange?: boolean;
-    blurTimeoutId?: ReturnType<typeof setTimeout>;
-    fixPositionCapture?: () => void;
-    currentRequest: JQuery.jqXHR | null = null;
+    private disabled?: boolean;
+    private visible?: boolean;
+    private ignoreValueChange?: boolean;
+    private blurTimeoutId?: ReturnType<typeof setTimeout>;
+    private fixPositionCapture?: () => void;
+    private currentRequest: JQuery.jqXHR | null = null;
 
     constructor(el: HTMLInputElement, options?: AutocompleteOptions) {
         this.element = el;
@@ -63,7 +63,7 @@ export class Autocomplete {
         this.setOptions(options);
     }
 
-    initialize(): void {
+    private initialize(): void {
         // jQuery rebinds `this` inside delegation handlers to the matched DOM
         // element, so handlers that need both `$(this)` (the element) AND
         // access to the Autocomplete instance use `self` for the latter.
@@ -125,7 +125,7 @@ export class Autocomplete {
         this.el.on("input.autocomplete", (e) => this.onKeyUp(e));
     }
 
-    onFocus(): void {
+    private onFocus(): void {
         if (this.disabled) {
             return;
         }
@@ -135,7 +135,7 @@ export class Autocomplete {
         }
     }
 
-    onBlur(): void {
+    private onBlur(): void {
         const options = this.options;
         const query = this.getQuery(this.el.val() as string);
 
@@ -147,7 +147,7 @@ export class Autocomplete {
         }, 200);
     }
 
-    abortAjax(): void {
+    private abortAjax(): void {
         if (this.currentRequest) {
             this.currentRequest.abort();
             this.currentRequest = null;
@@ -195,7 +195,7 @@ export class Autocomplete {
         this.disabled = false;
     }
 
-    fixPosition(): void {
+    private fixPosition(): void {
         const $container = this.$container;
         const containerParent = $container.parent().get(0);
 
@@ -248,13 +248,13 @@ export class Autocomplete {
         $container.css(styles);
     }
 
-    isCursorAtEnd(): boolean {
+    private isCursorAtEnd(): boolean {
         const valLength = (this.el.val() as string).length;
         const { selectionStart } = this.element;
         return typeof selectionStart === "number" ? selectionStart === valLength : true;
     }
 
-    onKeyPress(e: JQuery.KeyDownEvent): void {
+    private onKeyPress(e: JQuery.KeyDownEvent): void {
         if (!this.disabled && !this.visible && e.which === keys.DOWN && this.currentValue) {
             this.suggest();
             return;
@@ -310,7 +310,7 @@ export class Autocomplete {
         e.preventDefault();
     }
 
-    onKeyUp(e: JQuery.TriggeredEvent): void {
+    private onKeyUp(e: JQuery.TriggeredEvent): void {
         if (this.disabled) {
             return;
         }
@@ -336,7 +336,7 @@ export class Autocomplete {
         }
     }
 
-    onValueChange(): void {
+    private onValueChange(): void {
         if (this.ignoreValueChange) {
             this.ignoreValueChange = false;
             return;
@@ -369,14 +369,14 @@ export class Autocomplete {
         }
     }
 
-    isExactMatch(query: string): boolean {
+    private isExactMatch(query: string): boolean {
         const { suggestions } = this;
         return (
             suggestions.length === 1 && suggestions[0]!.value.toLowerCase() === query.toLowerCase()
         );
     }
 
-    getQuery(value: string): string {
+    private getQuery(value: string): string {
         const { delimiter } = this.options;
         if (!delimiter) {
             return value;
@@ -385,7 +385,7 @@ export class Autocomplete {
         return parts[parts.length - 1]!.trim();
     }
 
-    getSuggestionsLocal(query: string): AutocompleteResponse {
+    private getSuggestionsLocal(query: string): AutocompleteResponse {
         const options = this.options;
         const queryLowerCase = query.toLowerCase();
         const filter = options.lookupFilter;
@@ -399,7 +399,7 @@ export class Autocomplete {
         };
     }
 
-    getSuggestions(q: string): void {
+    private getSuggestions(q: string): void {
         const options = this.options;
         let serviceUrl = options.serviceUrl as ServiceUrl;
         let response: AutocompleteResponse | undefined;
@@ -466,7 +466,7 @@ export class Autocomplete {
         }
     }
 
-    isBadQuery(q: string): boolean {
+    private isBadQuery(q: string): boolean {
         if (!this.options.preventBadQueries) {
             return false;
         }
@@ -487,7 +487,7 @@ export class Autocomplete {
         this.onHint(null);
     }
 
-    groupSuggestionsByCategory(suggestions: Suggestion[], key: string): Suggestion[] {
+    private groupSuggestionsByCategory(suggestions: Suggestion[], key: string): Suggestion[] {
         const groups = new Map<unknown, Suggestion[]>();
         for (const s of suggestions) {
             const cat = (s.data as Record<string, unknown>)[key];
@@ -501,7 +501,7 @@ export class Autocomplete {
         return Array.from(groups.values()).flat();
     }
 
-    suggest(): void {
+    private suggest(): void {
         if (!this.suggestions.length) {
             if (this.options.showNoSuggestionNotice) {
                 this.noSuggestions();
@@ -567,7 +567,7 @@ export class Autocomplete {
         this.findBestHint();
     }
 
-    noSuggestions(): void {
+    private noSuggestions(): void {
         const { beforeRender } = this.options;
         const container = this.$container;
 
@@ -582,7 +582,7 @@ export class Autocomplete {
         this.visible = true;
     }
 
-    adjustContainerWidth(): void {
+    private adjustContainerWidth(): void {
         const { width } = this.options;
         if (width === "auto") {
             const w = this.el.outerWidth() ?? 0;
@@ -592,7 +592,7 @@ export class Autocomplete {
         }
     }
 
-    findBestHint(): void {
+    private findBestHint(): void {
         const value = (this.el.val() as string).toLowerCase();
         if (!value) {
             return;
@@ -607,7 +607,7 @@ export class Autocomplete {
         this.onHint(bestMatch);
     }
 
-    onHint(suggestion: Suggestion | null): void {
+    private onHint(suggestion: Suggestion | null): void {
         const { onHint: onHintCallback } = this.options;
         const hintValue = suggestion
             ? this.currentValue + suggestion.value.substr(this.currentValue.length)
@@ -620,7 +620,7 @@ export class Autocomplete {
         }
     }
 
-    verifySuggestionsFormat(suggestions: LookupArray): Suggestion[] {
+    private verifySuggestionsFormat(suggestions: LookupArray): Suggestion[] {
         if (suggestions.length && typeof suggestions[0] === "string") {
             return (suggestions as string[]).map((value) => ({ value, data: null }));
         }
@@ -631,7 +631,10 @@ export class Autocomplete {
         );
     }
 
-    validateOrientation(orientation: string | undefined, fallback: Orientation): Orientation {
+    private validateOrientation(
+        orientation: string | undefined,
+        fallback: Orientation
+    ): Orientation {
         const normalized = (orientation || "").trim().toLowerCase();
         if (normalized === "auto" || normalized === "top" || normalized === "bottom") {
             return normalized;
@@ -639,7 +642,11 @@ export class Autocomplete {
         return fallback;
     }
 
-    processResponse(result: AutocompleteResponse, originalQuery: string, cacheKey: string): void {
+    private processResponse(
+        result: AutocompleteResponse,
+        originalQuery: string,
+        cacheKey: string
+    ): void {
         const options = this.options;
         result.suggestions = this.verifySuggestionsFormat(result.suggestions);
 
@@ -662,7 +669,7 @@ export class Autocomplete {
         this.suggest();
     }
 
-    activate(index: number): HTMLElement | null {
+    private activate(index: number): HTMLElement | null {
         const selected = this.classes.selected;
         const container = this.$container;
         const children = container.find(`.${this.classes.suggestion}`);
@@ -679,7 +686,7 @@ export class Autocomplete {
         return null;
     }
 
-    selectHint(): void {
+    private selectHint(): void {
         this.select(this.suggestions.indexOf(this.hint!));
     }
 
@@ -688,7 +695,7 @@ export class Autocomplete {
         this.onSelect(i);
     }
 
-    moveUp(): void {
+    private moveUp(): void {
         if (this.selectedIndex === -1) {
             return;
         }
@@ -708,14 +715,14 @@ export class Autocomplete {
         this.adjustScroll(this.selectedIndex - 1);
     }
 
-    moveDown(): void {
+    private moveDown(): void {
         if (this.selectedIndex === this.suggestions.length - 1) {
             return;
         }
         this.adjustScroll(this.selectedIndex + 1);
     }
 
-    adjustScroll(index: number): void {
+    private adjustScroll(index: number): void {
         const activeItem = this.activate(index);
         if (!activeItem) {
             return;
@@ -741,7 +748,7 @@ export class Autocomplete {
         this.onHint(null);
     }
 
-    onSelect(index: number): void {
+    private onSelect(index: number): void {
         const onSelectCallback = this.options.onSelect;
         const suggestion = this.suggestions[index]!;
 
@@ -758,7 +765,7 @@ export class Autocomplete {
         onSelectCallback?.call(this.element, suggestion);
     }
 
-    getValue(value: string): string {
+    private getValue(value: string): string {
         const { delimiter } = this.options;
         if (!delimiter) {
             return value;
