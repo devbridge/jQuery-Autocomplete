@@ -3,7 +3,7 @@
   "version": "2.0.2",
   "description": "Autocomplete provides suggestions while you type into the text field.",
   "homepage": "https://github.com/devbridge/jQuery-Autocomplete",
-  "author": "Tomas Kirda (https://twitter.com/tkirda)",
+  "author": "Tomas Kirda (https://github.com/tkirda)",
   "main": "dist/jquery.autocomplete.js",
   "module": "dist/jquery.autocomplete.esm.js",
   "types": "dist/index.d.ts",
@@ -16,7 +16,17 @@
   },
   "license": "MIT",
   "keywords": [
-    "jquery-plugin"
+    "jquery-plugin",
+    "jquery",
+    "autocomplete",
+    "typeahead",
+    "suggest",
+    "suggestions",
+    "combobox",
+    "dropdown",
+    "input",
+    "search",
+    "ajax"
   ],
   "scripts": {
     "build": "node scripts/build.mjs",
@@ -32,7 +42,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/devbridge/jQuery-Autocomplete.git"
+    "url": "git+https://github.com/devbridge/jQuery-Autocomplete.git"
   },
   "peerDependencies": {
     "jquery": ">=3.0"
