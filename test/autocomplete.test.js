@@ -324,8 +324,7 @@ describe("Autocomplete Async — preventBadQueries", () => {
         // query attempt — ajax-succeeded, ajax-failed, AND bad-query-short-
         // circuit — so it's a single deterministic synchronisation point.
         const searchResolvers = [];
-        const nextSearchComplete = () =>
-            new Promise((resolve) => searchResolvers.push(resolve));
+        const nextSearchComplete = () => new Promise((resolve) => searchResolvers.push(resolve));
 
         $.mockjax({
             url: serviceUrl,
