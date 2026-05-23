@@ -47,6 +47,11 @@
   "peerDependencies": {
     "jquery": ">=3.0"
   },
+  "overrides": {
+    "jquery1": "npm:jquery@^3.7.1",
+    "jquery2": "npm:jquery@^3.7.1",
+    "jquery4": "npm:jquery@^3.7.1"
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@types/jquery": "^3.5.32",
