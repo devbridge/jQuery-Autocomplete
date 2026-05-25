@@ -53,7 +53,7 @@
     "jquery4": "npm:jquery@^3.7.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.4",
+    "@eslint/js": "^10.0.1",
     "@types/jquery": "^3.5.32",
     "esbuild": "^0.28.0",
     "eslint": "^10.4.0",
